@@ -1,0 +1,107 @@
+#include <sstream>
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+
+#include "VTKStencil.h"
+
+VTKStencil::VTKStencil ( const Parameters & parameters) : FieldStencil<FlowField> (parameters), _prefix (parameters.vtk.prefix) {
+    int cells = 1;
+    for(int i = 0; i < 3; i++) {
+        cells *= _parameters.parallel.localSize[i];
+    }
+    _pressures = new FLOAT[cells];
+    _velocities = new FLOAT*[cells];
+    for(int i = 0; i < cells; i++) {
+        _velocities[i] = new FLOAT[3];
+    }
+}
+
+
+void VTKStencil::apply ( FlowField & flowField, int i, int j ){
+    if( i > 1 && j > 1 ) { // is this a fluid cell?
+        int ind = (j-2) * _parameters.parallel.localSize[0] + (i-2);
+        flowField.getPressureAndVelocity(_pressures[ind], _velocities[ind], i, j);
+    }
+}
+
+
+void VTKStencil::apply ( FlowField & flowField, int i, int j, int k ){
+    if( i > 1 && j > 1 && k > 1 ) { // is this a fluid cell?
+        int ind = ((k-2) * _parameters.parallel.localSize[1] + (j-2)) * _parameters.parallel.localSize[0] + (i-2);
+        // std::cout << "i=" << i << ", j=" << j << ", k=" << k << ", ind=" << ind << "\n";
+        flowField.getPressureAndVelocity(_pressures[ind], _velocities[ind], i, j, k);
+    }
+}
+
+void VTKStencil::write ( FlowField & flowField, int timeStep ){
+
+    int cells = 1;
+    int numVertices = 1;
+    int cellsMin[3];
+    int cellsMax[3];
+    for(int i = 0; i < 3; i++) {
+        cellsMin[i] = _parameters.parallel.firstCorner[i];
+        cellsMax[i] = cellsMin[i] + _parameters.parallel.localSize[i];
+        // std::cout << "min=" << cellsMin[i] << ", max=" << cellsMax[i] << std::endl;
+        cells *= _parameters.parallel.localSize[i];
+        numVertices *= _parameters.parallel.localSize[i] + 1;
+    }
+    // std::cout << "cells=" << cells << std::endl;
+
+    // open stream
+    std::ofstream vtkFile;
+    std::stringstream filename;
+    filename << _prefix << "_" << std::setfill('0') << std::setw(6) << timeStep << ".vtk";
+    vtkFile.open(filename.str().c_str());
+    std::cout << timeStep << std::endl;
+    std::cout << filename.str() << std::endl;
+
+    // write header
+    vtkFile << "# vtk DataFile Version 2.0" << std::endl << "I need something to put here" << std::endl << "ASCII" << std::endl << std::endl;
+
+    // write vertex coordinates
+    vtkFile << "DATASET STRUCTURED_GRID" << std::endl << "DIMENSIONS "
+        << _parameters.parallel.localSize[0] << " " << _parameters.parallel.localSize[1] << " " << _parameters.parallel.localSize[2]
+        << std::endl << "POINTS " << numVertices << " float" << std::endl;
+
+    // TODO: lexicographic ordering?
+    vtkFile << std::fixed << std::setprecision(6);
+    for(int k = cellsMin[2]; k <= cellsMax[2]; k++) {
+        for(int j = cellsMin[1]; j <= cellsMax[1]; j++) {
+            for(int i = cellsMin[0]; i <= cellsMax[0]; i++) {
+                vtkFile << _parameters.meshsize->getPosX(i+2, j+2, k+2) << " "
+                    << _parameters.meshsize->getPosY(i+2, j+2, k+2) << " "
+                    << _parameters.meshsize->getPosZ(i+2, j+2, k+2) << std::endl;
+            }
+        }
+    }
+    vtkFile << std::endl;
+
+    // write pressure
+    int ind;
+    vtkFile << "CELL_DATA " << cells << std::endl << "SCALARS pressure float 1" << std::endl << "LOOKUP_TABLE default" << std::endl;
+    vtkFile << std::scientific;
+    for(int k = cellsMin[2]; k < cellsMax[2]; k++) {
+        for(int j = cellsMin[1]; j < cellsMax[1]; j++) {
+            for(int i = cellsMin[0]; i < cellsMax[0]; i++) {
+                ind = (k * _parameters.parallel.localSize[1] + j) * _parameters.parallel.localSize[0] + i;
+                vtkFile << _pressures[ind] << std::endl;
+            }
+        }
+    }
+    vtkFile << std::endl;
+
+    // write velocity
+    vtkFile << "VECTORS velocity float" << std::endl;
+    for(int k = cellsMin[2]; k < cellsMax[2]; k++) {
+        for(int j = cellsMin[1]; j < cellsMax[1]; j++) {
+            for(int i = cellsMin[0]; i < cellsMax[0]; i++) {
+                ind = (k * _parameters.parallel.localSize[1] + j) * _parameters.parallel.localSize[0] + i;
+                vtkFile << _velocities[ind][0] << " " << _velocities[ind][1] << " " << _velocities[ind][2] << std::endl;
+            }
+        }
+    }
+
+    vtkFile.close();
+}
