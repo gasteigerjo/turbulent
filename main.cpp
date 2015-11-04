@@ -84,7 +84,6 @@ int main (int argc, char *argv[]) {
       }
       // TODO- WS1: trigger VTK output
       if (lastPlotTime + parameters.vtk.interval < time) {
-          std::cout << lastPlotTime + parameters.vtk.interval << " < " << time;
           simulation->plotVTK(timeSteps);
           lastPlotTime += parameters.vtk.interval;
       }

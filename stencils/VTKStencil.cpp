@@ -5,14 +5,16 @@
 
 #include "VTKStencil.h"
 
+
 VTKStencil::VTKStencil ( const Parameters & parameters) : FieldStencil<FlowField> (parameters), _prefix (parameters.vtk.prefix) {
-    int cells = 1;
-    for(int i = 0; i < 3; i++) {
-        cells *= _parameters.parallel.localSize[i];
+    int numCells = 1;
+    for(int i = 0; i < _parameters.geometry.dim; i++) {
+        numCells *= _parameters.parallel.localSize[i];
     }
-    _pressures = new FLOAT[cells];
-    _velocities = new FLOAT*[cells];
-    for(int i = 0; i < cells; i++) {
+    // std::cout << "cells=" << numCells << std::endl;
+    _pressures = new FLOAT[numCells];
+    _velocities = new FLOAT*[numCells];
+    for(int i = 0; i < numCells; i++) {
         _velocities[i] = new FLOAT[3];
     }
 }
@@ -36,36 +38,42 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j, int k ){
 
 void VTKStencil::write ( FlowField & flowField, int timeStep ){
 
-    int cells = 1;
+    int numCells = 1;
     int numVertices = 1;
     int cellsMin[3];
     int cellsMax[3];
     for(int i = 0; i < 3; i++) {
         cellsMin[i] = _parameters.parallel.firstCorner[i];
         cellsMax[i] = cellsMin[i] + _parameters.parallel.localSize[i];
-        // std::cout << "min=" << cellsMin[i] << ", max=" << cellsMax[i] << std::endl;
-        cells *= _parameters.parallel.localSize[i];
-        numVertices *= _parameters.parallel.localSize[i] + 1;
+        std::cout << "min=" << cellsMin[i] << ", max=" << cellsMax[i] << std::endl;
+        if (i < _parameters.geometry.dim) {
+            numCells *= _parameters.parallel.localSize[i];
+            numVertices *= _parameters.parallel.localSize[i] + 1;
+        }
     }
-    // std::cout << "cells=" << cells << std::endl;
+    std::cout << "cells=" << numCells << std::endl;
 
     // open stream
     std::ofstream vtkFile;
     std::stringstream filename;
     filename << _prefix << "_" << std::setfill('0') << std::setw(6) << timeStep << ".vtk";
     vtkFile.open(filename.str().c_str());
-    std::cout << timeStep << std::endl;
-    std::cout << filename.str() << std::endl;
+    if (vtkFile.fail()) {
+        std::cout << "Failed to open file for VTK output: " << filename.str() << std::endl;
+    } else {
+        std::cout << "Writing VTK Output: " << filename.str() << std::endl;
+    }
 
     // write header
     vtkFile << "# vtk DataFile Version 2.0" << std::endl << "I need something to put here" << std::endl << "ASCII" << std::endl << std::endl;
 
     // write vertex coordinates
     vtkFile << "DATASET STRUCTURED_GRID" << std::endl << "DIMENSIONS "
-        << _parameters.parallel.localSize[0] << " " << _parameters.parallel.localSize[1] << " " << _parameters.parallel.localSize[2]
-        << std::endl << "POINTS " << numVertices << " float" << std::endl;
+        << _parameters.parallel.localSize[0] + 1 << " "
+        << _parameters.parallel.localSize[1] + 1 << " "
+        << _parameters.parallel.localSize[2] + 1 << std::endl
+        << "POINTS " << numVertices << " float" << std::endl;
 
-    // TODO: lexicographic ordering?
     vtkFile << std::fixed << std::setprecision(6);
     for(int k = cellsMin[2]; k <= cellsMax[2]; k++) {
         for(int j = cellsMin[1]; j <= cellsMax[1]; j++) {
@@ -80,9 +88,9 @@ void VTKStencil::write ( FlowField & flowField, int timeStep ){
 
     // write pressure
     int ind;
-    vtkFile << "CELL_DATA " << cells << std::endl << "SCALARS pressure float 1" << std::endl << "LOOKUP_TABLE default" << std::endl;
+    vtkFile << "CELL_DATA " << numCells << std::endl << "SCALARS pressure float 1" << std::endl << "LOOKUP_TABLE default" << std::endl;
     vtkFile << std::scientific;
-    for(int k = cellsMin[2]; k < cellsMax[2]; k++) {
+    for(int k = cellsMin[2]; k < cellsMax[2] + (3-_parameters.geometry.dim); k++) {
         for(int j = cellsMin[1]; j < cellsMax[1]; j++) {
             for(int i = cellsMin[0]; i < cellsMax[0]; i++) {
                 ind = (k * _parameters.parallel.localSize[1] + j) * _parameters.parallel.localSize[0] + i;
@@ -94,7 +102,7 @@ void VTKStencil::write ( FlowField & flowField, int timeStep ){
 
     // write velocity
     vtkFile << "VECTORS velocity float" << std::endl;
-    for(int k = cellsMin[2]; k < cellsMax[2]; k++) {
+    for(int k = cellsMin[2]; k < cellsMax[2] + (3-_parameters.geometry.dim); k++) {
         for(int j = cellsMin[1]; j < cellsMax[1]; j++) {
             for(int i = cellsMin[0]; i < cellsMax[0]; i++) {
                 ind = (k * _parameters.parallel.localSize[1] + j) * _parameters.parallel.localSize[0] + i;
@@ -102,6 +110,7 @@ void VTKStencil::write ( FlowField & flowField, int timeStep ){
             }
         }
     }
+    vtkFile << std::endl;
 
     vtkFile.close();
 }
