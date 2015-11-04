@@ -7,11 +7,14 @@
 
 
 VTKStencil::VTKStencil ( const Parameters & parameters) : FieldStencil<FlowField> (parameters), _prefix (parameters.vtk.prefix) {
+
+    // Get number of cells (i.e. array length)
     int numCells = 1;
     for(int i = 0; i < _parameters.geometry.dim; i++) {
         numCells *= _parameters.parallel.localSize[i];
     }
-    // std::cout << "cells=" << numCells << std::endl;
+
+    // Set up arrays for temporarily saving the pressure and velocity
     _pressures = new FLOAT[numCells];
     _velocities = new FLOAT*[numCells];
     for(int i = 0; i < numCells; i++) {
@@ -21,7 +24,9 @@ VTKStencil::VTKStencil ( const Parameters & parameters) : FieldStencil<FlowField
 
 
 void VTKStencil::apply ( FlowField & flowField, int i, int j ){
-    if( i > 1 && j > 1 ) { // is this a fluid cell?
+    if( i > 1 && j > 1 ) { // only for fluid cells
+
+        //temporarily save pressure and interpolated velocity in an array
         int ind = (j-2) * _parameters.parallel.localSize[0] + (i-2);
         flowField.getPressureAndVelocity(_pressures[ind], _velocities[ind], i, j);
     }
@@ -29,15 +34,17 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j ){
 
 
 void VTKStencil::apply ( FlowField & flowField, int i, int j, int k ){
-    if( i > 1 && j > 1 && k > 1 ) { // is this a fluid cell?
+    if( i > 1 && j > 1 && k > 1 ) { // only for fluid cells
+
+        //temporarily save pressure and interpolated velocity in an array
         int ind = ((k-2) * _parameters.parallel.localSize[1] + (j-2)) * _parameters.parallel.localSize[0] + (i-2);
-        // std::cout << "i=" << i << ", j=" << j << ", k=" << k << ", ind=" << ind << "\n";
         flowField.getPressureAndVelocity(_pressures[ind], _velocities[ind], i, j, k);
     }
 }
 
 void VTKStencil::write ( FlowField & flowField, int timeStep ){
 
+    // set up variables for the number of cells
     int numCells = 1;
     int numVertices = 1;
     int cellsMin[3];
@@ -45,13 +52,11 @@ void VTKStencil::write ( FlowField & flowField, int timeStep ){
     for(int i = 0; i < 3; i++) {
         cellsMin[i] = _parameters.parallel.firstCorner[i];
         cellsMax[i] = cellsMin[i] + _parameters.parallel.localSize[i];
-        std::cout << "min=" << cellsMin[i] << ", max=" << cellsMax[i] << std::endl;
         if (i < _parameters.geometry.dim) {
             numCells *= _parameters.parallel.localSize[i];
             numVertices *= _parameters.parallel.localSize[i] + 1;
         }
     }
-    std::cout << "cells=" << numCells << std::endl;
 
     // open stream
     std::ofstream vtkFile;
@@ -61,7 +66,7 @@ void VTKStencil::write ( FlowField & flowField, int timeStep ){
     if (vtkFile.fail()) {
         std::cout << "Failed to open file for VTK output: " << filename.str() << std::endl;
     } else {
-        std::cout << "Writing VTK Output: " << filename.str() << std::endl;
+        std::cout << "Writing VTK output: " << filename.str() << std::endl;
     }
 
     // write header

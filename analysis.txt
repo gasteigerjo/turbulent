@@ -1,0 +1,1223 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  ms/call  ms/call  name    
+ 47.10      3.49     3.49  3832291     0.00     0.00  FGHStencil::apply(FlowField&, int, int, int)
+  9.58      4.20     0.71 170130310     0.00     0.00  VectorField::getVector(int, int, int)
+  6.21      4.66     0.46 130073650     0.00     0.00  UniformMeshsize::getDz(int, int, int) const
+  5.94      5.10     0.44 130073650     0.00     0.00  UniformMeshsize::getDx(int, int, int) const
+  5.13      5.48     0.38 130073656     0.00     0.00  UniformMeshsize::getDy(int, int, int) const
+  3.78      5.76     0.28                             computeMatrix3D(_p_KSP*, _p_Mat*, _p_Mat*, void*)
+  3.64      6.03     0.27  3832291     0.00     0.00  VelocityStencil::apply(FlowField&, int, int, int)
+  3.51      6.29     0.26 124744160     0.00     0.00  FlowField::getVelocity()
+  2.83      6.50     0.21 34982350     0.00     0.00  ScalarField::getScalar(int, int, int)
+  2.16      6.66     0.16 17820870     0.00     0.00  IntScalarField::getValue(int, int, int)
+  2.02      6.81     0.15  3832291     0.00     0.00  RHSStencil::apply(FlowField&, int, int, int)
+  1.35      6.91     0.10 39921860     0.00     0.00  FlowField::getFGH()
+  0.94      6.98     0.07  3832290     0.00     0.00  MaxUStencil::apply(FlowField&, int, int, int)
+  0.81      7.04     0.06      790     0.08     8.71  Simulation::solveTimestep()
+  0.67      7.09     0.05      790     0.06     0.10  PetscSolver::solve()
+  0.67      7.14     0.05      102     0.49     0.59  VTKStencil::write(FlowField&, int)
+  0.54      7.18     0.04 11498451     0.00     0.00  FlowField::getFlags()
+  0.40      7.21     0.03   417910     0.00     0.00  MaxUStencil::applyTopWall(FlowField&, int, int, int)
+  0.40      7.24     0.03   417910     0.00     0.00  MaxUStencil::applyBottomWall(FlowField&, int, int, int)
+  0.27      7.26     0.02  3832291     0.00     0.00  ObstacleStencil::apply(FlowField&, int, int, int)
+  0.27      7.28     0.02   236210     0.00     0.00  MaxUStencil::applyLeftWall(FlowField&, int, int, int)
+  0.13      7.29     0.01 22994530     0.00     0.00  FlowField::getPressure()
+  0.13      7.30     0.01  4493622     0.00     0.00  FlowField::getCellsZ() const
+  0.13      7.31     0.01  3833080     0.00     0.00  FlowField::getRHS()
+  0.13      7.32     0.01  2662402     0.00     0.00  FlowField::getCellsY() const
+  0.13      7.33     0.01   494802     0.00     0.00  UniformMeshsize::getPosX(int, int, int) const
+  0.13      7.34     0.01   417910     0.00     0.00  non-virtual thunk to MaxUStencil::applyBottomWall(FlowField&, int, int, int)
+  0.13      7.35     0.01   408001     0.00     0.00  FlowField::getPressureAndVelocity(double&, double*, int, int, int)
+  0.13      7.36     0.01   382360     0.00     0.00  MovingWallVelocityStencil::applyTopWall(FlowField&, int, int, int)
+  0.13      7.37     0.01   382360     0.00     0.00  MovingWallVelocityStencil::applyBottomWall(FlowField&, int, int, int)
+  0.13      7.38     0.01   236210     0.00     0.00  MaxUStencil::applyRightWall(FlowField&, int, int, int)
+  0.13      7.39     0.01   208560     0.00     0.00  MovingWallFGHStencil::applyFrontWall(FlowField&, int, int, int)
+  0.13      7.40     0.01   208560     0.00     0.00  MovingWallFGHStencil::applyRightWall(FlowField&, int, int, int)
+  0.13      7.41     0.01   208560     0.00     0.00  MovingWallVelocityStencil::applyRightWall(FlowField&, int, int, int)
+  0.00      7.41     0.00   878582     0.00     0.00  FlowField::getCellsX() const
+  0.00      7.41     0.00   494805     0.00     0.00  UniformMeshsize::getPosY(int, int, int) const
+  0.00      7.41     0.00   494802     0.00     0.00  VTKStencil::apply(FlowField&, int, int, int)
+  0.00      7.41     0.00   494802     0.00     0.00  UniformMeshsize::getPosZ(int, int, int) const
+  0.00      7.41     0.00   417910     0.00     0.00  non-virtual thunk to MaxUStencil::applyTopWall(FlowField&, int, int, int)
+  0.00      7.41     0.00   382360     0.00     0.00  MovingWallFGHStencil::applyTopWall(FlowField&, int, int, int)
+  0.00      7.41     0.00   382360     0.00     0.00  MovingWallFGHStencil::applyBottomWall(FlowField&, int, int, int)
+  0.00      7.41     0.00   236210     0.00     0.00  MaxUStencil::applyBackWall(FlowField&, int, int, int)
+  0.00      7.41     0.00   236210     0.00     0.00  MaxUStencil::applyFrontWall(FlowField&, int, int, int)
+  0.00      7.41     0.00   236210     0.00     0.00  non-virtual thunk to MaxUStencil::applyBackWall(FlowField&, int, int, int)
+  0.00      7.41     0.00   236210     0.00     0.00  non-virtual thunk to MaxUStencil::applyLeftWall(FlowField&, int, int, int)
+  0.00      7.41     0.00   236210     0.00     0.00  non-virtual thunk to MaxUStencil::applyFrontWall(FlowField&, int, int, int)
+  0.00      7.41     0.00   236210     0.00     0.00  non-virtual thunk to MaxUStencil::applyRightWall(FlowField&, int, int, int)
+  0.00      7.41     0.00   208561     0.00     0.00  MovingWallFGHStencil::applyBackWall(FlowField&, int, int, int)
+  0.00      7.41     0.00   208560     0.00     0.00  MovingWallFGHStencil::applyLeftWall(FlowField&, int, int, int)
+  0.00      7.41     0.00   208560     0.00     0.00  MovingWallVelocityStencil::applyBackWall(FlowField&, int, int, int)
+  0.00      7.41     0.00   208560     0.00     0.00  MovingWallVelocityStencil::applyLeftWall(FlowField&, int, int, int)
+  0.00      7.41     0.00   208560     0.00     0.00  MovingWallVelocityStencil::applyFrontWall(FlowField&, int, int, int)
+  0.00      7.41     0.00     2371     0.00     0.00  MaxUStencil::getMaxValues() const
+  0.00      7.41     0.00     1580     0.00     0.00  UniformMeshsize::getDxMin() const
+  0.00      7.41     0.00     1580     0.00     0.00  UniformMeshsize::getDyMin() const
+  0.00      7.41     0.00     1580     0.00     0.00  UniformMeshsize::getDzMin() const
+  0.00      7.41     0.00      791     0.00     0.05  GlobalBoundaryIterator<FlowField>::iterate()
+  0.00      7.41     0.00      790     0.00     0.34  Simulation::setTimeStep()
+  0.00      7.41     0.00      790     0.00     0.00  MaxUStencil::reset()
+  0.00      7.41     0.00      220     0.00     0.00  tinyxml2::XMLElement::ToElement()
+  0.00      7.41     0.00      102     0.00     0.19  Simulation::plotVTK(int)
+  0.00      7.41     0.00       74     0.00     0.00  tinyxml2::StrPair::GetStr()
+  0.00      7.41     0.00       46     0.00     0.00  tinyxml2::XMLDocument::Identify(char*, tinyxml2::XMLNode**)
+  0.00      7.41     0.00       44     0.00     0.00  tinyxml2::XMLNode::FirstChildElement(char const*) const
+  0.00      7.41     0.00       40     0.00     0.00  tinyxml2::XMLElement::ParseAttributes(char*)
+  0.00      7.41     0.00       40     0.00     0.00  tinyxml2::MemPoolT<104>::SetTracked()
+  0.00      7.41     0.00       40     0.00     0.00  tinyxml2::MemPoolT<104>::Free(void*)
+  0.00      7.41     0.00       39     0.00     0.00  tinyxml2::XMLElement::FindAttribute(char const*) const
+  0.00      7.41     0.00       38     0.00     0.00  tinyxml2::XMLAttribute::~XMLAttribute()
+  0.00      7.41     0.00       38     0.00     0.00  tinyxml2::MemPoolT<72>::SetTracked()
+  0.00      7.41     0.00       38     0.00     0.00  tinyxml2::MemPoolT<72>::Free(void*)
+  0.00      7.41     0.00       32     0.00     0.00  tinyxml2::XMLNode::FirstChildElement(char const*)
+  0.00      7.41     0.00       31     0.00     0.00  tinyxml2::XMLAttribute::QueryDoubleValue(double*) const
+  0.00      7.41     0.00       22     0.00     0.00  tinyxml2::XMLNode::ToElement()
+  0.00      7.41     0.00       16     0.00     0.00  tinyxml2::XMLText::ToText() const
+  0.00      7.41     0.00       15     0.00     0.00  tinyxml2::XMLElement::~XMLElement()
+  0.00      7.41     0.00        8     0.00     0.00  tinyxml2::XMLElement::GetText() const
+  0.00      7.41     0.00        7     0.00     0.00  readFloatOptional(double&, tinyxml2::XMLElement*, char const*, double)
+  0.00      7.41     0.00        7     0.00     0.00  tinyxml2::XMLAttribute::QueryIntValue(int*) const
+  0.00      7.41     0.00        6     0.00     0.00  readFloatMandatory(double&, tinyxml2::XMLElement*, char const*)
+  0.00      7.41     0.00        6     0.00     0.00  readWall(tinyxml2::XMLElement*, double*, double&)
+  0.00      7.41     0.00        5     0.00     0.00  readIntOptional(int&, tinyxml2::XMLElement*, char const*, int)
+  0.00      7.41     0.00        4     0.00     0.00  readStringMandatory(std::string&, tinyxml2::XMLElement*)
+  0.00      7.41     0.00        4     0.00     0.00  tinyxml2::XMLText::ParseDeep(char*, tinyxml2::StrPair*)
+  0.00      7.41     0.00        4     0.00     0.00  tinyxml2::XMLText::~XMLText()
+  0.00      7.41     0.00        4     0.00     0.00  tinyxml2::MemPoolT<96>::SetTracked()
+  0.00      7.41     0.00        4     0.00     0.00  tinyxml2::MemPoolT<96>::Free(void*)
+  0.00      7.41     0.00        3     0.00     0.00  broadcastString(std::string&, int const&, int)
+  0.00      7.41     0.00        2     0.00     0.00  readIntMandatory(int&, tinyxml2::XMLElement*, char const*)
+  0.00      7.41     0.00        2     0.00     0.00  ScalarField::ScalarField(int, int, int)
+  0.00      7.41     0.00        2     0.00     0.00  VectorField::VectorField(int, int, int)
+  0.00      7.41     0.00        2     0.00     0.00  LinearSolver::LinearSolver(FlowField&, Parameters const&)
+  0.00      7.41     0.00        2     0.00     0.00  GlobalBoundaryFactory::getGlobalBoundaryFGHIterator(FlowField&)
+  0.00      7.41     0.00        2     0.00     0.00  __gnu_cxx::__exchange_and_add_dispatch(int*, int)
+  0.00      7.41     0.00        1     0.00     0.00  FGHStencil::FGHStencil(Parameters const&)
+  0.00      7.41     0.00        1     0.00     0.00  RHSStencil::RHSStencil(Parameters const&)
+  0.00      7.41     0.00        1     0.00     0.00  Simulation::initializeFlowField()
+  0.00      7.41     0.00        1     0.00     0.00  Simulation::~Simulation()
+  0.00      7.41     0.00        1     0.00     0.00  VTKStencil::VTKStencil(Parameters const&)
+  0.00      7.41     0.00        1     0.00     0.00  MaxUStencil::MaxUStencil(Parameters const&)
+  0.00      7.41     0.00        1     0.00     0.00  PetscSolver::reInitMatrix()
+  0.00      7.41     0.00        1     0.00     0.00  PetscSolver::PetscSolver(FlowField&, Parameters&)
+  0.00      7.41     0.00        1     0.00     0.00  SimpleTimer::getTimeAndContinue()
+  0.00      7.41     0.00        1     0.00     0.00  Configuration::loadParameters(Parameters&, int const&)
+  0.00      7.41     0.00        1     0.00     0.00  Configuration::Configuration(std::string const&)
+  0.00      7.41     0.00        1     0.00     0.00  IntScalarField::show(std::string)
+  0.00      7.41     0.00        1     0.00     0.00  IntScalarField::IntScalarField(int, int, int)
+  0.00      7.41     0.00        1     0.00     0.00  ObstacleStencil::ObstacleStencil(Parameters const&)
+  0.00      7.41     0.00        1     0.00     0.00  UniformMeshsize::UniformMeshsize(Parameters const&)
+  0.00      7.41     0.00        1     0.00     0.00  UniformMeshsize::~UniformMeshsize()
+  0.00      7.41     0.00        1     0.00     0.00  VelocityStencil::VelocityStencil(Parameters const&)
+  0.00      7.41     0.00        1     0.00     0.00  BFInputFGHStencil::applyBackWall(FlowField&, int, int, int)
+  0.00      7.41     0.00        1     0.00     0.00  BFInputFGHStencil::BFInputFGHStencil(Parameters const&)
+  0.00      7.41     0.00        1     0.00     0.00  BFInputFGHStencil::~BFInputFGHStencil()
+  0.00      7.41     0.00        1     0.00     0.00  TanhMeshStretching::~TanhMeshStretching()
+  0.00      7.41     0.00        1     0.00     0.00  MovingWallFGHStencil::MovingWallFGHStencil(Parameters const&)
+  0.00      7.41     0.00        1     0.00     0.00  MovingWallFGHStencil::~MovingWallFGHStencil()
+  0.00      7.41     0.00        1     0.00     0.00  GlobalBoundaryFactory::getGlobalBoundaryVelocityIterator(FlowField&)
+  0.00      7.41     0.00        1     0.00     0.00  GlobalBoundaryFactory::GlobalBoundaryFactory(Parameters&)
+  0.00      7.41     0.00        1     0.00     0.00  GlobalBoundaryFactory::~GlobalBoundaryFactory()
+  0.00      7.41     0.00        1     0.00     0.00  BFInputVelocityStencil::BFInputVelocityStencil(Parameters const&)
+  0.00      7.41     0.00        1     0.00     0.00  BFInputVelocityStencil::~BFInputVelocityStencil()
+  0.00      7.41     0.00        1     0.00     0.00  MovingWallVelocityStencil::MovingWallVelocityStencil(Parameters const&)
+  0.00      7.41     0.00        1     0.00     0.00  MovingWallVelocityStencil::~MovingWallVelocityStencil()
+  0.00      7.41     0.00        1     0.00     0.00  NeumannFGHBoundaryStencil::applyBackWall(FlowField&, int, int, int)
+  0.00      7.41     0.00        1     0.00     0.00  NeumannFGHBoundaryStencil::NeumannFGHBoundaryStencil(Parameters const&)
+  0.00      7.41     0.00        1     0.00     0.00  NeumannFGHBoundaryStencil::~NeumannFGHBoundaryStencil()
+  0.00      7.41     0.00        1     0.00     0.00  PeriodicBoundaryFGHStencil::applyBackWall(FlowField&, int, int, int)
+  0.00      7.41     0.00        1     0.00     0.00  PeriodicBoundaryFGHStencil::PeriodicBoundaryFGHStencil(Parameters const&)
+  0.00      7.41     0.00        1     0.00     0.00  PeriodicBoundaryFGHStencil::~PeriodicBoundaryFGHStencil()
+  0.00      7.41     0.00        1     0.00     0.00  PetscParallelConfiguration::computeSizes()
+  0.00      7.41     0.00        1     0.00     0.00  PetscParallelConfiguration::locateNeighbors()
+  0.00      7.41     0.00        1     0.00     0.00  PetscParallelConfiguration::PetscParallelConfiguration(Parameters&)
+  0.00      7.41     0.00        1     0.00     0.00  PetscParallelConfiguration::~PetscParallelConfiguration()
+  0.00      7.41     0.00        1     0.00     0.00  PetscParallelConfiguration::~PetscParallelConfiguration()
+  0.00      7.41     0.00        1     0.00     0.00  NeumannVelocityBoundaryStencil::NeumannVelocityBoundaryStencil(Parameters const&)
+  0.00      7.41     0.00        1     0.00     0.00  NeumannVelocityBoundaryStencil::~NeumannVelocityBoundaryStencil()
+  0.00      7.41     0.00        1     0.00     0.00  PeriodicBoundaryVelocityStencil::PeriodicBoundaryVelocityStencil(Parameters const&)
+  0.00      7.41     0.00        1     0.00     0.00  PeriodicBoundaryVelocityStencil::~PeriodicBoundaryVelocityStencil()
+  0.00      7.41     0.00        1     0.00     0.00  tinyxml2::XMLElement::ParseDeep(char*, tinyxml2::StrPair*)
+  0.00      7.41     0.00        1     0.00     0.00  tinyxml2::XMLDocument::LoadFile(char const*)
+  0.00      7.41     0.00        1     0.00     0.00  tinyxml2::XMLDocument::XMLDocument(bool, tinyxml2::Whitespace)
+  0.00      7.41     0.00        1     0.00     0.00  tinyxml2::XMLDocument::~XMLDocument()
+  0.00      7.41     0.00        1     0.00     0.00  tinyxml2::XMLDeclaration::ParseDeep(char*, tinyxml2::StrPair*)
+  0.00      7.41     0.00        1     0.00     0.00  tinyxml2::XMLDeclaration::~XMLDeclaration()
+  0.00      7.41     0.00        1     0.00     0.00  tinyxml2::XMLNode::ParseDeep(char*, tinyxml2::StrPair*)
+  0.00      7.41     0.00        1     0.00     0.00  tinyxml2::MemPoolT<88>::SetTracked()
+  0.00      7.41     0.00        1     0.00     0.00  tinyxml2::MemPoolT<88>::Free(void*)
+  0.00      7.41     0.00        1     0.00     0.00  FlowField::FlowField(Parameters const&)
+  0.00      7.41     0.00        1     0.00     0.00  SORSolver::solve()
+  0.00      7.41     0.00        1     0.00     0.00  __gnu_cxx::__exchange_and_add_dispatch(int*, int)
+  0.00      7.41     0.00        1     0.00     0.00  __gnu_cxx::__exchange_and_add_dispatch(int*, int)
+  0.00      7.41     0.00        1     0.00     0.00  PetscSolver::getGrid() const
+  0.00      7.41     0.00        1     0.00     0.00  tinyxml2::XMLElement::QueryIntAttribute(char const*, int*) const
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+ 
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this 
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 4 byte(s) for 0.13% of 7.41 seconds
+
+index % time    self  children    called     name
+                                                 <spontaneous>
+[1]     93.9    0.00    6.96                 main [1]
+                0.06    6.82     790/790         Simulation::solveTimestep() [2]
+                0.05    0.01     102/102         VTKStencil::write(FlowField&, int) [19]
+                0.00    0.02     102/102         Simulation::plotVTK(int) [28]
+                0.00    0.00       1/1           GlobalBoundaryFactory::GlobalBoundaryFactory(Parameters&) [51]
+                0.00    0.00       1/1           Configuration::Configuration(std::string const&) [117]
+                0.00    0.00       1/1           Configuration::loadParameters(Parameters&, int const&) [116]
+                0.00    0.00       1/1           PetscParallelConfiguration::PetscParallelConfiguration(Parameters&) [143]
+                0.00    0.00       1/1           UniformMeshsize::UniformMeshsize(Parameters const&) [121]
+                0.00    0.00       1/1           FlowField::FlowField(Parameters const&) [159]
+                0.00    0.00       1/1           MaxUStencil::MaxUStencil(Parameters const&) [112]
+                0.00    0.00       1/1           GlobalBoundaryFactory::getGlobalBoundaryVelocityIterator(FlowField&) [130]
+                0.00    0.00       1/2           GlobalBoundaryFactory::getGlobalBoundaryFGHIterator(FlowField&) [105]
+                0.00    0.00       1/1           FGHStencil::FGHStencil(Parameters const&) [107]
+                0.00    0.00       1/1           RHSStencil::RHSStencil(Parameters const&) [108]
+                0.00    0.00       1/1           VelocityStencil::VelocityStencil(Parameters const&) [123]
+                0.00    0.00       1/1           ObstacleStencil::ObstacleStencil(Parameters const&) [120]
+                0.00    0.00       1/1           VTKStencil::VTKStencil(Parameters const&) [111]
+                0.00    0.00       1/1           PetscSolver::PetscSolver(FlowField&, Parameters&) [114]
+                0.00    0.00       1/1           Simulation::initializeFlowField() [109]
+                0.00    0.00       1/1           Simulation::~Simulation() [110]
+                0.00    0.00       1/1           PetscParallelConfiguration::~PetscParallelConfiguration() [144]
+                0.00    0.00       1/1           UniformMeshsize::~UniformMeshsize() [122]
+-----------------------------------------------
+                0.06    6.82     790/790         main [1]
+[2]     92.9    0.06    6.82     790         Simulation::solveTimestep() [2]
+                3.49    1.74 3832290/3832291     FGHStencil::apply(FlowField&, int, int, int) [3]
+                0.27    0.40 3832290/3832291     VelocityStencil::apply(FlowField&, int, int, int) [5]
+                0.15    0.22 3832290/3832291     RHSStencil::apply(FlowField&, int, int, int) [10]
+                0.00    0.27     790/790         Simulation::setTimeStep() [11]
+                0.05    0.03     790/790         PetscSolver::solve() [17]
+                0.02    0.06 3832290/3832291     ObstacleStencil::apply(FlowField&, int, int, int) [18]
+                0.00    0.04     790/791         GlobalBoundaryIterator<FlowField>::iterate() [22]
+                0.01    0.01  382360/382360      MovingWallVelocityStencil::applyTopWall(FlowField&, int, int, int) [26]
+                0.01    0.01  382360/382360      MovingWallVelocityStencil::applyBottomWall(FlowField&, int, int, int) [27]
+                0.01    0.01  208560/208560      MovingWallVelocityStencil::applyRightWall(FlowField&, int, int, int) [31]
+                0.00    0.01  208560/208560      MovingWallVelocityStencil::applyBackWall(FlowField&, int, int, int) [41]
+                0.00    0.01  208560/208560      MovingWallVelocityStencil::applyFrontWall(FlowField&, int, int, int) [43]
+                0.00    0.01  208560/208560      MovingWallVelocityStencil::applyLeftWall(FlowField&, int, int, int) [42]
+                0.00    0.00  857940/2662402     FlowField::getCellsY() const [38]
+                0.00    0.00 1447280/4493622     FlowField::getCellsZ() const [36]
+                0.00    0.00  284400/878582      FlowField::getCellsX() const [60]
+-----------------------------------------------
+                0.00    0.00       1/3832291     __do_global_ctors_aux [50]
+                3.49    1.74 3832290/3832291     Simulation::solveTimestep() [2]
+[3]     70.6    3.49    1.74 3832291         FGHStencil::apply(FlowField&, int, int, int) [3]
+                0.45    0.00 107304120/170130310     VectorField::getVector(int, int, int) [4]
+                0.37    0.00 103471830/130073650     UniformMeshsize::getDz(int, int, int) const [6]
+                0.35    0.00 103471830/130073650     UniformMeshsize::getDx(int, int, int) const [7]
+                0.30    0.00 103471830/130073656     UniformMeshsize::getDy(int, int, int) const [9]
+                0.22    0.00 103471830/124744160     FlowField::getVelocity() [12]
+                0.03    0.00 3832290/17820870     IntScalarField::getValue(int, int, int) [14]
+                0.01    0.00 3832290/11498451     FlowField::getFlags() [21]
+                0.01    0.00 3832290/39921860     FlowField::getFGH() [16]
+-----------------------------------------------
+                0.00    0.00  208560/170130310     MovingWallFGHStencil::applyLeftWall(FlowField&, int, int, int) [49]
+                0.00    0.00  208560/170130310     MovingWallFGHStencil::applyRightWall(FlowField&, int, int, int) [34]
+                0.00    0.00  208560/170130310     MovingWallFGHStencil::applyFrontWall(FlowField&, int, int, int) [33]
+                0.00    0.00  208560/170130310     MovingWallFGHStencil::applyBackWall(FlowField&, int, int, int) [48]
+                0.00    0.00  236210/170130310     MaxUStencil::applyLeftWall(FlowField&, int, int, int) [25]
+                0.00    0.00  236210/170130310     MaxUStencil::applyRightWall(FlowField&, int, int, int) [32]
+                0.00    0.00  236210/170130310     MaxUStencil::applyFrontWall(FlowField&, int, int, int) [45]
+                0.00    0.00  236210/170130310     MaxUStencil::applyBackWall(FlowField&, int, int, int) [44]
+                0.00    0.00  382360/170130310     MovingWallFGHStencil::applyBottomWall(FlowField&, int, int, int) [47]
+                0.00    0.00  382360/170130310     MovingWallFGHStencil::applyTopWall(FlowField&, int, int, int) [46]
+                0.00    0.00  417910/170130310     MaxUStencil::applyBottomWall(FlowField&, int, int, int) [24]
+                0.00    0.00  417910/170130310     MaxUStencil::applyTopWall(FlowField&, int, int, int) [23]
+                0.00    0.00 1042800/170130310     MovingWallVelocityStencil::applyLeftWall(FlowField&, int, int, int) [42]
+                0.00    0.00 1042800/170130310     MovingWallVelocityStencil::applyRightWall(FlowField&, int, int, int) [31]
+                0.00    0.00 1042800/170130310     MovingWallVelocityStencil::applyFrontWall(FlowField&, int, int, int) [43]
+                0.00    0.00 1042800/170130310     MovingWallVelocityStencil::applyBackWall(FlowField&, int, int, int) [41]
+                0.01    0.00 1632000/170130310     FlowField::getPressureAndVelocity(double&, double*, int, int, int) [29]
+                0.01    0.00 1911800/170130310     MovingWallVelocityStencil::applyBottomWall(FlowField&, int, int, int) [27]
+                0.01    0.00 1911800/170130310     MovingWallVelocityStencil::applyTopWall(FlowField&, int, int, int) [26]
+                0.02    0.00 3832290/170130310     MaxUStencil::apply(FlowField&, int, int, int) [15]
+                0.10    0.00 22993740/170130310     RHSStencil::apply(FlowField&, int, int, int) [10]
+                0.10    0.00 22993740/170130310     VelocityStencil::apply(FlowField&, int, int, int) [5]
+                0.45    0.00 107304120/170130310     FGHStencil::apply(FlowField&, int, int, int) [3]
+[4]      9.6    0.71    0.00 170130310         VectorField::getVector(int, int, int) [4]
+-----------------------------------------------
+                0.00    0.00       1/3832291     __do_global_ctors_aux [50]
+                0.27    0.40 3832290/3832291     Simulation::solveTimestep() [2]
+[5]      9.1    0.27    0.40 3832291         VelocityStencil::apply(FlowField&, int, int, int) [5]
+                0.14    0.00 22993740/34982350     ScalarField::getScalar(int, int, int) [13]
+                0.10    0.00 22993740/170130310     VectorField::getVector(int, int, int) [4]
+                0.03    0.00 3832290/17820870     IntScalarField::getValue(int, int, int) [14]
+                0.03    0.00 11496870/39921860     FlowField::getFGH() [16]
+                0.03    0.00 7664580/130073650     UniformMeshsize::getDz(int, int, int) const [6]
+                0.03    0.00 7664580/130073650     UniformMeshsize::getDx(int, int, int) const [7]
+                0.02    0.00 7664580/130073656     UniformMeshsize::getDy(int, int, int) const [9]
+                0.01    0.00 3832290/11498451     FlowField::getFlags() [21]
+                0.01    0.00 22993740/22994530     FlowField::getPressure() [35]
+                0.01    0.00 3832290/124744160     FlowField::getVelocity() [12]
+-----------------------------------------------
+                0.00    0.00  236210/130073650     MaxUStencil::applyLeftWall(FlowField&, int, int, int) [25]
+                0.00    0.00  236210/130073650     MaxUStencil::applyRightWall(FlowField&, int, int, int) [32]
+                0.00    0.00  236210/130073650     MaxUStencil::applyFrontWall(FlowField&, int, int, int) [45]
+                0.00    0.00  236210/130073650     MaxUStencil::applyBackWall(FlowField&, int, int, int) [44]
+                0.00    0.00  417910/130073650     MaxUStencil::applyBottomWall(FlowField&, int, int, int) [24]
+                0.00    0.00  417910/130073650     MaxUStencil::applyTopWall(FlowField&, int, int, int) [23]
+                0.01    0.00 3832290/130073650     MaxUStencil::apply(FlowField&, int, int, int) [15]
+                0.01    0.00 3832290/130073650     RHSStencil::apply(FlowField&, int, int, int) [10]
+                0.03    0.00 7664580/130073650     VelocityStencil::apply(FlowField&, int, int, int) [5]
+                0.03    0.00 9492000/130073650     computeMatrix3D(_p_KSP*, _p_Mat*, _p_Mat*, void*) [8]
+                0.37    0.00 103471830/130073650     FGHStencil::apply(FlowField&, int, int, int) [3]
+[6]      6.2    0.46    0.00 130073650         UniformMeshsize::getDz(int, int, int) const [6]
+-----------------------------------------------
+                0.00    0.00  236210/130073650     MaxUStencil::applyLeftWall(FlowField&, int, int, int) [25]
+                0.00    0.00  236210/130073650     MaxUStencil::applyRightWall(FlowField&, int, int, int) [32]
+                0.00    0.00  236210/130073650     MaxUStencil::applyFrontWall(FlowField&, int, int, int) [45]
+                0.00    0.00  236210/130073650     MaxUStencil::applyBackWall(FlowField&, int, int, int) [44]
+                0.00    0.00  417910/130073650     MaxUStencil::applyBottomWall(FlowField&, int, int, int) [24]
+                0.00    0.00  417910/130073650     MaxUStencil::applyTopWall(FlowField&, int, int, int) [23]
+                0.01    0.00 3832290/130073650     MaxUStencil::apply(FlowField&, int, int, int) [15]
+                0.01    0.00 3832290/130073650     RHSStencil::apply(FlowField&, int, int, int) [10]
+                0.03    0.00 7664580/130073650     VelocityStencil::apply(FlowField&, int, int, int) [5]
+                0.03    0.00 9492000/130073650     computeMatrix3D(_p_KSP*, _p_Mat*, _p_Mat*, void*) [8]
+                0.35    0.00 103471830/130073650     FGHStencil::apply(FlowField&, int, int, int) [3]
+[7]      5.9    0.44    0.00 130073650         UniformMeshsize::getDx(int, int, int) const [7]
+-----------------------------------------------
+                                                 <spontaneous>
+[8]      5.4    0.28    0.12                 computeMatrix3D(_p_KSP*, _p_Mat*, _p_Mat*, void*) [8]
+                0.03    0.00 9492000/130073650     UniformMeshsize::getDz(int, int, int) const [6]
+                0.03    0.00 9492000/130073650     UniformMeshsize::getDx(int, int, int) const [7]
+                0.03    0.00 3164000/17820870     IntScalarField::getValue(int, int, int) [14]
+                0.03    0.00 9492000/130073656     UniformMeshsize::getDy(int, int, int) const [9]
+                0.00    0.00     791/11498451     FlowField::getFlags() [21]
+-----------------------------------------------
+                0.00    0.00       6/130073656     BFInputVelocityStencil::BFInputVelocityStencil(Parameters const&) [52]
+                0.00    0.00  236210/130073656     MaxUStencil::applyLeftWall(FlowField&, int, int, int) [25]
+                0.00    0.00  236210/130073656     MaxUStencil::applyRightWall(FlowField&, int, int, int) [32]
+                0.00    0.00  236210/130073656     MaxUStencil::applyFrontWall(FlowField&, int, int, int) [45]
+                0.00    0.00  236210/130073656     MaxUStencil::applyBackWall(FlowField&, int, int, int) [44]
+                0.00    0.00  417910/130073656     MaxUStencil::applyBottomWall(FlowField&, int, int, int) [24]
+                0.00    0.00  417910/130073656     MaxUStencil::applyTopWall(FlowField&, int, int, int) [23]
+                0.01    0.00 3832290/130073656     MaxUStencil::apply(FlowField&, int, int, int) [15]
+                0.01    0.00 3832290/130073656     RHSStencil::apply(FlowField&, int, int, int) [10]
+                0.02    0.00 7664580/130073656     VelocityStencil::apply(FlowField&, int, int, int) [5]
+                0.03    0.00 9492000/130073656     computeMatrix3D(_p_KSP*, _p_Mat*, _p_Mat*, void*) [8]
+                0.30    0.00 103471830/130073656     FGHStencil::apply(FlowField&, int, int, int) [3]
+[9]      5.1    0.38    0.00 130073656         UniformMeshsize::getDy(int, int, int) const [9]
+-----------------------------------------------
+                0.00    0.00       1/3832291     __do_global_ctors_aux [50]
+                0.15    0.22 3832290/3832291     Simulation::solveTimestep() [2]
+[10]     5.1    0.15    0.22 3832291         RHSStencil::apply(FlowField&, int, int, int) [10]
+                0.10    0.00 22993740/170130310     VectorField::getVector(int, int, int) [4]
+                0.06    0.00 22993740/39921860     FlowField::getFGH() [16]
+                0.02    0.00 3832290/34982350     ScalarField::getScalar(int, int, int) [13]
+                0.01    0.00 3832290/130073650     UniformMeshsize::getDz(int, int, int) const [6]
+                0.01    0.00 3832290/130073650     UniformMeshsize::getDx(int, int, int) const [7]
+                0.01    0.00 3832290/130073656     UniformMeshsize::getDy(int, int, int) const [9]
+                0.01    0.00 3832290/3833080     FlowField::getRHS() [37]
+-----------------------------------------------
+                0.00    0.27     790/790         Simulation::solveTimestep() [2]
+[11]     3.6    0.00    0.27     790         Simulation::setTimeStep() [11]
+                0.07    0.06 3832290/3832290     MaxUStencil::apply(FlowField&, int, int, int) [15]
+                0.03    0.01  417910/417910      MaxUStencil::applyTopWall(FlowField&, int, int, int) [23]
+                0.03    0.01  417910/417910      MaxUStencil::applyBottomWall(FlowField&, int, int, int) [24]
+                0.02    0.00  236210/236210      MaxUStencil::applyLeftWall(FlowField&, int, int, int) [25]
+                0.01    0.00  236210/236210      MaxUStencil::applyRightWall(FlowField&, int, int, int) [32]
+                0.01    0.00  417910/417910      non-virtual thunk to MaxUStencil::applyBottomWall(FlowField&, int, int, int) [40]
+                0.00    0.00  236210/236210      MaxUStencil::applyBackWall(FlowField&, int, int, int) [44]
+                0.00    0.00  236210/236210      MaxUStencil::applyFrontWall(FlowField&, int, int, int) [45]
+                0.00    0.00  949580/2662402     FlowField::getCellsY() const [38]
+                0.00    0.00 1602120/4493622     FlowField::getCellsZ() const [36]
+                0.00    0.00  417910/417910      non-virtual thunk to MaxUStencil::applyTopWall(FlowField&, int, int, int) [63]
+                0.00    0.00  312840/878582      FlowField::getCellsX() const [60]
+                0.00    0.00  236210/236210      non-virtual thunk to MaxUStencil::applyBackWall(FlowField&, int, int, int) [64]
+                0.00    0.00  236210/236210      non-virtual thunk to MaxUStencil::applyFrontWall(FlowField&, int, int, int) [66]
+                0.00    0.00  236210/236210      non-virtual thunk to MaxUStencil::applyRightWall(FlowField&, int, int, int) [67]
+                0.00    0.00  236210/236210      non-virtual thunk to MaxUStencil::applyLeftWall(FlowField&, int, int, int) [65]
+                0.00    0.00    2370/2371        MaxUStencil::getMaxValues() const [68]
+                0.00    0.00    1580/1580        UniformMeshsize::getDxMin() const [69]
+                0.00    0.00    1580/1580        UniformMeshsize::getDyMin() const [70]
+                0.00    0.00    1580/1580        UniformMeshsize::getDzMin() const [71]
+                0.00    0.00     790/790         MaxUStencil::reset() [72]
+-----------------------------------------------
+                0.00    0.00  236210/124744160     MaxUStencil::applyLeftWall(FlowField&, int, int, int) [25]
+                0.00    0.00  236210/124744160     MaxUStencil::applyRightWall(FlowField&, int, int, int) [32]
+                0.00    0.00  236210/124744160     MaxUStencil::applyFrontWall(FlowField&, int, int, int) [45]
+                0.00    0.00  236210/124744160     MaxUStencil::applyBackWall(FlowField&, int, int, int) [44]
+                0.00    0.00  417910/124744160     MaxUStencil::applyBottomWall(FlowField&, int, int, int) [24]
+                0.00    0.00  417910/124744160     MaxUStencil::applyTopWall(FlowField&, int, int, int) [23]
+                0.00    0.00 1042800/124744160     MovingWallVelocityStencil::applyLeftWall(FlowField&, int, int, int) [42]
+                0.00    0.00 1042800/124744160     MovingWallVelocityStencil::applyRightWall(FlowField&, int, int, int) [31]
+                0.00    0.00 1042800/124744160     MovingWallVelocityStencil::applyFrontWall(FlowField&, int, int, int) [43]
+                0.00    0.00 1042800/124744160     MovingWallVelocityStencil::applyBackWall(FlowField&, int, int, int) [41]
+                0.00    0.00 1911800/124744160     MovingWallVelocityStencil::applyBottomWall(FlowField&, int, int, int) [27]
+                0.00    0.00 1911800/124744160     MovingWallVelocityStencil::applyTopWall(FlowField&, int, int, int) [26]
+                0.01    0.00 3832290/124744160     MaxUStencil::apply(FlowField&, int, int, int) [15]
+                0.01    0.00 3832290/124744160     VelocityStencil::apply(FlowField&, int, int, int) [5]
+                0.01    0.00 3832290/124744160     ObstacleStencil::apply(FlowField&, int, int, int) [18]
+                0.22    0.00 103471830/124744160     FGHStencil::apply(FlowField&, int, int, int) [3]
+[12]     3.5    0.26    0.00 124744160         FlowField::getVelocity() [12]
+-----------------------------------------------
+                0.00    0.00  408000/34982350     FlowField::getPressureAndVelocity(double&, double*, int, int, int) [29]
+                0.02    0.00 3160000/34982350     computeRHS3D(_p_KSP*, _p_Vec*, void*) [20]
+                0.02    0.00 3832290/34982350     RHSStencil::apply(FlowField&, int, int, int) [10]
+                0.03    0.00 4588320/34982350     PetscSolver::solve() [17]
+                0.14    0.00 22993740/34982350     VelocityStencil::apply(FlowField&, int, int, int) [5]
+[13]     2.8    0.21    0.00 34982350         ScalarField::getScalar(int, int, int) [13]
+-----------------------------------------------
+                0.03    0.00 3160000/17820870     computeRHS3D(_p_KSP*, _p_Vec*, void*) [20]
+                0.03    0.00 3164000/17820870     computeMatrix3D(_p_KSP*, _p_Mat*, _p_Mat*, void*) [8]
+                0.03    0.00 3832290/17820870     FGHStencil::apply(FlowField&, int, int, int) [3]
+                0.03    0.00 3832290/17820870     VelocityStencil::apply(FlowField&, int, int, int) [5]
+                0.03    0.00 3832290/17820870     ObstacleStencil::apply(FlowField&, int, int, int) [18]
+[14]     2.2    0.16    0.00 17820870         IntScalarField::getValue(int, int, int) [14]
+-----------------------------------------------
+                0.07    0.06 3832290/3832290     Simulation::setTimeStep() [11]
+[15]     1.8    0.07    0.06 3832290         MaxUStencil::apply(FlowField&, int, int, int) [15]
+                0.02    0.00 3832290/170130310     VectorField::getVector(int, int, int) [4]
+                0.01    0.00 3832290/130073650     UniformMeshsize::getDz(int, int, int) const [6]
+                0.01    0.00 3832290/130073650     UniformMeshsize::getDx(int, int, int) const [7]
+                0.01    0.00 3832290/130073656     UniformMeshsize::getDy(int, int, int) const [9]
+                0.01    0.00 3832290/124744160     FlowField::getVelocity() [12]
+-----------------------------------------------
+                0.00    0.00  208560/39921860     MovingWallFGHStencil::applyLeftWall(FlowField&, int, int, int) [49]
+                0.00    0.00  208560/39921860     MovingWallFGHStencil::applyRightWall(FlowField&, int, int, int) [34]
+                0.00    0.00  208560/39921860     MovingWallFGHStencil::applyFrontWall(FlowField&, int, int, int) [33]
+                0.00    0.00  208560/39921860     MovingWallFGHStencil::applyBackWall(FlowField&, int, int, int) [48]
+                0.00    0.00  382360/39921860     MovingWallFGHStencil::applyBottomWall(FlowField&, int, int, int) [47]
+                0.00    0.00  382360/39921860     MovingWallFGHStencil::applyTopWall(FlowField&, int, int, int) [46]
+                0.01    0.00 3832290/39921860     FGHStencil::apply(FlowField&, int, int, int) [3]
+                0.03    0.00 11496870/39921860     VelocityStencil::apply(FlowField&, int, int, int) [5]
+                0.06    0.00 22993740/39921860     RHSStencil::apply(FlowField&, int, int, int) [10]
+[16]     1.3    0.10    0.00 39921860         FlowField::getFGH() [16]
+-----------------------------------------------
+                0.05    0.03     790/790         Simulation::solveTimestep() [2]
+[17]     1.0    0.05    0.03     790         PetscSolver::solve() [17]
+                0.03    0.00 4588320/34982350     ScalarField::getScalar(int, int, int) [13]
+                0.00    0.00     790/22994530     FlowField::getPressure() [35]
+-----------------------------------------------
+                0.00    0.00       1/3832291     __do_global_ctors_aux [50]
+                0.02    0.06 3832290/3832291     Simulation::solveTimestep() [2]
+[18]     1.0    0.02    0.06 3832291         ObstacleStencil::apply(FlowField&, int, int, int) [18]
+                0.03    0.00 3832290/17820870     IntScalarField::getValue(int, int, int) [14]
+                0.01    0.00 3832290/11498451     FlowField::getFlags() [21]
+                0.01    0.00 3832290/124744160     FlowField::getVelocity() [12]
+-----------------------------------------------
+                0.05    0.01     102/102         main [1]
+[19]     0.8    0.05    0.01     102         VTKStencil::write(FlowField&, int) [19]
+                0.01    0.00  494802/494802      UniformMeshsize::getPosX(int, int, int) const [39]
+                0.00    0.00  494802/494805      UniformMeshsize::getPosY(int, int, int) const [61]
+                0.00    0.00  494802/494802      UniformMeshsize::getPosZ(int, int, int) const [62]
+-----------------------------------------------
+                                                 <spontaneous>
+[20]     0.6    0.00    0.05                 computeRHS3D(_p_KSP*, _p_Vec*, void*) [20]
+                0.03    0.00 3160000/17820870     IntScalarField::getValue(int, int, int) [14]
+                0.02    0.00 3160000/34982350     ScalarField::getScalar(int, int, int) [13]
+                0.00    0.00     790/11498451     FlowField::getFlags() [21]
+                0.00    0.00     790/3833080     FlowField::getRHS() [37]
+-----------------------------------------------
+                0.00    0.00     790/11498451     computeRHS3D(_p_KSP*, _p_Vec*, void*) [20]
+                0.00    0.00     791/11498451     computeMatrix3D(_p_KSP*, _p_Mat*, _p_Mat*, void*) [8]
+                0.01    0.00 3832290/11498451     FGHStencil::apply(FlowField&, int, int, int) [3]
+                0.01    0.00 3832290/11498451     VelocityStencil::apply(FlowField&, int, int, int) [5]
+                0.01    0.00 3832290/11498451     ObstacleStencil::apply(FlowField&, int, int, int) [18]
+[21]     0.5    0.04    0.00 11498451         FlowField::getFlags() [21]
+-----------------------------------------------
+                0.00    0.00       1/791         __do_global_ctors_aux [50]
+                0.00    0.04     790/791         Simulation::solveTimestep() [2]
+[22]     0.5    0.00    0.04     791         GlobalBoundaryIterator<FlowField>::iterate() [22]
+                0.01    0.00  208560/208560      MovingWallFGHStencil::applyFrontWall(FlowField&, int, int, int) [33]
+                0.01    0.00  208560/208560      MovingWallFGHStencil::applyRightWall(FlowField&, int, int, int) [34]
+                0.00    0.00 1444120/4493622     FlowField::getCellsZ() const [36]
+                0.00    0.00  854780/2662402     FlowField::getCellsY() const [38]
+                0.00    0.00  382360/382360      MovingWallFGHStencil::applyTopWall(FlowField&, int, int, int) [46]
+                0.00    0.00  382360/382360      MovingWallFGHStencil::applyBottomWall(FlowField&, int, int, int) [47]
+                0.00    0.00  208560/208560      MovingWallFGHStencil::applyLeftWall(FlowField&, int, int, int) [49]
+                0.00    0.00  208560/208561      MovingWallFGHStencil::applyBackWall(FlowField&, int, int, int) [48]
+                0.00    0.00  281240/878582      FlowField::getCellsX() const [60]
+-----------------------------------------------
+                0.03    0.01  417910/417910      Simulation::setTimeStep() [11]
+[23]     0.5    0.03    0.01  417910         MaxUStencil::applyTopWall(FlowField&, int, int, int) [23]
+                0.00    0.00  417910/170130310     VectorField::getVector(int, int, int) [4]
+                0.00    0.00  417910/130073650     UniformMeshsize::getDz(int, int, int) const [6]
+                0.00    0.00  417910/130073650     UniformMeshsize::getDx(int, int, int) const [7]
+                0.00    0.00  417910/130073656     UniformMeshsize::getDy(int, int, int) const [9]
+                0.00    0.00  417910/124744160     FlowField::getVelocity() [12]
+-----------------------------------------------
+                0.03    0.01  417910/417910      Simulation::setTimeStep() [11]
+[24]     0.5    0.03    0.01  417910         MaxUStencil::applyBottomWall(FlowField&, int, int, int) [24]
+                0.00    0.00  417910/170130310     VectorField::getVector(int, int, int) [4]
+                0.00    0.00  417910/130073650     UniformMeshsize::getDz(int, int, int) const [6]
+                0.00    0.00  417910/130073650     UniformMeshsize::getDx(int, int, int) const [7]
+                0.00    0.00  417910/130073656     UniformMeshsize::getDy(int, int, int) const [9]
+                0.00    0.00  417910/124744160     FlowField::getVelocity() [12]
+-----------------------------------------------
+                0.02    0.00  236210/236210      Simulation::setTimeStep() [11]
+[25]     0.3    0.02    0.00  236210         MaxUStencil::applyLeftWall(FlowField&, int, int, int) [25]
+                0.00    0.00  236210/170130310     VectorField::getVector(int, int, int) [4]
+                0.00    0.00  236210/130073650     UniformMeshsize::getDz(int, int, int) const [6]
+                0.00    0.00  236210/130073650     UniformMeshsize::getDx(int, int, int) const [7]
+                0.00    0.00  236210/130073656     UniformMeshsize::getDy(int, int, int) const [9]
+                0.00    0.00  236210/124744160     FlowField::getVelocity() [12]
+-----------------------------------------------
+                0.01    0.01  382360/382360      Simulation::solveTimestep() [2]
+[26]     0.3    0.01    0.01  382360         MovingWallVelocityStencil::applyTopWall(FlowField&, int, int, int) [26]
+                0.01    0.00 1911800/170130310     VectorField::getVector(int, int, int) [4]
+                0.00    0.00 1911800/124744160     FlowField::getVelocity() [12]
+-----------------------------------------------
+                0.01    0.01  382360/382360      Simulation::solveTimestep() [2]
+[27]     0.3    0.01    0.01  382360         MovingWallVelocityStencil::applyBottomWall(FlowField&, int, int, int) [27]
+                0.01    0.00 1911800/170130310     VectorField::getVector(int, int, int) [4]
+                0.00    0.00 1911800/124744160     FlowField::getVelocity() [12]
+-----------------------------------------------
+                0.00    0.02     102/102         main [1]
+[28]     0.3    0.00    0.02     102         Simulation::plotVTK(int) [28]
+                0.00    0.02  494802/494802      VTKStencil::apply(FlowField&, int, int, int) [30]
+                0.00    0.00     102/2662402     FlowField::getCellsY() const [38]
+                0.00    0.00     102/4493622     FlowField::getCellsZ() const [36]
+                0.00    0.00     102/878582      FlowField::getCellsX() const [60]
+-----------------------------------------------
+                0.00    0.00       1/408001      __do_global_ctors_aux [50]
+                0.01    0.01  408000/408001      VTKStencil::apply(FlowField&, int, int, int) [30]
+[29]     0.3    0.01    0.01  408001         FlowField::getPressureAndVelocity(double&, double*, int, int, int) [29]
+                0.01    0.00 1632000/170130310     VectorField::getVector(int, int, int) [4]
+                0.00    0.00  408000/34982350     ScalarField::getScalar(int, int, int) [13]
+-----------------------------------------------
+                0.00    0.02  494802/494802      Simulation::plotVTK(int) [28]
+[30]     0.3    0.00    0.02  494802         VTKStencil::apply(FlowField&, int, int, int) [30]
+                0.01    0.01  408000/408001      FlowField::getPressureAndVelocity(double&, double*, int, int, int) [29]
+-----------------------------------------------
+                0.01    0.01  208560/208560      Simulation::solveTimestep() [2]
+[31]     0.2    0.01    0.01  208560         MovingWallVelocityStencil::applyRightWall(FlowField&, int, int, int) [31]
+                0.00    0.00 1042800/170130310     VectorField::getVector(int, int, int) [4]
+                0.00    0.00 1042800/124744160     FlowField::getVelocity() [12]
+-----------------------------------------------
+                0.01    0.00  236210/236210      Simulation::setTimeStep() [11]
+[32]     0.2    0.01    0.00  236210         MaxUStencil::applyRightWall(FlowField&, int, int, int) [32]
+                0.00    0.00  236210/170130310     VectorField::getVector(int, int, int) [4]
+                0.00    0.00  236210/130073650     UniformMeshsize::getDz(int, int, int) const [6]
+                0.00    0.00  236210/130073650     UniformMeshsize::getDx(int, int, int) const [7]
+                0.00    0.00  236210/130073656     UniformMeshsize::getDy(int, int, int) const [9]
+                0.00    0.00  236210/124744160     FlowField::getVelocity() [12]
+-----------------------------------------------
+                0.01    0.00  208560/208560      GlobalBoundaryIterator<FlowField>::iterate() [22]
+[33]     0.2    0.01    0.00  208560         MovingWallFGHStencil::applyFrontWall(FlowField&, int, int, int) [33]
+                0.00    0.00  208560/170130310     VectorField::getVector(int, int, int) [4]
+                0.00    0.00  208560/39921860     FlowField::getFGH() [16]
+-----------------------------------------------
+                0.01    0.00  208560/208560      GlobalBoundaryIterator<FlowField>::iterate() [22]
+[34]     0.2    0.01    0.00  208560         MovingWallFGHStencil::applyRightWall(FlowField&, int, int, int) [34]
+                0.00    0.00  208560/170130310     VectorField::getVector(int, int, int) [4]
+                0.00    0.00  208560/39921860     FlowField::getFGH() [16]
+-----------------------------------------------
+                0.00    0.00     790/22994530     PetscSolver::solve() [17]
+                0.01    0.00 22993740/22994530     VelocityStencil::apply(FlowField&, int, int, int) [5]
+[35]     0.1    0.01    0.00 22994530         FlowField::getPressure() [35]
+-----------------------------------------------
+                0.00    0.00     102/4493622     Simulation::plotVTK(int) [28]
+                0.00    0.00 1444120/4493622     GlobalBoundaryIterator<FlowField>::iterate() [22]
+                0.00    0.00 1447280/4493622     Simulation::solveTimestep() [2]
+                0.00    0.00 1602120/4493622     Simulation::setTimeStep() [11]
+[36]     0.1    0.01    0.00 4493622         FlowField::getCellsZ() const [36]
+-----------------------------------------------
+                0.00    0.00     790/3833080     computeRHS3D(_p_KSP*, _p_Vec*, void*) [20]
+                0.01    0.00 3832290/3833080     RHSStencil::apply(FlowField&, int, int, int) [10]
+[37]     0.1    0.01    0.00 3833080         FlowField::getRHS() [37]
+-----------------------------------------------
+                0.00    0.00     102/2662402     Simulation::plotVTK(int) [28]
+                0.00    0.00  854780/2662402     GlobalBoundaryIterator<FlowField>::iterate() [22]
+                0.00    0.00  857940/2662402     Simulation::solveTimestep() [2]
+                0.00    0.00  949580/2662402     Simulation::setTimeStep() [11]
+[38]     0.1    0.01    0.00 2662402         FlowField::getCellsY() const [38]
+-----------------------------------------------
+                0.01    0.00  494802/494802      VTKStencil::write(FlowField&, int) [19]
+[39]     0.1    0.01    0.00  494802         UniformMeshsize::getPosX(int, int, int) const [39]
+-----------------------------------------------
+                0.01    0.00  417910/417910      Simulation::setTimeStep() [11]
+[40]     0.1    0.01    0.00  417910         non-virtual thunk to MaxUStencil::applyBottomWall(FlowField&, int, int, int) [40]
+-----------------------------------------------
+                0.00    0.01  208560/208560      Simulation::solveTimestep() [2]
+[41]     0.1    0.00    0.01  208560         MovingWallVelocityStencil::applyBackWall(FlowField&, int, int, int) [41]
+                0.00    0.00 1042800/170130310     VectorField::getVector(int, int, int) [4]
+                0.00    0.00 1042800/124744160     FlowField::getVelocity() [12]
+-----------------------------------------------
+                0.00    0.01  208560/208560      Simulation::solveTimestep() [2]
+[42]     0.1    0.00    0.01  208560         MovingWallVelocityStencil::applyLeftWall(FlowField&, int, int, int) [42]
+                0.00    0.00 1042800/170130310     VectorField::getVector(int, int, int) [4]
+                0.00    0.00 1042800/124744160     FlowField::getVelocity() [12]
+-----------------------------------------------
+                0.00    0.01  208560/208560      Simulation::solveTimestep() [2]
+[43]     0.1    0.00    0.01  208560         MovingWallVelocityStencil::applyFrontWall(FlowField&, int, int, int) [43]
+                0.00    0.00 1042800/170130310     VectorField::getVector(int, int, int) [4]
+                0.00    0.00 1042800/124744160     FlowField::getVelocity() [12]
+-----------------------------------------------
+                0.00    0.00  236210/236210      Simulation::setTimeStep() [11]
+[44]     0.1    0.00    0.00  236210         MaxUStencil::applyBackWall(FlowField&, int, int, int) [44]
+                0.00    0.00  236210/170130310     VectorField::getVector(int, int, int) [4]
+                0.00    0.00  236210/130073650     UniformMeshsize::getDz(int, int, int) const [6]
+                0.00    0.00  236210/130073650     UniformMeshsize::getDx(int, int, int) const [7]
+                0.00    0.00  236210/130073656     UniformMeshsize::getDy(int, int, int) const [9]
+                0.00    0.00  236210/124744160     FlowField::getVelocity() [12]
+-----------------------------------------------
+                0.00    0.00  236210/236210      Simulation::setTimeStep() [11]
+[45]     0.1    0.00    0.00  236210         MaxUStencil::applyFrontWall(FlowField&, int, int, int) [45]
+                0.00    0.00  236210/170130310     VectorField::getVector(int, int, int) [4]
+                0.00    0.00  236210/130073650     UniformMeshsize::getDz(int, int, int) const [6]
+                0.00    0.00  236210/130073650     UniformMeshsize::getDx(int, int, int) const [7]
+                0.00    0.00  236210/130073656     UniformMeshsize::getDy(int, int, int) const [9]
+                0.00    0.00  236210/124744160     FlowField::getVelocity() [12]
+-----------------------------------------------
+                0.00    0.00  382360/382360      GlobalBoundaryIterator<FlowField>::iterate() [22]
+[46]     0.0    0.00    0.00  382360         MovingWallFGHStencil::applyTopWall(FlowField&, int, int, int) [46]
+                0.00    0.00  382360/170130310     VectorField::getVector(int, int, int) [4]
+                0.00    0.00  382360/39921860     FlowField::getFGH() [16]
+-----------------------------------------------
+                0.00    0.00  382360/382360      GlobalBoundaryIterator<FlowField>::iterate() [22]
+[47]     0.0    0.00    0.00  382360         MovingWallFGHStencil::applyBottomWall(FlowField&, int, int, int) [47]
+                0.00    0.00  382360/170130310     VectorField::getVector(int, int, int) [4]
+                0.00    0.00  382360/39921860     FlowField::getFGH() [16]
+-----------------------------------------------
+                0.00    0.00       1/208561      __do_global_ctors_aux [50]
+                0.00    0.00  208560/208561      GlobalBoundaryIterator<FlowField>::iterate() [22]
+[48]     0.0    0.00    0.00  208561         MovingWallFGHStencil::applyBackWall(FlowField&, int, int, int) [48]
+                0.00    0.00  208560/170130310     VectorField::getVector(int, int, int) [4]
+                0.00    0.00  208560/39921860     FlowField::getFGH() [16]
+-----------------------------------------------
+                0.00    0.00  208560/208560      GlobalBoundaryIterator<FlowField>::iterate() [22]
+[49]     0.0    0.00    0.00  208560         MovingWallFGHStencil::applyLeftWall(FlowField&, int, int, int) [49]
+                0.00    0.00  208560/170130310     VectorField::getVector(int, int, int) [4]
+                0.00    0.00  208560/39921860     FlowField::getFGH() [16]
+-----------------------------------------------
+                                                 <spontaneous>
+[50]     0.0    0.00    0.00                 __do_global_ctors_aux [50]
+                0.00    0.00       1/791         GlobalBoundaryIterator<FlowField>::iterate() [22]
+                0.00    0.00       1/3832291     FGHStencil::apply(FlowField&, int, int, int) [3]
+                0.00    0.00       1/3832291     VelocityStencil::apply(FlowField&, int, int, int) [5]
+                0.00    0.00       1/3832291     RHSStencil::apply(FlowField&, int, int, int) [10]
+                0.00    0.00       1/408001      FlowField::getPressureAndVelocity(double&, double*, int, int, int) [29]
+                0.00    0.00       1/3832291     ObstacleStencil::apply(FlowField&, int, int, int) [18]
+                0.00    0.00       1/208561      MovingWallFGHStencil::applyBackWall(FlowField&, int, int, int) [48]
+                0.00    0.00       1/1           IntScalarField::show(std::string) [118]
+                0.00    0.00       1/2           __gnu_cxx::__exchange_and_add_dispatch(int*, int) [106]
+                0.00    0.00       1/1           SimpleTimer::getTimeAndContinue() [115]
+                0.00    0.00       1/2           LinearSolver::LinearSolver(FlowField&, Parameters const&) [104]
+                0.00    0.00       1/1           TanhMeshStretching::~TanhMeshStretching() [127]
+                0.00    0.00       1/2371        MaxUStencil::getMaxValues() const [68]
+                0.00    0.00       1/1           PeriodicBoundaryFGHStencil::applyBackWall(FlowField&, int, int, int) [138]
+                0.00    0.00       1/1           SORSolver::solve() [160]
+                0.00    0.00       1/1           PetscSolver::getGrid() const [163]
+                0.00    0.00       1/1           __gnu_cxx::__exchange_and_add_dispatch(int*, int) [161]
+                0.00    0.00       1/1           PetscParallelConfiguration::~PetscParallelConfiguration() [145]
+                0.00    0.00       1/2           GlobalBoundaryFactory::getGlobalBoundaryFGHIterator(FlowField&) [105]
+                0.00    0.00       1/1           NeumannFGHBoundaryStencil::applyBackWall(FlowField&, int, int, int) [135]
+                0.00    0.00       1/1           BFInputFGHStencil::applyBackWall(FlowField&, int, int, int) [124]
+                0.00    0.00       1/1           __gnu_cxx::__exchange_and_add_dispatch(int*, int) [162]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[51]     0.0    0.00    0.00       1         GlobalBoundaryFactory::GlobalBoundaryFactory(Parameters&) [51]
+                0.00    0.00       1/1           BFInputVelocityStencil::BFInputVelocityStencil(Parameters const&) [52]
+                0.00    0.00       1/1           PeriodicBoundaryVelocityStencil::PeriodicBoundaryVelocityStencil(Parameters const&) [148]
+                0.00    0.00       1/1           PeriodicBoundaryFGHStencil::PeriodicBoundaryFGHStencil(Parameters const&) [139]
+                0.00    0.00       1/1           MovingWallVelocityStencil::MovingWallVelocityStencil(Parameters const&) [133]
+                0.00    0.00       1/1           MovingWallFGHStencil::MovingWallFGHStencil(Parameters const&) [128]
+                0.00    0.00       1/1           NeumannVelocityBoundaryStencil::NeumannVelocityBoundaryStencil(Parameters const&) [146]
+                0.00    0.00       1/1           NeumannFGHBoundaryStencil::NeumannFGHBoundaryStencil(Parameters const&) [136]
+                0.00    0.00       1/1           BFInputFGHStencil::BFInputFGHStencil(Parameters const&) [125]
+-----------------------------------------------
+                0.00    0.00       1/1           GlobalBoundaryFactory::GlobalBoundaryFactory(Parameters&) [51]
+[52]     0.0    0.00    0.00       1         BFInputVelocityStencil::BFInputVelocityStencil(Parameters const&) [52]
+                0.00    0.00       6/130073656     UniformMeshsize::getDy(int, int, int) const [9]
+                0.00    0.00       3/494805      UniformMeshsize::getPosY(int, int, int) const [61]
+-----------------------------------------------
+                0.00    0.00     102/878582      Simulation::plotVTK(int) [28]
+                0.00    0.00  281240/878582      GlobalBoundaryIterator<FlowField>::iterate() [22]
+                0.00    0.00  284400/878582      Simulation::solveTimestep() [2]
+                0.00    0.00  312840/878582      Simulation::setTimeStep() [11]
+[60]     0.0    0.00    0.00  878582         FlowField::getCellsX() const [60]
+-----------------------------------------------
+                0.00    0.00       3/494805      BFInputVelocityStencil::BFInputVelocityStencil(Parameters const&) [52]
+                0.00    0.00  494802/494805      VTKStencil::write(FlowField&, int) [19]
+[61]     0.0    0.00    0.00  494805         UniformMeshsize::getPosY(int, int, int) const [61]
+-----------------------------------------------
+                0.00    0.00  494802/494802      VTKStencil::write(FlowField&, int) [19]
+[62]     0.0    0.00    0.00  494802         UniformMeshsize::getPosZ(int, int, int) const [62]
+-----------------------------------------------
+                0.00    0.00  417910/417910      Simulation::setTimeStep() [11]
+[63]     0.0    0.00    0.00  417910         non-virtual thunk to MaxUStencil::applyTopWall(FlowField&, int, int, int) [63]
+-----------------------------------------------
+                0.00    0.00  236210/236210      Simulation::setTimeStep() [11]
+[64]     0.0    0.00    0.00  236210         non-virtual thunk to MaxUStencil::applyBackWall(FlowField&, int, int, int) [64]
+-----------------------------------------------
+                0.00    0.00  236210/236210      Simulation::setTimeStep() [11]
+[65]     0.0    0.00    0.00  236210         non-virtual thunk to MaxUStencil::applyLeftWall(FlowField&, int, int, int) [65]
+-----------------------------------------------
+                0.00    0.00  236210/236210      Simulation::setTimeStep() [11]
+[66]     0.0    0.00    0.00  236210         non-virtual thunk to MaxUStencil::applyFrontWall(FlowField&, int, int, int) [66]
+-----------------------------------------------
+                0.00    0.00  236210/236210      Simulation::setTimeStep() [11]
+[67]     0.0    0.00    0.00  236210         non-virtual thunk to MaxUStencil::applyRightWall(FlowField&, int, int, int) [67]
+-----------------------------------------------
+                0.00    0.00       1/2371        __do_global_ctors_aux [50]
+                0.00    0.00    2370/2371        Simulation::setTimeStep() [11]
+[68]     0.0    0.00    0.00    2371         MaxUStencil::getMaxValues() const [68]
+-----------------------------------------------
+                0.00    0.00    1580/1580        Simulation::setTimeStep() [11]
+[69]     0.0    0.00    0.00    1580         UniformMeshsize::getDxMin() const [69]
+-----------------------------------------------
+                0.00    0.00    1580/1580        Simulation::setTimeStep() [11]
+[70]     0.0    0.00    0.00    1580         UniformMeshsize::getDyMin() const [70]
+-----------------------------------------------
+                0.00    0.00    1580/1580        Simulation::setTimeStep() [11]
+[71]     0.0    0.00    0.00    1580         UniformMeshsize::getDzMin() const [71]
+-----------------------------------------------
+                0.00    0.00     790/790         Simulation::setTimeStep() [11]
+[72]     0.0    0.00    0.00     790         MaxUStencil::reset() [72]
+-----------------------------------------------
+                0.00    0.00       3/220         tinyxml2::XMLNode::ParseDeep(char*, tinyxml2::StrPair*) [156]
+                0.00    0.00     103/220         tinyxml2::XMLElement::ParseDeep(char*, tinyxml2::StrPair*) [150]
+                0.00    0.00     114/220         tinyxml2::XMLNode::FirstChildElement(char const*) const [76]
+[73]     0.0    0.00    0.00     220         tinyxml2::XMLElement::ToElement() [73]
+-----------------------------------------------
+                0.00    0.00       2/74          tinyxml2::XMLNode::ParseDeep(char*, tinyxml2::StrPair*) [156]
+                0.00    0.00      26/74          tinyxml2::XMLElement::ParseDeep(char*, tinyxml2::StrPair*) [150]
+                0.00    0.00      46/74          tinyxml2::XMLElement::ParseAttributes(char*) [77]
+[74]     0.0    0.00    0.00      74         tinyxml2::StrPair::GetStr() [74]
+-----------------------------------------------
+                0.00    0.00       3/46          tinyxml2::XMLNode::ParseDeep(char*, tinyxml2::StrPair*) [156]
+                0.00    0.00      43/46          tinyxml2::XMLElement::ParseDeep(char*, tinyxml2::StrPair*) [150]
+[75]     0.0    0.00    0.00      46         tinyxml2::XMLDocument::Identify(char*, tinyxml2::XMLNode**) [75]
+-----------------------------------------------
+                0.00    0.00      12/44          readWall(tinyxml2::XMLElement*, double*, double&) [93]
+                0.00    0.00      32/44          Configuration::loadParameters(Parameters&, int const&) [116]
+[76]     0.0    0.00    0.00      44         tinyxml2::XMLNode::FirstChildElement(char const*) const [76]
+                0.00    0.00     114/220         tinyxml2::XMLElement::ToElement() [73]
+                0.00    0.00      12/22          tinyxml2::XMLNode::ToElement() [86]
+-----------------------------------------------
+                0.00    0.00      40/40          tinyxml2::XMLElement::ParseDeep(char*, tinyxml2::StrPair*) [150]
+[77]     0.0    0.00    0.00      40         tinyxml2::XMLElement::ParseAttributes(char*) [77]
+                0.00    0.00      46/74          tinyxml2::StrPair::GetStr() [74]
+                0.00    0.00      38/38          tinyxml2::MemPoolT<72>::SetTracked() [82]
+-----------------------------------------------
+                0.00    0.00       1/40          tinyxml2::XMLNode::ParseDeep(char*, tinyxml2::StrPair*) [156]
+                0.00    0.00      39/40          tinyxml2::XMLElement::ParseDeep(char*, tinyxml2::StrPair*) [150]
+[78]     0.0    0.00    0.00      40         tinyxml2::MemPoolT<104>::SetTracked() [78]
+-----------------------------------------------
+                0.00    0.00       1/40          tinyxml2::XMLDocument::~XMLDocument() [153]
+                0.00    0.00      14/40          tinyxml2::XMLElement::ParseDeep(char*, tinyxml2::StrPair*) [150]
+                0.00    0.00      25/40          tinyxml2::XMLElement::~XMLElement() [88]
+[79]     0.0    0.00    0.00      40         tinyxml2::MemPoolT<104>::Free(void*) [79]
+-----------------------------------------------
+                0.00    0.00       1/39          tinyxml2::XMLElement::QueryIntAttribute(char const*, int*) const [164]
+                0.00    0.00       2/39          readIntMandatory(int&, tinyxml2::XMLElement*, char const*) [101]
+                0.00    0.00       5/39          readIntOptional(int&, tinyxml2::XMLElement*, char const*, int) [94]
+                0.00    0.00       6/39          readFloatMandatory(double&, tinyxml2::XMLElement*, char const*) [92]
+                0.00    0.00       7/39          readFloatOptional(double&, tinyxml2::XMLElement*, char const*, double) [90]
+                0.00    0.00      18/39          readWall(tinyxml2::XMLElement*, double*, double&) [93]
+[80]     0.0    0.00    0.00      39         tinyxml2::XMLElement::FindAttribute(char const*) const [80]
+-----------------------------------------------
+                0.00    0.00      38/38          tinyxml2::XMLElement::~XMLElement() [88]
+[81]     0.0    0.00    0.00      38         tinyxml2::XMLAttribute::~XMLAttribute() [81]
+-----------------------------------------------
+                0.00    0.00      38/38          tinyxml2::XMLElement::ParseAttributes(char*) [77]
+[82]     0.0    0.00    0.00      38         tinyxml2::MemPoolT<72>::SetTracked() [82]
+-----------------------------------------------
+                0.00    0.00      38/38          tinyxml2::XMLElement::~XMLElement() [88]
+[83]     0.0    0.00    0.00      38         tinyxml2::MemPoolT<72>::Free(void*) [83]
+-----------------------------------------------
+                0.00    0.00      32/32          Configuration::loadParameters(Parameters&, int const&) [116]
+[84]     0.0    0.00    0.00      32         tinyxml2::XMLNode::FirstChildElement(char const*) [84]
+-----------------------------------------------
+                0.00    0.00       6/31          readFloatMandatory(double&, tinyxml2::XMLElement*, char const*) [92]
+                0.00    0.00       7/31          readFloatOptional(double&, tinyxml2::XMLElement*, char const*, double) [90]
+                0.00    0.00      18/31          readWall(tinyxml2::XMLElement*, double*, double&) [93]
+[85]     0.0    0.00    0.00      31         tinyxml2::XMLAttribute::QueryDoubleValue(double*) const [85]
+-----------------------------------------------
+                0.00    0.00       2/22          tinyxml2::XMLNode::ParseDeep(char*, tinyxml2::StrPair*) [156]
+                0.00    0.00       8/22          tinyxml2::XMLElement::ParseDeep(char*, tinyxml2::StrPair*) [150]
+                0.00    0.00      12/22          tinyxml2::XMLNode::FirstChildElement(char const*) const [76]
+[86]     0.0    0.00    0.00      22         tinyxml2::XMLNode::ToElement() [86]
+-----------------------------------------------
+                0.00    0.00      16/16          tinyxml2::XMLElement::GetText() const [89]
+[87]     0.0    0.00    0.00      16         tinyxml2::XMLText::ToText() const [87]
+-----------------------------------------------
+                                  25             tinyxml2::XMLElement::~XMLElement() [88]
+                0.00    0.00       1/15          tinyxml2::XMLDocument::~XMLDocument() [153]
+                0.00    0.00      14/15          tinyxml2::XMLElement::ParseDeep(char*, tinyxml2::StrPair*) [150]
+[88]     0.0    0.00    0.00      15+25      tinyxml2::XMLElement::~XMLElement() [88]
+                0.00    0.00      38/38          tinyxml2::XMLAttribute::~XMLAttribute() [81]
+                0.00    0.00      38/38          tinyxml2::MemPoolT<72>::Free(void*) [83]
+                0.00    0.00      25/40          tinyxml2::MemPoolT<104>::Free(void*) [79]
+                0.00    0.00       4/4           tinyxml2::XMLText::~XMLText() [97]
+                0.00    0.00       4/4           tinyxml2::MemPoolT<96>::Free(void*) [99]
+                                  25             tinyxml2::XMLElement::~XMLElement() [88]
+-----------------------------------------------
+                0.00    0.00       8/8           readStringMandatory(std::string&, tinyxml2::XMLElement*) [95]
+[89]     0.0    0.00    0.00       8         tinyxml2::XMLElement::GetText() const [89]
+                0.00    0.00      16/16          tinyxml2::XMLText::ToText() const [87]
+-----------------------------------------------
+                0.00    0.00       7/7           Configuration::loadParameters(Parameters&, int const&) [116]
+[90]     0.0    0.00    0.00       7         readFloatOptional(double&, tinyxml2::XMLElement*, char const*, double) [90]
+                0.00    0.00       7/39          tinyxml2::XMLElement::FindAttribute(char const*) const [80]
+                0.00    0.00       7/31          tinyxml2::XMLAttribute::QueryDoubleValue(double*) const [85]
+-----------------------------------------------
+                0.00    0.00       1/7           Configuration::loadParameters(Parameters&, int const&) [116]
+                0.00    0.00       2/7           readIntMandatory(int&, tinyxml2::XMLElement*, char const*) [101]
+                0.00    0.00       4/7           readIntOptional(int&, tinyxml2::XMLElement*, char const*, int) [94]
+[91]     0.0    0.00    0.00       7         tinyxml2::XMLAttribute::QueryIntValue(int*) const [91]
+-----------------------------------------------
+                0.00    0.00       6/6           Configuration::loadParameters(Parameters&, int const&) [116]
+[92]     0.0    0.00    0.00       6         readFloatMandatory(double&, tinyxml2::XMLElement*, char const*) [92]
+                0.00    0.00       6/39          tinyxml2::XMLElement::FindAttribute(char const*) const [80]
+                0.00    0.00       6/31          tinyxml2::XMLAttribute::QueryDoubleValue(double*) const [85]
+-----------------------------------------------
+                0.00    0.00       6/6           Configuration::loadParameters(Parameters&, int const&) [116]
+[93]     0.0    0.00    0.00       6         readWall(tinyxml2::XMLElement*, double*, double&) [93]
+                0.00    0.00      18/39          tinyxml2::XMLElement::FindAttribute(char const*) const [80]
+                0.00    0.00      18/31          tinyxml2::XMLAttribute::QueryDoubleValue(double*) const [85]
+                0.00    0.00      12/44          tinyxml2::XMLNode::FirstChildElement(char const*) const [76]
+-----------------------------------------------
+                0.00    0.00       5/5           Configuration::loadParameters(Parameters&, int const&) [116]
+[94]     0.0    0.00    0.00       5         readIntOptional(int&, tinyxml2::XMLElement*, char const*, int) [94]
+                0.00    0.00       5/39          tinyxml2::XMLElement::FindAttribute(char const*) const [80]
+                0.00    0.00       4/7           tinyxml2::XMLAttribute::QueryIntValue(int*) const [91]
+-----------------------------------------------
+                0.00    0.00       4/4           Configuration::loadParameters(Parameters&, int const&) [116]
+[95]     0.0    0.00    0.00       4         readStringMandatory(std::string&, tinyxml2::XMLElement*) [95]
+                0.00    0.00       8/8           tinyxml2::XMLElement::GetText() const [89]
+-----------------------------------------------
+                0.00    0.00       4/4           tinyxml2::XMLElement::ParseDeep(char*, tinyxml2::StrPair*) [150]
+[96]     0.0    0.00    0.00       4         tinyxml2::XMLText::ParseDeep(char*, tinyxml2::StrPair*) [96]
+-----------------------------------------------
+                0.00    0.00       4/4           tinyxml2::XMLElement::~XMLElement() [88]
+[97]     0.0    0.00    0.00       4         tinyxml2::XMLText::~XMLText() [97]
+-----------------------------------------------
+                0.00    0.00       4/4           tinyxml2::XMLElement::ParseDeep(char*, tinyxml2::StrPair*) [150]
+[98]     0.0    0.00    0.00       4         tinyxml2::MemPoolT<96>::SetTracked() [98]
+-----------------------------------------------
+                0.00    0.00       4/4           tinyxml2::XMLElement::~XMLElement() [88]
+[99]     0.0    0.00    0.00       4         tinyxml2::MemPoolT<96>::Free(void*) [99]
+-----------------------------------------------
+                0.00    0.00       3/3           Configuration::loadParameters(Parameters&, int const&) [116]
+[100]    0.0    0.00    0.00       3         broadcastString(std::string&, int const&, int) [100]
+-----------------------------------------------
+                0.00    0.00       2/2           Configuration::loadParameters(Parameters&, int const&) [116]
+[101]    0.0    0.00    0.00       2         readIntMandatory(int&, tinyxml2::XMLElement*, char const*) [101]
+                0.00    0.00       2/39          tinyxml2::XMLElement::FindAttribute(char const*) const [80]
+                0.00    0.00       2/7           tinyxml2::XMLAttribute::QueryIntValue(int*) const [91]
+-----------------------------------------------
+                0.00    0.00       2/2           FlowField::FlowField(Parameters const&) [159]
+[102]    0.0    0.00    0.00       2         ScalarField::ScalarField(int, int, int) [102]
+-----------------------------------------------
+                0.00    0.00       2/2           FlowField::FlowField(Parameters const&) [159]
+[103]    0.0    0.00    0.00       2         VectorField::VectorField(int, int, int) [103]
+-----------------------------------------------
+                0.00    0.00       1/2           PetscSolver::PetscSolver(FlowField&, Parameters&) [114]
+                0.00    0.00       1/2           __do_global_ctors_aux [50]
+[104]    0.0    0.00    0.00       2         LinearSolver::LinearSolver(FlowField&, Parameters const&) [104]
+-----------------------------------------------
+                0.00    0.00       1/2           main [1]
+                0.00    0.00       1/2           __do_global_ctors_aux [50]
+[105]    0.0    0.00    0.00       2         GlobalBoundaryFactory::getGlobalBoundaryFGHIterator(FlowField&) [105]
+-----------------------------------------------
+                0.00    0.00       1/2           Configuration::loadParameters(Parameters&, int const&) [116]
+                0.00    0.00       1/2           __do_global_ctors_aux [50]
+[106]    0.0    0.00    0.00       2         __gnu_cxx::__exchange_and_add_dispatch(int*, int) [106]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[107]    0.0    0.00    0.00       1         FGHStencil::FGHStencil(Parameters const&) [107]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[108]    0.0    0.00    0.00       1         RHSStencil::RHSStencil(Parameters const&) [108]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[109]    0.0    0.00    0.00       1         Simulation::initializeFlowField() [109]
+                0.00    0.00       1/1           PetscSolver::reInitMatrix() [113]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[110]    0.0    0.00    0.00       1         Simulation::~Simulation() [110]
+                0.00    0.00       1/1           BFInputFGHStencil::~BFInputFGHStencil() [126]
+                0.00    0.00       1/1           GlobalBoundaryFactory::~GlobalBoundaryFactory() [131]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[111]    0.0    0.00    0.00       1         VTKStencil::VTKStencil(Parameters const&) [111]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[112]    0.0    0.00    0.00       1         MaxUStencil::MaxUStencil(Parameters const&) [112]
+-----------------------------------------------
+                0.00    0.00       1/1           Simulation::initializeFlowField() [109]
+[113]    0.0    0.00    0.00       1         PetscSolver::reInitMatrix() [113]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[114]    0.0    0.00    0.00       1         PetscSolver::PetscSolver(FlowField&, Parameters&) [114]
+                0.00    0.00       1/2           LinearSolver::LinearSolver(FlowField&, Parameters const&) [104]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_ctors_aux [50]
+[115]    0.0    0.00    0.00       1         SimpleTimer::getTimeAndContinue() [115]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[116]    0.0    0.00    0.00       1         Configuration::loadParameters(Parameters&, int const&) [116]
+                0.00    0.00      32/44          tinyxml2::XMLNode::FirstChildElement(char const*) const [76]
+                0.00    0.00      32/32          tinyxml2::XMLNode::FirstChildElement(char const*) [84]
+                0.00    0.00       7/7           readFloatOptional(double&, tinyxml2::XMLElement*, char const*, double) [90]
+                0.00    0.00       6/6           readFloatMandatory(double&, tinyxml2::XMLElement*, char const*) [92]
+                0.00    0.00       6/6           readWall(tinyxml2::XMLElement*, double*, double&) [93]
+                0.00    0.00       5/5           readIntOptional(int&, tinyxml2::XMLElement*, char const*, int) [94]
+                0.00    0.00       4/4           readStringMandatory(std::string&, tinyxml2::XMLElement*) [95]
+                0.00    0.00       3/3           broadcastString(std::string&, int const&, int) [100]
+                0.00    0.00       2/2           readIntMandatory(int&, tinyxml2::XMLElement*, char const*) [101]
+                0.00    0.00       1/1           tinyxml2::XMLDocument::XMLDocument(bool, tinyxml2::Whitespace) [152]
+                0.00    0.00       1/1           tinyxml2::XMLDocument::LoadFile(char const*) [151]
+                0.00    0.00       1/7           tinyxml2::XMLAttribute::QueryIntValue(int*) const [91]
+                0.00    0.00       1/1           tinyxml2::XMLElement::QueryIntAttribute(char const*, int*) const [164]
+                0.00    0.00       1/1           tinyxml2::XMLDocument::~XMLDocument() [153]
+                0.00    0.00       1/2           __gnu_cxx::__exchange_and_add_dispatch(int*, int) [106]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[117]    0.0    0.00    0.00       1         Configuration::Configuration(std::string const&) [117]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_ctors_aux [50]
+[118]    0.0    0.00    0.00       1         IntScalarField::show(std::string) [118]
+-----------------------------------------------
+                0.00    0.00       1/1           FlowField::FlowField(Parameters const&) [159]
+[119]    0.0    0.00    0.00       1         IntScalarField::IntScalarField(int, int, int) [119]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[120]    0.0    0.00    0.00       1         ObstacleStencil::ObstacleStencil(Parameters const&) [120]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[121]    0.0    0.00    0.00       1         UniformMeshsize::UniformMeshsize(Parameters const&) [121]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[122]    0.0    0.00    0.00       1         UniformMeshsize::~UniformMeshsize() [122]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[123]    0.0    0.00    0.00       1         VelocityStencil::VelocityStencil(Parameters const&) [123]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_ctors_aux [50]
+[124]    0.0    0.00    0.00       1         BFInputFGHStencil::applyBackWall(FlowField&, int, int, int) [124]
+-----------------------------------------------
+                0.00    0.00       1/1           GlobalBoundaryFactory::GlobalBoundaryFactory(Parameters&) [51]
+[125]    0.0    0.00    0.00       1         BFInputFGHStencil::BFInputFGHStencil(Parameters const&) [125]
+-----------------------------------------------
+                0.00    0.00       1/1           Simulation::~Simulation() [110]
+[126]    0.0    0.00    0.00       1         BFInputFGHStencil::~BFInputFGHStencil() [126]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_ctors_aux [50]
+[127]    0.0    0.00    0.00       1         TanhMeshStretching::~TanhMeshStretching() [127]
+-----------------------------------------------
+                0.00    0.00       1/1           GlobalBoundaryFactory::GlobalBoundaryFactory(Parameters&) [51]
+[128]    0.0    0.00    0.00       1         MovingWallFGHStencil::MovingWallFGHStencil(Parameters const&) [128]
+-----------------------------------------------
+                0.00    0.00       1/1           GlobalBoundaryFactory::~GlobalBoundaryFactory() [131]
+[129]    0.0    0.00    0.00       1         MovingWallFGHStencil::~MovingWallFGHStencil() [129]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[130]    0.0    0.00    0.00       1         GlobalBoundaryFactory::getGlobalBoundaryVelocityIterator(FlowField&) [130]
+-----------------------------------------------
+                0.00    0.00       1/1           Simulation::~Simulation() [110]
+[131]    0.0    0.00    0.00       1         GlobalBoundaryFactory::~GlobalBoundaryFactory() [131]
+                0.00    0.00       1/1           MovingWallVelocityStencil::~MovingWallVelocityStencil() [134]
+                0.00    0.00       1/1           MovingWallFGHStencil::~MovingWallFGHStencil() [129]
+                0.00    0.00       1/1           PeriodicBoundaryVelocityStencil::~PeriodicBoundaryVelocityStencil() [149]
+                0.00    0.00       1/1           PeriodicBoundaryFGHStencil::~PeriodicBoundaryFGHStencil() [140]
+                0.00    0.00       1/1           NeumannVelocityBoundaryStencil::~NeumannVelocityBoundaryStencil() [147]
+                0.00    0.00       1/1           NeumannFGHBoundaryStencil::~NeumannFGHBoundaryStencil() [137]
+                0.00    0.00       1/1           BFInputVelocityStencil::~BFInputVelocityStencil() [132]
+-----------------------------------------------
+                0.00    0.00       1/1           GlobalBoundaryFactory::~GlobalBoundaryFactory() [131]
+[132]    0.0    0.00    0.00       1         BFInputVelocityStencil::~BFInputVelocityStencil() [132]
+-----------------------------------------------
+                0.00    0.00       1/1           GlobalBoundaryFactory::GlobalBoundaryFactory(Parameters&) [51]
+[133]    0.0    0.00    0.00       1         MovingWallVelocityStencil::MovingWallVelocityStencil(Parameters const&) [133]
+-----------------------------------------------
+                0.00    0.00       1/1           GlobalBoundaryFactory::~GlobalBoundaryFactory() [131]
+[134]    0.0    0.00    0.00       1         MovingWallVelocityStencil::~MovingWallVelocityStencil() [134]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_ctors_aux [50]
+[135]    0.0    0.00    0.00       1         NeumannFGHBoundaryStencil::applyBackWall(FlowField&, int, int, int) [135]
+-----------------------------------------------
+                0.00    0.00       1/1           GlobalBoundaryFactory::GlobalBoundaryFactory(Parameters&) [51]
+[136]    0.0    0.00    0.00       1         NeumannFGHBoundaryStencil::NeumannFGHBoundaryStencil(Parameters const&) [136]
+-----------------------------------------------
+                0.00    0.00       1/1           GlobalBoundaryFactory::~GlobalBoundaryFactory() [131]
+[137]    0.0    0.00    0.00       1         NeumannFGHBoundaryStencil::~NeumannFGHBoundaryStencil() [137]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_ctors_aux [50]
+[138]    0.0    0.00    0.00       1         PeriodicBoundaryFGHStencil::applyBackWall(FlowField&, int, int, int) [138]
+-----------------------------------------------
+                0.00    0.00       1/1           GlobalBoundaryFactory::GlobalBoundaryFactory(Parameters&) [51]
+[139]    0.0    0.00    0.00       1         PeriodicBoundaryFGHStencil::PeriodicBoundaryFGHStencil(Parameters const&) [139]
+-----------------------------------------------
+                0.00    0.00       1/1           GlobalBoundaryFactory::~GlobalBoundaryFactory() [131]
+[140]    0.0    0.00    0.00       1         PeriodicBoundaryFGHStencil::~PeriodicBoundaryFGHStencil() [140]
+-----------------------------------------------
+                0.00    0.00       1/1           PetscParallelConfiguration::PetscParallelConfiguration(Parameters&) [143]
+[141]    0.0    0.00    0.00       1         PetscParallelConfiguration::computeSizes() [141]
+-----------------------------------------------
+                0.00    0.00       1/1           PetscParallelConfiguration::PetscParallelConfiguration(Parameters&) [143]
+[142]    0.0    0.00    0.00       1         PetscParallelConfiguration::locateNeighbors() [142]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[143]    0.0    0.00    0.00       1         PetscParallelConfiguration::PetscParallelConfiguration(Parameters&) [143]
+                0.00    0.00       1/1           PetscParallelConfiguration::computeSizes() [141]
+                0.00    0.00       1/1           PetscParallelConfiguration::locateNeighbors() [142]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[144]    0.0    0.00    0.00       1         PetscParallelConfiguration::~PetscParallelConfiguration() [144]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_ctors_aux [50]
+[145]    0.0    0.00    0.00       1         PetscParallelConfiguration::~PetscParallelConfiguration() [145]
+-----------------------------------------------
+                0.00    0.00       1/1           GlobalBoundaryFactory::GlobalBoundaryFactory(Parameters&) [51]
+[146]    0.0    0.00    0.00       1         NeumannVelocityBoundaryStencil::NeumannVelocityBoundaryStencil(Parameters const&) [146]
+-----------------------------------------------
+                0.00    0.00       1/1           GlobalBoundaryFactory::~GlobalBoundaryFactory() [131]
+[147]    0.0    0.00    0.00       1         NeumannVelocityBoundaryStencil::~NeumannVelocityBoundaryStencil() [147]
+-----------------------------------------------
+                0.00    0.00       1/1           GlobalBoundaryFactory::GlobalBoundaryFactory(Parameters&) [51]
+[148]    0.0    0.00    0.00       1         PeriodicBoundaryVelocityStencil::PeriodicBoundaryVelocityStencil(Parameters const&) [148]
+-----------------------------------------------
+                0.00    0.00       1/1           GlobalBoundaryFactory::~GlobalBoundaryFactory() [131]
+[149]    0.0    0.00    0.00       1         PeriodicBoundaryVelocityStencil::~PeriodicBoundaryVelocityStencil() [149]
+-----------------------------------------------
+                                  39             tinyxml2::XMLElement::ParseDeep(char*, tinyxml2::StrPair*) [150]
+                0.00    0.00       1/1           tinyxml2::XMLNode::ParseDeep(char*, tinyxml2::StrPair*) [156]
+[150]    0.0    0.00    0.00       1+39      tinyxml2::XMLElement::ParseDeep(char*, tinyxml2::StrPair*) [150]
+                0.00    0.00     103/220         tinyxml2::XMLElement::ToElement() [73]
+                0.00    0.00      43/46          tinyxml2::XMLDocument::Identify(char*, tinyxml2::XMLNode**) [75]
+                0.00    0.00      40/40          tinyxml2::XMLElement::ParseAttributes(char*) [77]
+                0.00    0.00      39/40          tinyxml2::MemPoolT<104>::SetTracked() [78]
+                0.00    0.00      26/74          tinyxml2::StrPair::GetStr() [74]
+                0.00    0.00      14/15          tinyxml2::XMLElement::~XMLElement() [88]
+                0.00    0.00      14/40          tinyxml2::MemPoolT<104>::Free(void*) [79]
+                0.00    0.00       8/22          tinyxml2::XMLNode::ToElement() [86]
+                0.00    0.00       4/4           tinyxml2::XMLText::ParseDeep(char*, tinyxml2::StrPair*) [96]
+                0.00    0.00       4/4           tinyxml2::MemPoolT<96>::SetTracked() [98]
+                                  39             tinyxml2::XMLElement::ParseDeep(char*, tinyxml2::StrPair*) [150]
+-----------------------------------------------
+                0.00    0.00       1/1           Configuration::loadParameters(Parameters&, int const&) [116]
+[151]    0.0    0.00    0.00       1         tinyxml2::XMLDocument::LoadFile(char const*) [151]
+                0.00    0.00       1/1           tinyxml2::XMLNode::ParseDeep(char*, tinyxml2::StrPair*) [156]
+-----------------------------------------------
+                0.00    0.00       1/1           Configuration::loadParameters(Parameters&, int const&) [116]
+[152]    0.0    0.00    0.00       1         tinyxml2::XMLDocument::XMLDocument(bool, tinyxml2::Whitespace) [152]
+-----------------------------------------------
+                0.00    0.00       1/1           Configuration::loadParameters(Parameters&, int const&) [116]
+[153]    0.0    0.00    0.00       1         tinyxml2::XMLDocument::~XMLDocument() [153]
+                0.00    0.00       1/15          tinyxml2::XMLElement::~XMLElement() [88]
+                0.00    0.00       1/1           tinyxml2::XMLDeclaration::~XMLDeclaration() [155]
+                0.00    0.00       1/40          tinyxml2::MemPoolT<104>::Free(void*) [79]
+                0.00    0.00       1/1           tinyxml2::MemPoolT<88>::Free(void*) [158]
+-----------------------------------------------
+                0.00    0.00       1/1           tinyxml2::XMLNode::ParseDeep(char*, tinyxml2::StrPair*) [156]
+[154]    0.0    0.00    0.00       1         tinyxml2::XMLDeclaration::ParseDeep(char*, tinyxml2::StrPair*) [154]
+-----------------------------------------------
+                0.00    0.00       1/1           tinyxml2::XMLDocument::~XMLDocument() [153]
+[155]    0.0    0.00    0.00       1         tinyxml2::XMLDeclaration::~XMLDeclaration() [155]
+-----------------------------------------------
+                0.00    0.00       1/1           tinyxml2::XMLDocument::LoadFile(char const*) [151]
+[156]    0.0    0.00    0.00       1         tinyxml2::XMLNode::ParseDeep(char*, tinyxml2::StrPair*) [156]
+                0.00    0.00       3/46          tinyxml2::XMLDocument::Identify(char*, tinyxml2::XMLNode**) [75]
+                0.00    0.00       3/220         tinyxml2::XMLElement::ToElement() [73]
+                0.00    0.00       2/22          tinyxml2::XMLNode::ToElement() [86]
+                0.00    0.00       2/74          tinyxml2::StrPair::GetStr() [74]
+                0.00    0.00       1/1           tinyxml2::XMLElement::ParseDeep(char*, tinyxml2::StrPair*) [150]
+                0.00    0.00       1/1           tinyxml2::XMLDeclaration::ParseDeep(char*, tinyxml2::StrPair*) [154]
+                0.00    0.00       1/40          tinyxml2::MemPoolT<104>::SetTracked() [78]
+                0.00    0.00       1/1           tinyxml2::MemPoolT<88>::SetTracked() [157]
+-----------------------------------------------
+                0.00    0.00       1/1           tinyxml2::XMLNode::ParseDeep(char*, tinyxml2::StrPair*) [156]
+[157]    0.0    0.00    0.00       1         tinyxml2::MemPoolT<88>::SetTracked() [157]
+-----------------------------------------------
+                0.00    0.00       1/1           tinyxml2::XMLDocument::~XMLDocument() [153]
+[158]    0.0    0.00    0.00       1         tinyxml2::MemPoolT<88>::Free(void*) [158]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[159]    0.0    0.00    0.00       1         FlowField::FlowField(Parameters const&) [159]
+                0.00    0.00       2/2           ScalarField::ScalarField(int, int, int) [102]
+                0.00    0.00       2/2           VectorField::VectorField(int, int, int) [103]
+                0.00    0.00       1/1           IntScalarField::IntScalarField(int, int, int) [119]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_ctors_aux [50]
+[160]    0.0    0.00    0.00       1         SORSolver::solve() [160]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_ctors_aux [50]
+[161]    0.0    0.00    0.00       1         __gnu_cxx::__exchange_and_add_dispatch(int*, int) [161]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_ctors_aux [50]
+[162]    0.0    0.00    0.00       1         __gnu_cxx::__exchange_and_add_dispatch(int*, int) [162]
+-----------------------------------------------
+                0.00    0.00       1/1           __do_global_ctors_aux [50]
+[163]    0.0    0.00    0.00       1         PetscSolver::getGrid() const [163]
+-----------------------------------------------
+                0.00    0.00       1/1           Configuration::loadParameters(Parameters&, int const&) [116]
+[164]    0.0    0.00    0.00       1         tinyxml2::XMLElement::QueryIntAttribute(char const*, int*) const [164]
+                0.00    0.00       1/39          tinyxml2::XMLElement::FindAttribute(char const*) const [80]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+
+Index by function name
+
+ [100] broadcastString(std::string&, int const&, int) [127] TanhMeshStretching::~TanhMeshStretching() [156] tinyxml2::XMLNode::ParseDeep(char*, tinyxml2::StrPair*)
+   [8] computeMatrix3D(_p_KSP*, _p_Mat*, _p_Mat*, void*) [46] MovingWallFGHStencil::applyTopWall(FlowField&, int, int, int) [86] tinyxml2::XMLNode::ToElement()
+  [94] readIntOptional(int&, tinyxml2::XMLElement*, char const*, int) [48] MovingWallFGHStencil::applyBackWall(FlowField&, int, int, int) [96] tinyxml2::XMLText::ParseDeep(char*, tinyxml2::StrPair*)
+ [101] readIntMandatory(int&, tinyxml2::XMLElement*, char const*) [49] MovingWallFGHStencil::applyLeftWall(FlowField&, int, int, int) [97] tinyxml2::XMLText::~XMLText()
+  [90] readFloatOptional(double&, tinyxml2::XMLElement*, char const*, double) [33] MovingWallFGHStencil::applyFrontWall(FlowField&, int, int, int) [78] tinyxml2::MemPoolT<104>::SetTracked()
+  [92] readFloatMandatory(double&, tinyxml2::XMLElement*, char const*) [34] MovingWallFGHStencil::applyRightWall(FlowField&, int, int, int) [79] tinyxml2::MemPoolT<104>::Free(void*)
+  [95] readStringMandatory(std::string&, tinyxml2::XMLElement*) [47] MovingWallFGHStencil::applyBottomWall(FlowField&, int, int, int) [82] tinyxml2::MemPoolT<72>::SetTracked()
+  [93] readWall(tinyxml2::XMLElement*, double*, double&) [128] MovingWallFGHStencil::MovingWallFGHStencil(Parameters const&) [83] tinyxml2::MemPoolT<72>::Free(void*)
+   [3] FGHStencil::apply(FlowField&, int, int, int) [129] MovingWallFGHStencil::~MovingWallFGHStencil() [157] tinyxml2::MemPoolT<88>::SetTracked()
+ [107] FGHStencil::FGHStencil(Parameters const&) [105] GlobalBoundaryFactory::getGlobalBoundaryFGHIterator(FlowField&) [158] tinyxml2::MemPoolT<88>::Free(void*)
+  [10] RHSStencil::apply(FlowField&, int, int, int) [130] GlobalBoundaryFactory::getGlobalBoundaryVelocityIterator(FlowField&) [98] tinyxml2::MemPoolT<96>::SetTracked()
+ [108] RHSStencil::RHSStencil(Parameters const&) [51] GlobalBoundaryFactory::GlobalBoundaryFactory(Parameters&) [99] tinyxml2::MemPoolT<96>::Free(void*)
+  [11] Simulation::setTimeStep() [131] GlobalBoundaryFactory::~GlobalBoundaryFactory() [35] FlowField::getPressure()
+   [2] Simulation::solveTimestep() [52] BFInputVelocityStencil::BFInputVelocityStencil(Parameters const&) [12] FlowField::getVelocity()
+ [109] Simulation::initializeFlowField() [132] BFInputVelocityStencil::~BFInputVelocityStencil() [29] FlowField::getPressureAndVelocity(double&, double*, int, int, int)
+  [28] Simulation::plotVTK(int) [22] GlobalBoundaryIterator<FlowField>::iterate() [16] FlowField::getFGH()
+ [110] Simulation::~Simulation() [26] MovingWallVelocityStencil::applyTopWall(FlowField&, int, int, int) [37] FlowField::getRHS()
+  [30] VTKStencil::apply(FlowField&, int, int, int) [41] MovingWallVelocityStencil::applyBackWall(FlowField&, int, int, int) [21] FlowField::getFlags()
+  [19] VTKStencil::write(FlowField&, int) [42] MovingWallVelocityStencil::applyLeftWall(FlowField&, int, int, int) [159] FlowField::FlowField(Parameters const&)
+ [111] VTKStencil::VTKStencil(Parameters const&) [43] MovingWallVelocityStencil::applyFrontWall(FlowField&, int, int, int) [160] SORSolver::solve()
+  [23] MaxUStencil::applyTopWall(FlowField&, int, int, int) [31] MovingWallVelocityStencil::applyRightWall(FlowField&, int, int, int) [106] __gnu_cxx::__exchange_and_add_dispatch(int*, int)
+  [44] MaxUStencil::applyBackWall(FlowField&, int, int, int) [27] MovingWallVelocityStencil::applyBottomWall(FlowField&, int, int, int) [161] __gnu_cxx::__exchange_and_add_dispatch(int*, int)
+  [25] MaxUStencil::applyLeftWall(FlowField&, int, int, int) [133] MovingWallVelocityStencil::MovingWallVelocityStencil(Parameters const&) [162] __gnu_cxx::__exchange_and_add_dispatch(int*, int)
+  [45] MaxUStencil::applyFrontWall(FlowField&, int, int, int) [134] MovingWallVelocityStencil::~MovingWallVelocityStencil() [68] MaxUStencil::getMaxValues() const
+  [32] MaxUStencil::applyRightWall(FlowField&, int, int, int) [135] NeumannFGHBoundaryStencil::applyBackWall(FlowField&, int, int, int) [163] PetscSolver::getGrid() const
+  [24] MaxUStencil::applyBottomWall(FlowField&, int, int, int) [136] NeumannFGHBoundaryStencil::NeumannFGHBoundaryStencil(Parameters const&) [7] UniformMeshsize::getDx(int, int, int) const
+  [15] MaxUStencil::apply(FlowField&, int, int, int) [137] NeumannFGHBoundaryStencil::~NeumannFGHBoundaryStencil() [9] UniformMeshsize::getDy(int, int, int) const
+  [72] MaxUStencil::reset()  [138] PeriodicBoundaryFGHStencil::applyBackWall(FlowField&, int, int, int) [6] UniformMeshsize::getDz(int, int, int) const
+ [112] MaxUStencil::MaxUStencil(Parameters const&) [139] PeriodicBoundaryFGHStencil::PeriodicBoundaryFGHStencil(Parameters const&) [39] UniformMeshsize::getPosX(int, int, int) const
+ [113] PetscSolver::reInitMatrix() [140] PeriodicBoundaryFGHStencil::~PeriodicBoundaryFGHStencil() [61] UniformMeshsize::getPosY(int, int, int) const
+  [17] PetscSolver::solve()  [141] PetscParallelConfiguration::computeSizes() [62] UniformMeshsize::getPosZ(int, int, int) const
+ [114] PetscSolver::PetscSolver(FlowField&, Parameters&) [142] PetscParallelConfiguration::locateNeighbors() [69] UniformMeshsize::getDxMin() const
+  [13] ScalarField::getScalar(int, int, int) [143] PetscParallelConfiguration::PetscParallelConfiguration(Parameters&) [70] UniformMeshsize::getDyMin() const
+ [102] ScalarField::ScalarField(int, int, int) [144] PetscParallelConfiguration::~PetscParallelConfiguration() [71] UniformMeshsize::getDzMin() const
+ [115] SimpleTimer::getTimeAndContinue() [145] PetscParallelConfiguration::~PetscParallelConfiguration() [80] tinyxml2::XMLElement::FindAttribute(char const*) const
+   [4] VectorField::getVector(int, int, int) [146] NeumannVelocityBoundaryStencil::NeumannVelocityBoundaryStencil(Parameters const&) [164] tinyxml2::XMLElement::QueryIntAttribute(char const*, int*) const
+ [103] VectorField::VectorField(int, int, int) [147] NeumannVelocityBoundaryStencil::~NeumannVelocityBoundaryStencil() [89] tinyxml2::XMLElement::GetText() const
+ [104] LinearSolver::LinearSolver(FlowField&, Parameters const&) [148] PeriodicBoundaryVelocityStencil::PeriodicBoundaryVelocityStencil(Parameters const&) [91] tinyxml2::XMLAttribute::QueryIntValue(int*) const
+ [116] Configuration::loadParameters(Parameters&, int const&) [149] PeriodicBoundaryVelocityStencil::~PeriodicBoundaryVelocityStencil() [85] tinyxml2::XMLAttribute::QueryDoubleValue(double*) const
+ [117] Configuration::Configuration(std::string const&) [77] tinyxml2::XMLElement::ParseAttributes(char*) [76] tinyxml2::XMLNode::FirstChildElement(char const*) const
+ [118] IntScalarField::show(std::string) [150] tinyxml2::XMLElement::ParseDeep(char*, tinyxml2::StrPair*) [87] tinyxml2::XMLText::ToText() const
+  [14] IntScalarField::getValue(int, int, int) [73] tinyxml2::XMLElement::ToElement() [60] FlowField::getCellsX() const
+ [119] IntScalarField::IntScalarField(int, int, int) [88] tinyxml2::XMLElement::~XMLElement() [38] FlowField::getCellsY() const
+  [18] ObstacleStencil::apply(FlowField&, int, int, int) [75] tinyxml2::XMLDocument::Identify(char*, tinyxml2::XMLNode**) [36] FlowField::getCellsZ() const
+ [120] ObstacleStencil::ObstacleStencil(Parameters const&) [151] tinyxml2::XMLDocument::LoadFile(char const*) [63] non-virtual thunk to MaxUStencil::applyTopWall(FlowField&, int, int, int)
+ [121] UniformMeshsize::UniformMeshsize(Parameters const&) [152] tinyxml2::XMLDocument::XMLDocument(bool, tinyxml2::Whitespace) [64] non-virtual thunk to MaxUStencil::applyBackWall(FlowField&, int, int, int)
+ [122] UniformMeshsize::~UniformMeshsize() [153] tinyxml2::XMLDocument::~XMLDocument() [65] non-virtual thunk to MaxUStencil::applyLeftWall(FlowField&, int, int, int)
+   [5] VelocityStencil::apply(FlowField&, int, int, int) [81] tinyxml2::XMLAttribute::~XMLAttribute() [66] non-virtual thunk to MaxUStencil::applyFrontWall(FlowField&, int, int, int)
+ [123] VelocityStencil::VelocityStencil(Parameters const&) [154] tinyxml2::XMLDeclaration::ParseDeep(char*, tinyxml2::StrPair*) [67] non-virtual thunk to MaxUStencil::applyRightWall(FlowField&, int, int, int)
+ [124] BFInputFGHStencil::applyBackWall(FlowField&, int, int, int) [155] tinyxml2::XMLDeclaration::~XMLDeclaration() [40] non-virtual thunk to MaxUStencil::applyBottomWall(FlowField&, int, int, int)
+ [125] BFInputFGHStencil::BFInputFGHStencil(Parameters const&) [74] tinyxml2::StrPair::GetStr()
+ [126] BFInputFGHStencil::~BFInputFGHStencil() [84] tinyxml2::XMLNode::FirstChildElement(char const*)

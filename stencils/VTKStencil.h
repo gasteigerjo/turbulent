@@ -16,9 +16,9 @@
 class VTKStencil : public FieldStencil<FlowField> {
 
 private:
-    std::string _prefix;
-    FLOAT * _pressures;
-    FLOAT ** _velocities;
+    std::string _prefix;        // VTK-filename prefix
+    FLOAT * _pressures;         // Array for temporarily saving the pressure
+    FLOAT ** _velocities;       // Array for temporarily saving the velocity
 
 public:
 
