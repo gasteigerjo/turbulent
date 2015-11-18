@@ -16,10 +16,7 @@ VTKStencil::VTKStencil ( const Parameters & parameters) : FieldStencil<FlowField
 
     // Set up arrays for temporarily saving the pressure and velocity
     _pressures = new FLOAT[numCells];
-    _velocities = new FLOAT*[numCells];
-    for(int i = 0; i < numCells; i++) {
-        _velocities[i] = new FLOAT[3];
-    }
+    _velocities = new FLOAT[3*numCells];
 }
 
 
@@ -28,7 +25,7 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j ){
 
         //temporarily save pressure and interpolated velocity in an array
         int ind = (j-2) * _parameters.parallel.localSize[0] + (i-2);
-        flowField.getPressureAndVelocity(_pressures[ind], _velocities[ind], i, j);
+        flowField.getPressureAndVelocity(_pressures[ind], _velocities + 3*ind, i, j);
     }
 }
 
@@ -38,7 +35,7 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j, int k ){
 
         //temporarily save pressure and interpolated velocity in an array
         int ind = ((k-2) * _parameters.parallel.localSize[1] + (j-2)) * _parameters.parallel.localSize[0] + (i-2);
-        flowField.getPressureAndVelocity(_pressures[ind], _velocities[ind], i, j, k);
+        flowField.getPressureAndVelocity(_pressures[ind], _velocities + 3*ind, i, j, k);
     }
 }
 
@@ -111,7 +108,7 @@ void VTKStencil::write ( FlowField & flowField, int timeStep ){
         for(int j = cellsMin[1]; j < cellsMax[1]; j++) {
             for(int i = cellsMin[0]; i < cellsMax[0]; i++) {
                 ind = (k * _parameters.parallel.localSize[1] + j) * _parameters.parallel.localSize[0] + i;
-                vtkFile << _velocities[ind][0] << " " << _velocities[ind][1] << " " << _velocities[ind][2] << std::endl;
+                vtkFile << _velocities[3*ind] << " " << _velocities[3*ind + 1] << " " << _velocities[3*ind + 2] << std::endl;
             }
         }
     }

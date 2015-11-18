@@ -143,9 +143,9 @@ class Simulation {
         _wallVelocityIterator.iterate();
     }
 
-    /** TODO- WS1: plots the flow field. */
+    /** WS1: plots the flow field. */
     virtual void plotVTK(int timeStep){
-        // TODO- WS1: create VTKStencil and respective iterator; iterate stencil
+        // WS1: create VTKStencil and respective iterator; iterate stencil
         //           over _flowField and write flow field information to vtk file
         _vtkIterator.iterate();
         _vtkStencil.write(_flowField, timeStep);

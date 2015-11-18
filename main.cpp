@@ -66,7 +66,7 @@ int main (int argc, char *argv[]) {
     FLOAT timeStdOut=parameters.stdOut.interval;
     int timeSteps = 0;
 
-    // TODO- WS1: plot initial state
+    // WS1: plot initial state
     simulation->plotVTK(0);
 
     // time loop
@@ -82,16 +82,16 @@ int main (int argc, char *argv[]) {
                         parameters.timestep.dt << std::endl;
           timeStdOut += parameters.stdOut.interval;
       }
-      // TODO- WS1: trigger VTK output
+      // WS1: trigger VTK output
       if (lastPlotTime + parameters.vtk.interval < time) {
-          simulation->plotVTK(timeSteps);
+          simulation->plotVTK(timeSteps); // TODO Change to time?
           lastPlotTime += parameters.vtk.interval;
       }
 
       timeSteps++;
     }
 
-    // TODO- WS1: plot final output
+    // WS1: plot final output
     simulation->plotVTK(timeSteps);
 
     delete simulation; simulation=NULL;

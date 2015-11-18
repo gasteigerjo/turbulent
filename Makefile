@@ -25,6 +25,8 @@ stencils/MaxUStencil.o stencils/MovingWallStencils.o stencils/PeriodicBoundarySt
 stencils/FGHStencil.o solvers/SORSolver.o solvers/PetscSolver.o \
 stencils/RHSStencil.o stencils/VelocityStencil.o \
 stencils/VTKStencil.o \
+stencils/PressureBufferFillStencil.o stencils/PressureBufferReadStencil.o\
+stencils/VelocityBufferFillStencil.o stencils/VelocityBufferReadStencil.o\
 parallelManagers/PetscParallelConfiguration.o\
 GlobalBoundaryFactory.o\
 stencils/BFStepInitStencil.o stencils/NeumannBoundaryStencils.o stencils/BFInputStencils.o stencils/ObstacleStencil.o\

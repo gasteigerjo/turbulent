@@ -6,10 +6,8 @@
 #include "../Stencil.h"
 #include "../FlowField.h"
 #include <string>
-#include <fstream>
-#include <sstream>
 
-/** TODO- WS1: Stencil for writting VTK files
+/**
  *
  * When iterated with, creates a VTK file.
  */
@@ -18,7 +16,7 @@ class VTKStencil : public FieldStencil<FlowField> {
 private:
     std::string _prefix;        // VTK-filename prefix
     FLOAT * _pressures;         // Array for temporarily saving the pressure
-    FLOAT ** _velocities;       // Array for temporarily saving the velocity
+    FLOAT * _velocities;        // Array for temporarily saving the velocity
 
 public:
 
