@@ -1,16 +1,18 @@
 #### The petsc environment can also be fixed in the makefile
 # PETSC_DIR =
+# for Thomas:
+PETSC_DIR = /opt/petsc/petsc-3.5.4/conf
 # PETSC_ARCH =
 include ${PETSC_DIR}/../conf/variables
 
 # default gnu compiler (currently not used)
 # CC = g++
 # compiler wrapper for mac-cluster
-CC = mpiCC
+# CC = mpiCC
 # compiler on Ubuntu
 #
 #
-#CC = mpic++
+CC = mpic++
 CFLAGS = -Wall -Werror -O3
 SRCDIR = ./
 INCLUDE = -I. -Istencils ${PETSC_CC_INCLUDES}
@@ -21,6 +23,7 @@ NSMAIN = main.o
 OBJ = DataStructures.o Configuration.o 3rdparty/tinyxml2/tinyxml2.o SimpleTimer.o
 
 NSOBJ = FlowField.o LinearSolver.o Meshsize.o\
+TurbulentFlowField.o\
 stencils/MaxUStencil.o stencils/MovingWallStencils.o stencils/PeriodicBoundaryStencils.o\
 stencils/FGHStencil.o solvers/SORSolver.o solvers/PetscSolver.o \
 stencils/RHSStencil.o stencils/VelocityStencil.o \

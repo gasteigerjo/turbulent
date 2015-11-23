@@ -133,6 +133,28 @@ class BFStepParameters{
 };
 
 
+enum MixingLengthModelDeltaType{
+    IgnoreDelta=0,
+    FixedDelta=1,
+    BlasiusLayer=2,
+    TurbulentFlatPlate=3
+};
+
+class MixingLengthModelParameters{  // example: <mixingLengthModel kappa="0.41">
+                                    //            <delta fixedValue="0.001">fixed</delta>
+                                    //          </mixingLengthModel>
+    public:
+        int deltaType;              // type of estimation of boundary layer thickness, 0=ignored, 1=fixed, 2=Blasius or 3=turbulentFlatPlate
+        FLOAT deltaValue;           // value of the boundary layer thickness for type "fixed"
+        FLOAT kappa;                // defaults to 0.41
+};
+
+class TurbulenceModelParameters{
+    public:
+        std::string type;     // currently only "mixingLength" supported
+        MixingLengthModelParameters mixingLengthModel;
+};
+
 
 //@}
 
@@ -155,6 +177,7 @@ class Parameters {
         StdOutParameters        stdOut;
         BFStepParameters        bfStep;
         // TODO WS2: include parameters for turbulence
+        TurbulenceModelParameters turbulenceModel;
         Meshsize                *meshsize;
 };
 

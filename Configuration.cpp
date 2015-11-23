@@ -418,8 +418,37 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
 
 
         //------------------------------------------------------
-        // TODO WS2: Turbulence
+        // WS2: Turbulence model
         //------------------------------------------------------
+        node = confFile.FirstChildElement()->FirstChildElement("turbulenceModel");
+        if (node != NULL) {
+            subNode = node->FirstChildElement("type");
+            readStringMandatory(parameters.turbulenceModel.type, subNode);
+            subNode = node->FirstChildElement("mixingLengthModel");
+            if (subNode != NULL) {
+                readFloatOptional(parameters.turbulenceModel.mixingLengthModel.kappa,
+                                  subNode, "kappa", 0.41);
+                subNode = node->FirstChildElement("delta");
+                if (subNode != NULL) {
+                    std::string deltaType;
+                    readStringMandatory(deltaType, subNode);
+                    if (deltaType == "ignored"){
+                        parameters.turbulenceModel.mixingLengthModel.deltaType = IgnoreDelta;
+                    }else if (deltaType == "fixed"){
+                        parameters.turbulenceModel.mixingLengthModel.deltaType = FixedDelta;
+                    }else if (deltaType == "Blasius"){
+                        parameters.turbulenceModel.mixingLengthModel.deltaType = BlasiusLayer;
+                    }else if (deltaType == "turbulentFlatPlate"){
+                        parameters.turbulenceModel.mixingLengthModel.deltaType = TurbulentFlatPlate;
+                    }else{
+                      handleError(1, "Error loading mixing length model parameters (delta)")
+                    }
+                    readFloatOptional(parameters.turbulenceModel.mixingLengthModel.deltaValue,
+                                      subNode, "fixedValue");
+                }
+                // TODO: revise mixing length model parameters
+            }
+        }
     }
 
     // Broadcasting of the values
@@ -477,7 +506,10 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
     MPI_Bcast(parameters.walls.vectorFront,  3, MY_MPI_FLOAT, 0, communicator);
     MPI_Bcast(parameters.walls.vectorBack,   3, MY_MPI_FLOAT, 0, communicator);
 
-    // TODO WS2: broadcast turbulence parameters
-
+    // WS2: broadcast turbulence parameters
+    broadcastString (parameters.turbulenceModel.type, communicator);
+    MPI_Bcast(&(parameters.turbulenceModel.mixingLengthModel.deltaType),  1, MPI_INT,      0, communicator);
+    MPI_Bcast(&(parameters.turbulenceModel.mixingLengthModel.deltaValue), 1, MY_MPI_FLOAT, 0, communicator);
+    MPI_Bcast(&(parameters.turbulenceModel.mixingLengthModel.kappa),      1, MY_MPI_FLOAT, 0, communicator);
 
 }
