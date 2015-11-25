@@ -30,7 +30,6 @@ inline void loadLocalVelocity3D(FlowField & flowField, FLOAT * const localVeloci
     }
 }
 
-
 // load local meshsize for 2D -> same as loadLocalVelocity2D, but invoking call to meshsize-ptr
 inline void loadLocalMeshsize2D(const Parameters& parameters, FLOAT * const localMeshsize, int i, int j){
     for (int row = -1; row <= 1; row++ ){
@@ -50,6 +49,30 @@ inline void loadLocalMeshsize3D(const Parameters& parameters, FLOAT * const loca
                 localMeshsize[39 + 27*layer + 9*row + 3*column + 1] = parameters.meshsize->getDy(i+column,j+row,k+layer);
                 localMeshsize[39 + 27*layer + 9*row + 3*column + 2] = parameters.meshsize->getDz(i+column,j+row,k+layer);
             }
+        }
+    }
+}
+
+// TODO WS2: Load local turbulence viscosity for 2D
+
+inline void loadLocalTurbViscosity2D(TurbulentFlowField & turbulentFlowField, FLOAT * const localViscosity, int i, int j){
+    for (int row = -1; row <= 1; row++ ){
+        for ( int column = -1; column <= 1; column ++ ){
+            const FLOAT * const point = TurbulentFlowField.getTurbViscosity().getValue(i + column, j + row);
+            localViscosity[39 + 9*row + 3*column]     = point[0];
+        }
+    }
+}
+
+
+// TODO WS2: Load local turbulence viscosity for 3D
+
+inline void loadLocalTurbViscosity3D(TurbulentFlowField & turbulentFlowField, FLOAT * const localViscosity, int i, int j, int k){
+    for ( int layer = -1; layer <= 1; layer ++ ){
+        for ( int row = -1; row <= 1; row++ ){
+            for ( int column = -1; column <= 1; column ++ ){
+                const FLOAT * const point = TurbulentFlowField.getTurbViscosity().getValue(i + column, j + row);
+                localViscosity[39 + 9*row + 3*column]     = point[0];
         }
     }
 }
@@ -651,6 +674,7 @@ inline FLOAT computeG2D(const FLOAT * const localVelocity, const FLOAT * const l
 }
 
 
+
 inline FLOAT computeF3D(const FLOAT * const localVelocity, const FLOAT * const localMeshsize, const Parameters & parameters, FLOAT dt){
     return localVelocity [mapd(0,0,0,0)]
                 +  dt * ( 1 / parameters.flow.Re * ( d2udx2 ( localVelocity, localMeshsize )
@@ -676,5 +700,13 @@ inline FLOAT computeH3D(const FLOAT * const localVelocity, const FLOAT * const l
                 - dw2dz ( localVelocity, parameters, localMeshsize ) - duwdx ( localVelocity, parameters, localMeshsize )
                 - dvwdy ( localVelocity, parameters, localMeshsize ) + parameters.environment.gz );
 }
+
+inline FLOAT computeTurbF2D(const FLOAT * const localVelocity, const FLOAT * const localViscosity, const FLOAT * const localMeshsize, const Parameters & parameters, FLOAT dt){
+    return localVelocity [mapd(0,0,0,0)]
+        + dt * ( (1 / parameters.flow.Re + localViscosity[mapd(0,0,0,0)] ) * ( d2udx2 ( localVelocity, localMeshsize ) + d2udy2(localVelocity, localMeshsize)) + dudx(localViscosity, localMeshsize) * dudx(localVelocity, localMeshsize)+dudy(localViscosity, localMeshsize) * dudy(localVelocity, localMeshsize)
+        - du2dx (localVelocity, parameters, localMeshsize)
+                    - duvdy (localVelocity, parameters, localMeshsize) + parameters.environment.gx);
+}
+
 
 #endif
