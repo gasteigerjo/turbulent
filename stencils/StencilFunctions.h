@@ -708,5 +708,11 @@ inline FLOAT computeTurbF2D(const FLOAT * const localVelocity, const FLOAT * con
                     - duvdy (localVelocity, parameters, localMeshsize) + parameters.environment.gx);
 }
 
+inline FLOAT computeTurbG2D(const FLOAT * const localVelocity, const FLOAT * const localViscosity, const FLOAT * const localMeshsize, const Parameters & parameters, FLOAT dt){
+    return localVelocity [mapd(0,0,0,0)]
+        + dt * ( (1 / parameters.flow.Re + localViscosity[mapd(0,0,0,0)] ) * ( d2vdx2 ( localVelocity, localMeshsize ) + d2vdy2(localVelocity, localMeshsize)) + dvdx(localViscosity, localMeshsize) * dvdx(localVelocity, localMeshsize)+dvdy(localViscosity, localMeshsize) * dvdy(localVelocity, localMeshsize)
+        - dv2dy (localVelocity, parameters, localMeshsize)
+                    - duvdx (localVelocity, parameters, localMeshsize) + parameters.environment.gx);
+}
 
 #endif
