@@ -2,17 +2,17 @@
 #include "StencilFunctions.h"
 #include "Definitions.h"
 
-FGHTurbStencil::FGHTurbStencil ( const Parameters & parameters ) : FieldStencil<TurblentFlowField> ( parameters ) {}
+FGHTurbStencil::FGHTurbStencil ( const Parameters & parameters ) : FieldStencil<TurbulentFlowField> ( parameters ) {}
 
 
-void FGHTurbStencil::apply ( TurblentFlowField & turblentFlowField,  int i, int j ){
+void FGHTurbStencil::apply ( TurbulentFlowField & turbulentFlowField,  int i, int j ){
 
     // Load local velocities into the center layer of the local array
 
-    loadLocalVelocity2D(  turblentFlowField, _localVelocity, i, j);
+    loadLocalVelocity2D(  turbulentFlowField, _localVelocity, i, j);
     loadLocalMeshsize2D(_parameters, _localMeshsize, i, j);
 
-    FLOAT* const values = turblentFlowField.getFGH().getVector(i,j);
+    FLOAT* const values = turbulentFlowField.getFGH().getVector(i,j);
 
     // Now the localVelocity array should contain lexicographically ordered elements around the
     // given index
@@ -23,16 +23,16 @@ void FGHTurbStencil::apply ( TurblentFlowField & turblentFlowField,  int i, int 
 }
 
 
-void FGHTurbStencil::apply ( TurblentFlowField & turblentFlowField, int i, int j, int k ){
+void FGHTurbStencil::apply ( TurbulentFlowField & turbulentFlowField, int i, int j, int k ){
     // The same as in 2D, with slight modifications
 
-    const int obstacle = turblentFlowField.getFlags().getValue(i, j, k);
+    const int obstacle = turbulentFlowField.getFlags().getValue(i, j, k);
 
-    FLOAT * const values = turblentFlowField.getFGH().getVector(i,j,k);
+    FLOAT * const values = turbulentFlowField.getFGH().getVector(i,j,k);
 
     if ((obstacle & OBSTACLE_SELF) == 0){   // If the cell is fluid
 
-        loadLocalVelocity3D(  turblentFlowField, _localVelocity, i, j, k);
+        loadLocalVelocity3D(  turbulentFlowField, _localVelocity, i, j, k);
         loadLocalMeshsize3D(_parameters, _localMeshsize, i, j, k);
 
         if ((obstacle & OBSTACLE_RIGHT) == 0) { // If the right cell is fluid

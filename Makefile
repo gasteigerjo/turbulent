@@ -23,7 +23,6 @@ NSMAIN = main.o
 OBJ = DataStructures.o Configuration.o 3rdparty/tinyxml2/tinyxml2.o SimpleTimer.o
 
 NSOBJ = FlowField.o LinearSolver.o Meshsize.o\
-TurbulentFlowField.o\
 stencils/MaxUStencil.o stencils/MovingWallStencils.o stencils/PeriodicBoundaryStencils.o\
 stencils/FGHStencil.o solvers/SORSolver.o solvers/PetscSolver.o \
 stencils/RHSStencil.o stencils/VelocityStencil.o \
@@ -33,6 +32,8 @@ stencils/VelocityBufferFillStencil.o stencils/VelocityBufferReadStencil.o\
 parallelManagers/PetscParallelConfiguration.o\
 GlobalBoundaryFactory.o\
 stencils/BFStepInitStencil.o stencils/NeumannBoundaryStencils.o stencils/BFInputStencils.o stencils/ObstacleStencil.o\
+TurbulentFlowField.o \
+stencils/FGHTurbStencil.o \
 
 all: ns
 

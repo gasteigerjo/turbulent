@@ -4,6 +4,7 @@
 #include <math.h>
 #include "../Definitions.h"
 #include "../Parameters.h"
+#include "../TurbulentFlowField.h"
 
 // Load the local velocity cube with relevant velocities of the 2D plane
 inline void loadLocalVelocity2D(FlowField & flowField, FLOAT * const localVelocity, int i, int j){
@@ -58,8 +59,8 @@ inline void loadLocalMeshsize3D(const Parameters& parameters, FLOAT * const loca
 inline void loadLocalTurbViscosity2D(TurbulentFlowField & turbulentFlowField, FLOAT * const localViscosity, int i, int j){
     for (int row = -1; row <= 1; row++ ){
         for ( int column = -1; column <= 1; column ++ ){
-            const FLOAT * const point = TurbulentFlowField.getTurbViscosity().getValue(i + column, j + row);
-            localViscosity[39 + 9*row + 3*column]     = point[0];
+            // const FLOAT * const point = turbulentFlowField.getTurbViscosity().getScalar(i + column, j + row);
+            // localViscosity[39 + 9*row + 3*column]     = point[0];
         }
     }
 }
@@ -71,8 +72,9 @@ inline void loadLocalTurbViscosity3D(TurbulentFlowField & turbulentFlowField, FL
     for ( int layer = -1; layer <= 1; layer ++ ){
         for ( int row = -1; row <= 1; row++ ){
             for ( int column = -1; column <= 1; column ++ ){
-                const FLOAT * const point = TurbulentFlowField.getTurbViscosity().getValue(i + column, j + row);
-                localViscosity[39 + 9*row + 3*column]     = point[0];
+                // const FLOAT * const point = turbulentFlowField.getTurbViscosity().getScalar(i + column, j + row);
+                // localViscosity[39 + 9*row + 3*column]     = point[0];
+            }
         }
     }
 }
@@ -307,7 +309,7 @@ inline FLOAT duvdx ( const FLOAT * const lv, const Parameters & parameters, cons
     const FLOAT uM11 = lv[mapd(-1, 1, 0, 0)];
     const FLOAT vM10 = lv[mapd(-1, 0, 0, 1)];
 
-    // this a central difference expression for the first-derivative. We therefore linearly interpolate u*v onto the surface of the 
+    // this a central difference expression for the first-derivative. We therefore linearly interpolate u*v onto the surface of the
     // current cell (in 2D: upper left and upper right corner) and then take the central difference
     const FLOAT secondOrder = (  ((hyLong-hyShort)/hyLong*u00 +hyShort/hyLong*u01) * ((hxLong1-hxShort)/hxLong1*v00+hxShort/hxLong1*v10)
                                - ((hyLong-hyShort)/hyLong*uM10+hyShort/hyLong*uM11) *((hxLong0-hxShort)/hxLong0*v00+hxShort/hxLong0*vM10) )/ (2.0*hxShort);
@@ -667,7 +669,7 @@ inline FLOAT computeF2D(const FLOAT * const localVelocity, const FLOAT * const l
 }
 
 inline FLOAT computeG2D(const FLOAT * const localVelocity, const FLOAT * const localMeshsize, const Parameters & parameters, FLOAT dt){
-    return localVelocity [mapd(0,0,0,1)] 
+    return localVelocity [mapd(0,0,0,1)]
         + dt * ( 1 / parameters.flow.Re * ( d2vdx2 ( localVelocity, localMeshsize )
                     + d2vdy2(localVelocity, localMeshsize)) - duvdx (localVelocity, parameters, localMeshsize)
                     - dv2dy (localVelocity, parameters, localMeshsize) + parameters.environment.gy);
@@ -702,17 +704,17 @@ inline FLOAT computeH3D(const FLOAT * const localVelocity, const FLOAT * const l
 }
 
 inline FLOAT computeTurbF2D(const FLOAT * const localVelocity, const FLOAT * const localViscosity, const FLOAT * const localMeshsize, const Parameters & parameters, FLOAT dt){
-    return localVelocity [mapd(0,0,0,0)]
-        + dt * ( (1 / parameters.flow.Re + localViscosity[mapd(0,0,0,0)] ) * ( d2udx2 ( localVelocity, localMeshsize ) + d2udy2(localVelocity, localMeshsize)) + dudx(localViscosity, localMeshsize) * dudx(localVelocity, localMeshsize)+dudy(localViscosity, localMeshsize) * dudy(localVelocity, localMeshsize)
-        - du2dx (localVelocity, parameters, localMeshsize)
-                    - duvdy (localVelocity, parameters, localMeshsize) + parameters.environment.gx);
+    return localVelocity [mapd(0,0,0,0)];
+        // + dt * ( (1 / parameters.flow.Re + localViscosity[mapd(0,0,0,0)] ) * ( d2udx2 ( localVelocity, localMeshsize ) + d2udy2(localVelocity, localMeshsize)) + dudx(localViscosity, localMeshsize) * dudx(localVelocity, localMeshsize)+dudy(localViscosity, localMeshsize) * dudy(localVelocity, localMeshsize)
+        // - du2dx (localVelocity, parameters, localMeshsize)
+        //             - duvdy (localVelocity, parameters, localMeshsize) + parameters.environment.gx);
 }
 
 inline FLOAT computeTurbG2D(const FLOAT * const localVelocity, const FLOAT * const localViscosity, const FLOAT * const localMeshsize, const Parameters & parameters, FLOAT dt){
-    return localVelocity [mapd(0,0,0,0)]
-        + dt * ( (1 / parameters.flow.Re + localViscosity[mapd(0,0,0,0)] ) * ( d2vdx2 ( localVelocity, localMeshsize ) + d2vdy2(localVelocity, localMeshsize)) + dvdx(localViscosity, localMeshsize) * dvdx(localVelocity, localMeshsize)+dvdy(localViscosity, localMeshsize) * dvdy(localVelocity, localMeshsize)
-        - dv2dy (localVelocity, parameters, localMeshsize)
-                    - duvdx (localVelocity, parameters, localMeshsize) + parameters.environment.gx);
+    return localVelocity [mapd(0,0,0,0)];
+        // + dt * ( (1 / parameters.flow.Re + localViscosity[mapd(0,0,0,0)] ) * ( d2vdx2 ( localVelocity, localMeshsize ) + d2vdy2(localVelocity, localMeshsize)) + dvdx(localViscosity, localMeshsize) * dvdx(localVelocity, localMeshsize)+dvdy(localViscosity, localMeshsize) * dvdy(localVelocity, localMeshsize)
+        // - dv2dy (localVelocity, parameters, localMeshsize)
+        //             - duvdx (localVelocity, parameters, localMeshsize) + parameters.environment.gx);
 }
 
 #endif

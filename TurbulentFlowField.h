@@ -17,6 +17,7 @@ class TurbulentFlowField : public FlowField {
         ScalarField _distNearestWall; //! Scalar field representing the distance to the nearest wall
 
     public:
+        TurbulentFlowField (const Parameters & parameters);
         /** Get turbulent viscosity field
          * @return Reference to turbulent viscosity field
          */
