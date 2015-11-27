@@ -59,8 +59,7 @@ inline void loadLocalMeshsize3D(const Parameters& parameters, FLOAT * const loca
 inline void loadLocalTurbViscosity2D(TurbulentFlowField & turbulentFlowField, FLOAT * const localViscosity, int i, int j){
     for (int row = -1; row <= 1; row++ ){
         for ( int column = -1; column <= 1; column ++ ){
-            // const FLOAT * const point = turbulentFlowField.getTurbViscosity().getScalar(i + column, j + row);
-            // localViscosity[39 + 9*row + 3*column]     = point[0];
+            localViscosity[39 + 9*row + 3*column]     = turbulentFlowField.getTurbViscosity().getScalar(i + column, j + row);
         }
     }
 }
@@ -72,8 +71,7 @@ inline void loadLocalTurbViscosity3D(TurbulentFlowField & turbulentFlowField, FL
     for ( int layer = -1; layer <= 1; layer ++ ){
         for ( int row = -1; row <= 1; row++ ){
             for ( int column = -1; column <= 1; column ++ ){
-                // const FLOAT * const point = turbulentFlowField.getTurbViscosity().getScalar(i + column, j + row);
-                // localViscosity[39 + 9*row + 3*column]     = point[0];
+                localViscosity[39 + 9*row + 3*column]     = turbulentFlowField.getTurbViscosity().getScalar(i + column, j + row);
             }
         }
     }
@@ -119,6 +117,140 @@ inline FLOAT dwdz ( const FLOAT * const lv, const FLOAT * const lm ) {
     /*if (fabs(tmp1-tmp2) > 1.0e-12){handleError(1, "dwdz");}
 
     return tmp2;*/
+}
+
+// du/dy evaluated at the cell center, hence the location of pressure and turbulent viscosity
+inline FLOAT dudy_cc ( const FLOAT * const lv, const FLOAT * const lm ) { // TODO make sure implementation is correct
+
+    // evaluate dudy in the cell center by a central difference
+
+    const int index0 = mapd(0,1,0,0);   // 1     0
+    const int index1 = mapd(-1,1,0,0);  // |_____|
+    const int index2 = mapd(0,-1,0,0);  // |     |
+    const int index3 = mapd(-1,-1,0,0); // |_____|
+                                        // |     |
+                                        // 3     2
+
+    //               dy of this cell            dy of cell above    dy of cell below
+    const FLOAT dy = lm[mapd(0,0,0,1)] + 0.5 * (lm[mapd(0,1,0,1)] + lm[mapd(0,-1,0,1)]);
+    // dividing by 2 interpolates the values at 0 and 1 as well as at 2 and 3 to the center
+    // then dividing by dy is the finite difference
+    return  ( (lv[index0] + lv[index1]) - (lv[index2] + lv[index3]) ) / (2.0 * dy);
+
+}
+
+// du/dy evaluated at the cell center, hence the location of pressure and turbulent viscosity
+inline FLOAT dudy_cc ( const FLOAT * const lv, const FLOAT * const lm ) { // TODO make sure implementation is correct
+
+    // evaluate dudy in the cell center by a central difference
+
+    const int index0 = mapd(0,1,0,0);   // 1     0    y
+    const int index1 = mapd(-1,1,0,0);  // |_____|    ^
+    const int index2 = mapd(0,-1,0,0);  // |     |    -->x
+    const int index3 = mapd(-1,-1,0,0); // |_____|
+                                        // |     |
+                                        // 3     2
+
+    //               dy of this cell            dy of cell above    dy of cell below
+    const FLOAT dy = lm[mapd(0,0,0,1)] + 0.5 * (lm[mapd(0,1,0,1)] + lm[mapd(0,-1,0,1)]);
+    // dividing by 2 interpolates the values at 0 and 1 as well as at 2 and 3 to the center
+    // then dividing by dy is the finite difference
+    return  ( (lv[index0] + lv[index1]) - (lv[index2] + lv[index3]) ) / (2.0 * dy);
+
+}
+
+// du/dz evaluated at the cell center, hence the location of pressure and turbulent viscosity
+inline FLOAT dudz_cc ( const FLOAT * const lv, const FLOAT * const lm ) { // TODO make sure implementation is correct
+
+    // evaluate dudz in the cell center by a central difference
+
+    const int index0 = mapd(0,0,1,0);   // 1     0    z
+    const int index1 = mapd(-1,0,1,0);  // |_____|    ^
+    const int index2 = mapd(0,0,-1,0);  // |     |    -->x
+    const int index3 = mapd(-1,0,-1,0); // |_____|
+                                        // |     |
+                                        // 3     2
+
+    //               dz of this cell            dz of cell above    dz of cell below
+    const FLOAT dz = lm[mapd(0,0,0,2)] + 0.5 * (lm[mapd(0,0,1,2)] + lm[mapd(0,0,-1,2)]);
+    // dividing by 2 interpolates the values at 0 and 1 as well as at 2 and 3 to the center
+    // then dividing by dz is the finite difference
+    return  ( (lv[index0] + lv[index1]) - (lv[index2] + lv[index3]) ) / (2.0 * dz);
+
+}
+
+// dv/dx evaluated at the cell center, hence the location of pressure and turbulent viscosity
+inline FLOAT dvdx_cc ( const FLOAT * const lv, const FLOAT * const lm ) { // TODO make sure implementation is correct
+
+    // evaluate dvdx in the cell center by a central difference
+
+    const int index0 = mapd(1,0,0,1);   //                 y
+    const int index1 = mapd(1,-1,0,1);  // 2----------0    ^
+    const int index2 = mapd(-1,0,0,1);  //    |    |       -->x
+    const int index3 = mapd(-1,-1,0,1); // 3----------1
+
+    //               dx of this cell            dx of cell right    dx of cell left
+    const FLOAT dx = lm[mapd(0,0,0,0)] + 0.5 * (lm[mapd(1,0,0,0)] + lm[mapd(-1,0,0,0)]);
+    // dividing by 2 interpolates the values at 0 and 1 as well as at 2 and 3 to the center
+    // then dividing by dx is the finite difference
+    return  ( (lv[index0] + lv[index1]) - (lv[index2] + lv[index3]) ) / (2.0 * dx);
+
+}
+
+// dv/dz evaluated at the cell center, hence the location of pressure and turbulent viscosity
+inline FLOAT dvdz_cc ( const FLOAT * const lv, const FLOAT * const lm ) { // TODO make sure implementation is correct
+
+    // evaluate dvdz in the cell center by a central difference
+
+    const int index0 = mapd(0,0,1,1);   //                 y
+    const int index1 = mapd(0,-1,1,1);  // 2----------0    ^
+    const int index2 = mapd(0,0,-1,1);  //    |    |       -->z
+    const int index3 = mapd(0,-1,-1,1); // 3----------1
+
+    //               dz of this cell            dz of cell right    dz of cell left
+    const FLOAT dz = lm[mapd(0,0,0,2)] + 0.5 * (lm[mapd(0,0,1,2)] + lm[mapd(0,0,-1,2)]);
+    // dividing by 2 interpolates the values at 0 and 1 as well as at 2 and 3 to the center
+    // then dividing by dz is the finite difference
+    return  ( (lv[index0] + lv[index1]) - (lv[index2] + lv[index3]) ) / (2.0 * dz);
+
+}
+
+// dw/dx evaluated at the cell center, hence the location of pressure and turbulent viscosity
+inline FLOAT dwdx_cc ( const FLOAT * const lv, const FLOAT * const lm ) { // TODO make sure implementation is correct
+
+    // evaluate dwdx in the cell center by a central difference
+
+    const int index0 = mapd(1,0,0,2);   //                 z
+    const int index1 = mapd(1,0,-1,2);  // 2----------0    ^
+    const int index2 = mapd(-1,0,0,2);  //    |    |       -->x
+    const int index3 = mapd(-1,0,-1,2); // 3----------1
+
+    //               dx of this cell            dx of cell right    dx of cell left
+    const FLOAT dx = lm[mapd(0,0,0,0)] + 0.5 * (lm[mapd(1,0,0,0)] + lm[mapd(-1,0,0,0)]);
+    // dividing by 2 interpolates the values at 0 and 1 as well as at 2 and 3 to the center
+    // then dividing by dx is the finite difference
+    return  ( (lv[index0] + lv[index1]) - (lv[index2] + lv[index3]) ) / (2.0 * dx);
+
+}
+
+// dw/dy evaluated at the cell center, hence the location of pressure and turbulent viscosity
+inline FLOAT dwdy_cc ( const FLOAT * const lv, const FLOAT * const lm ) { // TODO make sure implementation is correct
+
+    // evaluate dwdy in the cell center by a central difference
+
+    const int index0 = mapd(0,1,0,0);   // 1     0    y
+    const int index1 = mapd(0,1,-1,0);  // |_____|    ^
+    const int index2 = mapd(0,-1,0,0);  // |     |    -->z
+    const int index3 = mapd(0,-1,-1,0); // |_____|
+                                        // |     |
+                                        // 3     2
+
+    //               dy of this cell            dy of cell above    dy of cell below
+    const FLOAT dy = lm[mapd(0,0,0,1)] + 0.5 * (lm[mapd(0,1,0,1)] + lm[mapd(0,-1,0,1)]);
+    // dividing by 2 interpolates the values at 0 and 1 as well as at 2 and 3 to the center
+    // then dividing by dy is the finite difference
+    return  ( (lv[index0] + lv[index1]) - (lv[index2] + lv[index3]) ) / (2.0 * dy);
+
 }
 
 

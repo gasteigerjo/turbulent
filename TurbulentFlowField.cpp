@@ -2,9 +2,9 @@
 
 TurbulentFlowField::TurbulentFlowField(const Parameters & parameters):
     FlowField(parameters),
-    _turbViscosity(parameters.geometry.dim==2?ScalarField(getCellsX() + 3, getCellsY() + 3):
+    _turbViscosity(parameters.geometry.dim==2 ? ScalarField(getCellsX() + 3, getCellsY() + 3) :
                       ScalarField(getCellsX() + 3, getCellsY() + 3, getCellsZ() + 3)),
-    _distNearestWall(parameters.geometry.dim==2?ScalarField(getCellsX() + 3, getCellsY() + 3):
+    _distNearestWall(parameters.geometry.dim==2 ? ScalarField(getCellsX() + 3, getCellsY() + 3) :
                       ScalarField(getCellsX() + 3, getCellsY() + 3, getCellsZ() + 3))
   {}
 
