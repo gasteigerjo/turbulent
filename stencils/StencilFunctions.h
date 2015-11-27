@@ -124,26 +124,6 @@ inline FLOAT dudy_cc ( const FLOAT * const lv, const FLOAT * const lm ) { // TOD
 
     // evaluate dudy in the cell center by a central difference
 
-    const int index0 = mapd(0,1,0,0);   // 1     0
-    const int index1 = mapd(-1,1,0,0);  // |_____|
-    const int index2 = mapd(0,-1,0,0);  // |     |
-    const int index3 = mapd(-1,-1,0,0); // |_____|
-                                        // |     |
-                                        // 3     2
-
-    //               dy of this cell            dy of cell above    dy of cell below
-    const FLOAT dy = lm[mapd(0,0,0,1)] + 0.5 * (lm[mapd(0,1,0,1)] + lm[mapd(0,-1,0,1)]);
-    // dividing by 2 interpolates the values at 0 and 1 as well as at 2 and 3 to the center
-    // then dividing by dy is the finite difference
-    return  ( (lv[index0] + lv[index1]) - (lv[index2] + lv[index3]) ) / (2.0 * dy);
-
-}
-
-// du/dy evaluated at the cell center, hence the location of pressure and turbulent viscosity
-inline FLOAT dudy_cc ( const FLOAT * const lv, const FLOAT * const lm ) { // TODO make sure implementation is correct
-
-    // evaluate dudy in the cell center by a central difference
-
     const int index0 = mapd(0,1,0,0);   // 1     0    y
     const int index1 = mapd(-1,1,0,0);  // |_____|    ^
     const int index2 = mapd(0,-1,0,0);  // |     |    -->x
