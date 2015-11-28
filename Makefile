@@ -33,7 +33,7 @@ parallelManagers/PetscParallelConfiguration.o\
 GlobalBoundaryFactory.o\
 stencils/BFStepInitStencil.o stencils/NeumannBoundaryStencils.o stencils/BFInputStencils.o stencils/ObstacleStencil.o\
 TurbulentFlowField.o \
-stencils/FGHTurbStencil.o stencils/TurbViscosityStencil.o \
+stencils/FGHTurbStencil.o stencils/TurbViscosityStencil.o stencils/DistNearestWallStencil.o \
 
 all: ns
 

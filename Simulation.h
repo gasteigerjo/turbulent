@@ -95,9 +95,9 @@ class Simulation {
         BFStepInitStencil stencil(_parameters);
         FieldIterator<FlowField> iterator(_flowField,_parameters,stencil,0,1);
         iterator.iterate();
-	_wallVelocityIterator.iterate();
+        _wallVelocityIterator.iterate();
       } else if (_parameters.simulation.scenario=="pressure-channel"){
-	    //set pressure boundaries here for left wall
+        //set pressure boundaries here for left wall
         const FLOAT value = _parameters.walls.scalarLeft;
         ScalarField& rhs = _flowField.getRHS();
 
@@ -118,8 +118,8 @@ class Simulation {
 	    BFStepInitStencil stencil(_parameters);
         FieldIterator<FlowField> iterator(_flowField,_parameters,stencil,0,1);
         iterator.iterate();
-	  }
-      	_solver.reInitMatrix();
+	    }
+      _solver.reInitMatrix();
     }
 
     virtual void solveTimestep(){
@@ -136,8 +136,8 @@ class Simulation {
         // TODO WS2: communicate pressure values
         // compute velocity
         _velocityIterator.iterate();
-	// set obstacle boundaries
-	_obstacleIterator.iterate();
+        // set obstacle boundaries
+        _obstacleIterator.iterate();
         // TODO WS2: communicate velocity values
         // Iterate for velocities on the boundary
         _wallVelocityIterator.iterate();

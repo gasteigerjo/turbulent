@@ -23,6 +23,11 @@ void TurbViscosityStencil::apply ( TurbulentFlowField & turbFlowField, int i, in
         loadLocalVelocity3D(  turbFlowField, _localVelocity, i, j, k);
         loadLocalMeshsize3D(_parameters, _localMeshsize, i, j, k);
 
+        // do not test here for now since no other turbulence models are available
+        // if (_parameters.turbulenceModel.type == "mixingLength")
+
+        // Sij is a component of the shear strain tensor
+        // SijSij is the sum of the elementwise squares
         FLOAT SijSij = pow(dudx(_localVelocity, _localMeshsize), 2)
                      + pow(dvdy(_localVelocity, _localMeshsize), 2)
                      + pow(dwdz(_localVelocity, _localMeshsize), 2)
@@ -32,11 +37,14 @@ void TurbViscosityStencil::apply ( TurbulentFlowField & turbFlowField, int i, in
                       + pow(dvdz_cc(_localVelocity, _localMeshsize) + dwdy_cc(_localVelocity, _localMeshsize), 2)
                        );
 
+        // the mixing length of Prandtl's model
         FLOAT mixingLength = 0.0;
+        // h is the distance to the nearest wall
         const FLOAT h = turbFlowField.getDistNearestWall().getScalar(i, j, k);
 
         switch (_parameters.turbulenceModel.mixingLengthModel.deltaType) {
           case IgnoreDelta:
+            // do not incorporate the boundary layer thickness
             mixingLength = _parameters.turbulenceModel.mixingLengthModel.kappa * h;
             break;
           default:
@@ -44,6 +52,7 @@ void TurbViscosityStencil::apply ( TurbulentFlowField & turbFlowField, int i, in
             break;
         }
 
+        // calculate the turb visc from the mixing length model
         turbFlowField.getTurbViscosity().getScalar(i, j, k) = pow(mixingLength, 2) * sqrt(2.0 * SijSij);
     }
 }
