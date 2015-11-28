@@ -16,7 +16,7 @@ void FGHTurbStencil::apply ( TurbulentFlowField & turbulentFlowField,  int i, in
     FLOAT* const values = turbulentFlowField.getFGH().getVector(i,j);
 
     // Now the localVelocity array should contain lexicographically ordered elements around the
-    // given index
+    // given index 2D
 
     values [0] = computeTurbF2D(_localVelocity, _localTurbViscosity,_localMeshsize, _parameters, _parameters.timestep.dt);
     values [1] = computeTurbG2D(_localVelocity, _localTurbViscosity,_localMeshsize, _parameters, _parameters.timestep.dt);
