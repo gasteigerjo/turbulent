@@ -1,9 +1,9 @@
 #### The petsc environment can also be fixed in the makefile
 # PETSC_DIR =
 # for Thomas:
-PETSC_DIR = /opt/petsc/petsc-3.5.4/conf
+PETSC_DIR = /opt/petsc/petsc-3.5.4
 # PETSC_ARCH =
-include ${PETSC_DIR}/../conf/variables
+include ${PETSC_DIR}/conf/variables
 
 # default gnu compiler (currently not used)
 # CC = g++
@@ -13,7 +13,7 @@ include ${PETSC_DIR}/../conf/variables
 #
 #
 CC = mpic++
-CFLAGS = -Wall -Werror -O3
+CFLAGS = -Wall -Werror -O3 -Wno-unknown-pragmas -Wno-unused-value
 SRCDIR = ./
 INCLUDE = -I. -Istencils ${PETSC_CC_INCLUDES}
 

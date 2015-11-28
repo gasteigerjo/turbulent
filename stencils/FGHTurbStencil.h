@@ -13,8 +13,10 @@ class FGHTurbStencil : public FieldStencil<TurbulentFlowField>
         // A local velocity variable that will be used to approximate derivatives. Size matches 3D
         // case, but can be used for 2D as well.
         FLOAT _localVelocity [ 27 * 3 ];
-        // local meshsize
+        // local meshsize 
         FLOAT _localMeshsize [ 27 * 3 ];
+        // local turbulent viscosity
+        FLOAT _localTurbViscosity [ 27 * 3 ];
 
 
     public:
