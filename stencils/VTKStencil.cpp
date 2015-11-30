@@ -1,118 +1,106 @@
-#include <sstream>
-#include <iostream>
-#include <fstream>
-#include <iomanip>
-
 #include "VTKStencil.h"
+#include "../Iterators.h"
+#include <string>
+#include <fstream>
+#include <sstream>
+
+VTKStencil::VTKStencil ( const Parameters & parameters ) : FieldStencil<FlowField> ( parameters ) {}
 
 
-VTKStencil::VTKStencil ( const Parameters & parameters) : FieldStencil<FlowField> (parameters), _prefix (parameters.vtk.prefix) {
+void VTKStencil::apply ( FlowField & flowField, int i, int j ) {
+    Meshsize *ms = _parameters.meshsize;
+    _ssPoints << ms->getPosX(i+1, j+1) << " " << ms->getPosY(i+1, j+1) << " 0" << std::endl;
 
-    // Get number of cells (i.e. array length)
-    int numCells = 1;
-    for(int i = 0; i < _parameters.geometry.dim; i++) {
-        numCells *= _parameters.parallel.localSize[i];
-    }
+    // skip ghost cells
+    if (i < 2 || j < 2) return;
 
-    // Set up arrays for temporarily saving the pressure and velocity
-    _pressures = new FLOAT[numCells];
-    _velocities = new FLOAT[3*numCells];
-}
+    FLOAT pressure;
+    FLOAT* velocity = new FLOAT(2);
+    const int obstacle = flowField.getFlags().getValue(i, j);
 
-
-void VTKStencil::apply ( FlowField & flowField, int i, int j ){
-    if( i > 1 && j > 1 ) { // only for fluid cells
-
-        //temporarily save pressure and interpolated velocity in an array
-        int ind = (j-2) * _parameters.parallel.localSize[0] + (i-2);
-        flowField.getPressureAndVelocity(_pressures[ind], _velocities + 3*ind, i, j);
-    }
-}
-
-
-void VTKStencil::apply ( FlowField & flowField, int i, int j, int k ){
-    if( i > 1 && j > 1 && k > 1 ) { // only for fluid cells
-
-        //temporarily save pressure and interpolated velocity in an array
-        int ind = ((k-2) * _parameters.parallel.localSize[1] + (j-2)) * _parameters.parallel.localSize[0] + (i-2);
-        flowField.getPressureAndVelocity(_pressures[ind], _velocities + 3*ind, i, j, k);
-    }
-}
-
-void VTKStencil::write ( FlowField & flowField, int timeStep ){
-
-    // set up variables for the number of cells
-    int numCells = 1;
-    int numVertices = 1;
-    int cellsMin[3];
-    int cellsMax[3];
-    for(int i = 0; i < 3; i++) {
-        cellsMin[i] = _parameters.parallel.firstCorner[i];
-        cellsMax[i] = cellsMin[i] + _parameters.parallel.localSize[i];
-        if (i < _parameters.geometry.dim) {
-            numCells *= _parameters.parallel.localSize[i];
-            numVertices *= _parameters.parallel.localSize[i] + 1;
-        }
-    }
-
-    // open stream
-    std::ofstream vtkFile;
-    std::stringstream filename;
-    filename << _prefix << "_" << std::setfill('0') << std::setw(6) << timeStep << ".vtk";
-    vtkFile.open(filename.str().c_str());
-    if (vtkFile.fail()) {
-        std::cout << "Failed to open file for VTK output: " << filename.str() << std::endl;
+    // check whether current cell is a fluid cell or not
+    if ((obstacle & OBSTACLE_SELF) == 0) {
+      flowField.getPressureAndVelocity(pressure, velocity,  i, j);
     } else {
-        std::cout << "Writing VTK output: " << filename.str() << std::endl;
+      pressure = 0.0;
+      velocity[0] = 0.0;
+      velocity[1] = 0.0;
     }
 
-    // write header
-    vtkFile << "# vtk DataFile Version 2.0" << std::endl << "I need something to put here" << std::endl << "ASCII" << std::endl << std::endl;
+    _ssPressure << pressure << std::endl;
+    _ssVelocity << velocity[0] << " " << velocity[1] << " 0" << std::endl;
+}
 
-    // write vertex coordinates
-    vtkFile << "DATASET STRUCTURED_GRID" << std::endl << "DIMENSIONS "
-        << _parameters.parallel.localSize[0] + 1 << " "
-        << _parameters.parallel.localSize[1] + 1 << " "
-        << _parameters.parallel.localSize[2] + 1 << std::endl
-        << "POINTS " << numVertices << " float" << std::endl;
 
-    vtkFile << std::fixed << std::setprecision(6);
-    for(int k = cellsMin[2]; k <= cellsMax[2]; k++) {
-        for(int j = cellsMin[1]; j <= cellsMax[1]; j++) {
-            for(int i = cellsMin[0]; i <= cellsMax[0]; i++) {
-                vtkFile << _parameters.meshsize->getPosX(i+2, j+2, k+2) << " "
-                    << _parameters.meshsize->getPosY(i+2, j+2, k+2) << " "
-                    << _parameters.meshsize->getPosZ(i+2, j+2, k+2) << std::endl;
-            }
-        }
+void VTKStencil::apply ( FlowField & flowField, int i, int j, int k ) {
+    Meshsize *ms = _parameters.meshsize;
+    _ssPoints << ms->getPosX(i+1, j+1, k+1) << " "
+              << ms->getPosY(i+1, j+1, k+1) << " "
+              << ms->getPosZ(i+1, j+1, k+1) << std::endl;
+
+    // skip ghost cells
+    if (i < 2 || j < 2 || k < 2) return;
+
+    FLOAT pressure;
+    FLOAT* velocity = new FLOAT(3);
+    const int obstacle = flowField.getFlags().getValue(i, j, k);
+
+    // check whether current cell is a fluid cell or not
+    if ((obstacle & OBSTACLE_SELF) == 0) {
+      flowField.getPressureAndVelocity(pressure, velocity,  i, j, k);
+    } else {
+      pressure = 0.0;
+      velocity[0] = 0.0;
+      velocity[1] = 0.0;
+      velocity[2] = 0.0;
     }
-    vtkFile << std::endl;
 
-    // write pressure
-    int ind;
-    vtkFile << "CELL_DATA " << numCells << std::endl << "SCALARS pressure float 1" << std::endl << "LOOKUP_TABLE default" << std::endl;
-    vtkFile << std::scientific;
-    for(int k = cellsMin[2]; k < cellsMax[2] + (3-_parameters.geometry.dim); k++) {
-        for(int j = cellsMin[1]; j < cellsMax[1]; j++) {
-            for(int i = cellsMin[0]; i < cellsMax[0]; i++) {
-                ind = (k * _parameters.parallel.localSize[1] + j) * _parameters.parallel.localSize[0] + i;
-                vtkFile << _pressures[ind] << std::endl;
-            }
-        }
-    }
-    vtkFile << std::endl;
+    _ssPressure << pressure << std::endl;
+    _ssVelocity << velocity[0] << " " << velocity[1] << " " << velocity[2] << std::endl;
+}
 
-    // write velocity
-    vtkFile << "VECTORS velocity float" << std::endl;
-    for(int k = cellsMin[2]; k < cellsMax[2] + (3-_parameters.geometry.dim); k++) {
-        for(int j = cellsMin[1]; j < cellsMax[1]; j++) {
-            for(int i = cellsMin[0]; i < cellsMax[0]; i++) {
-                ind = (k * _parameters.parallel.localSize[1] + j) * _parameters.parallel.localSize[0] + i;
-                vtkFile << _velocities[3*ind] << " " << _velocities[3*ind + 1] << " " << _velocities[3*ind + 2] << std::endl;
-            }
-        }
-    }
-    vtkFile << std::endl;
+void VTKStencil::write ( FlowField & flowField, int timeStep ) {
+    const int nx = flowField.getNx();
+    const int ny = flowField.getNy();
+    const int nz = _parameters.geometry.dim == 2 ? 0 : flowField.getNz();
+    const int nPoints = (nx+1)*(ny+1)*(nz+1);
+    const int nCells =_parameters.geometry.dim == 2 ? nx*ny :  nx*ny*nz;
 
-    vtkFile.close();
+    // construct the file name and open the corresponding file
+    std::stringstream fileName;
+    fileName << _parameters.vtk.prefix << "_" << timeStep << ".vtk";
+    std::ofstream file;
+    file.open(fileName.str().c_str());
+    fileName.clear();
+
+    // write VTK header
+    file << "# vtk DataFile Version 2.0" << std::endl;
+    file << "I need something to put here" << std::endl;
+    file << "ASCII\n" << std::endl;
+
+    // write grid
+    file << "DATASET STRUCTURED_GRID" << std::endl;
+    file << "DIMENSIONS " << nx+1 << " " << ny+1 << " " << nz+1 << std::endl;
+    file << "POINTS " << nPoints << " float" << std::endl;
+    file << _ssPoints.str();
+
+    file << "\nCELL_DATA " << nCells << std::endl;
+
+    // write pressure date
+    file << "SCALARS pressure float 1" << std::endl;
+    file << "LOOKUP_TABLE default" << std::endl;
+    file << _ssPressure.str();
+
+    // write velocity data
+    file << "\nVECTORS velocity float" << std::endl;
+    file << _ssVelocity.str();
+
+
+    // clear the stringstreams
+    _ssPoints.str("");
+    _ssPressure.str("");
+    _ssVelocity.str("");
+
+    // finally, close the file
+    file.close();
 }

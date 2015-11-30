@@ -52,7 +52,7 @@ int main (int argc, char *argv[]) {
       turbFlowField = new TurbulentFlowField(parameters);
       flowField = turbFlowField;
       simulation = new TurbulentSimulation(parameters,*turbFlowField);
-      handleError(1,"Turbulence currently not supported yet!");
+      // handleError(1,"Turbulence currently not supported yet!");
     } else if (parameters.simulation.type=="dns"){
       if(rank==0){ std::cout << "Start DNS simulation in " << parameters.geometry.dim << "D" << std::endl; }
       flowField = new FlowField(parameters);

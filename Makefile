@@ -34,6 +34,7 @@ GlobalBoundaryFactory.o\
 stencils/BFStepInitStencil.o stencils/NeumannBoundaryStencils.o stencils/BFInputStencils.o stencils/ObstacleStencil.o\
 TurbulentFlowField.o \
 stencils/FGHTurbStencil.o stencils/TurbViscosityStencil.o stencils/DistNearestWallStencil.o \
+stencils/MinDtStencil.o \
 
 all: ns
 

@@ -7,6 +7,7 @@
 #include "stencils/FGHTurbStencil.h"
 #include "stencils/TurbViscosityStencil.h"
 #include "stencils/DistNearestWallStencil.h"
+#include "stencils/MinDtStencil.h"
 
 
 class TurbulentSimulation : public Simulation {
@@ -19,6 +20,9 @@ class TurbulentSimulation : public Simulation {
     TurbViscosityStencil _turbViscStencil;
     FieldIterator<TurbulentFlowField> _turbViscIterator;
 
+    MinDtStencil _minDtStencil;
+    FieldIterator<TurbulentFlowField> _minDtIterator;
+
   public:
     TurbulentSimulation(Parameters &parameters, TurbulentFlowField &turbFlowField):
       Simulation(parameters, turbFlowField),
@@ -26,7 +30,9 @@ class TurbulentSimulation : public Simulation {
       _fghTurbStencil(parameters),
       _fghTurbIterator(turbFlowField,parameters,_fghTurbStencil),
       _turbViscStencil(parameters),
-      _turbViscIterator(turbFlowField,parameters,_turbViscStencil)
+      _turbViscIterator(turbFlowField,parameters,_turbViscStencil),
+      _minDtStencil(parameters),
+      _minDtIterator(turbFlowField,parameters,_minDtStencil)
     {}
 
     void initializeFlowField() {
@@ -40,12 +46,46 @@ class TurbulentSimulation : public Simulation {
     }
 
     void solveTimestep(){
-      // TODO timestepping for turbulent simulation
+      setTimeStep();
+      // compute turbulent viscosity
+      _turbViscIterator.iterate();
+      // compute fgh for turbulent case
+      _fghTurbIterator.iterate();
+      // set global boundary values
+      _wallFGHIterator.iterate();
+      // compute the right hand side
+      _rhsIterator.iterate();
+      // solve for pressure
+      _solver.solve();
+      // TODO WS2: communicate pressure values
+      // compute velocity
+      _velocityIterator.iterate();
+      // set obstacle boundaries
+      _obstacleIterator.iterate();
+      // TODO WS2: communicate velocity values
+      // Iterate for velocities on the boundary
+      _wallVelocityIterator.iterate();
     }
 
   protected:
-    void setTimeStep(){
-      // TODO find implementation, p.8 of work sheet
+    virtual void setTimeStep(){
+      // TODO
+      // iterate stencil (e.g. MinDtStencil) over all cells to find smallest dt from formula f
+      // f: equation (12) from work sheet p.8, where Re=1/(nu+nuT)
+      // then communicate time step to all ranks
+
+      FLOAT localMin, globalMin;
+
+      _minDtStencil.reset();
+      _minDtIterator.iterate();
+
+      localMin = _minDtStencil.getMinValue();
+
+      globalMin = MY_FLOAT_MAX;
+      MPI_Allreduce(&localMin, &globalMin, 1, MY_MPI_FLOAT, MPI_MIN, PETSC_COMM_WORLD);
+
+      _parameters.timestep.dt = globalMin;
+      _parameters.timestep.dt *= _parameters.timestep.tau;
     }
 };
 
