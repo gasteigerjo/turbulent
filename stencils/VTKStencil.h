@@ -9,13 +9,14 @@
 #include <fstream>
 #include <sstream>
 
-/** TODO WS1: Stencil for writting VTK files
+/** WS1: Stencil for writting VTK files
  *
  * When iterated with, creates a VTK file.
  */
 class VTKStencil : public FieldStencil<FlowField> {
     private:
-        std::stringstream _ssPoints, _ssPressure, _ssVelocity;
+        std::stringstream _ssPoints, _ssPressure, _ssVelocity, _ssTurbViscosity;
+        bool _turbulent;
 
     public:
 

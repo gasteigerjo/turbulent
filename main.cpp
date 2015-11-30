@@ -47,10 +47,12 @@ int main (int argc, char *argv[]) {
 
     // initialise simulation
     if (parameters.simulation.type=="turbulence"){
-      // TODO WS2: initialise turbulent flow field and turbulent simulation object
+      if(rank==0){ std::cout << "Start RANS simulation in " << parameters.geometry.dim << "D" << std::endl; }
+      // WS2: initialise turbulent flow field and turbulent simulation object
       TurbulentFlowField *turbFlowField = NULL;
       turbFlowField = new TurbulentFlowField(parameters);
       flowField = turbFlowField;
+      if(flowField == NULL){ handleError(1, "flowField==NULL!"); }
       simulation = new TurbulentSimulation(parameters,*turbFlowField);
       // handleError(1,"Turbulence currently not supported yet!");
     } else if (parameters.simulation.type=="dns"){
