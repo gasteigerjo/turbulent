@@ -18,8 +18,8 @@ void FGHTurbStencil::apply ( TurbulentFlowField & turbulentFlowField,  int i, in
     // Now the localVelocity array should contain lexicographically ordered elements around the
     // given index 2D
 
-    values [0] = computeTurbF2D(_localVelocity, _localTurbViscosity,_localMeshsize, _parameters, _parameters.timestep.dt);
-    values [1] = computeTurbG2D(_localVelocity, _localTurbViscosity,_localMeshsize, _parameters, _parameters.timestep.dt);
+    values [0] = computeTurbF2D(_localVelocity, _localTurbViscosity, _localMeshsize, _parameters, _parameters.timestep.dt);
+    values [1] = computeTurbG2D(_localVelocity, _localTurbViscosity, _localMeshsize, _parameters, _parameters.timestep.dt);
 
 }
 
@@ -35,15 +35,16 @@ void FGHTurbStencil::apply ( TurbulentFlowField & turbulentFlowField, int i, int
 
         loadLocalVelocity3D(  turbulentFlowField, _localVelocity, i, j, k);
         loadLocalMeshsize3D(_parameters, _localMeshsize, i, j, k);
+  		fafaloadLocalTurbViscosity3D(turbulentFlowField, _localTurbViscosity,i,j);
 
         if ((obstacle & OBSTACLE_RIGHT) == 0) { // If the right cell is fluid
-            values [0] = computeF3D(_localVelocity, _localMeshsize, _parameters, _parameters.timestep.dt);
+            values [0] = computeTurbF3D(_localVelocity, _localTurbViscosity, _localMeshsize, _parameters, _parameters.timestep.dt);
         }
         if ((obstacle & OBSTACLE_TOP) == 0) {
-            values [1] = computeG3D(_localVelocity, _localMeshsize, _parameters, _parameters.timestep.dt);
+            values [1] = computeTurbG3D(_localVelocity, _localTurbViscosity, _localMeshsize, _parameters, _parameters.timestep.dt);
         }
         if ((obstacle & OBSTACLE_BACK) == 0) {
-            values [2] = computeH3D(_localVelocity, _localMeshsize, _parameters, _parameters.timestep.dt);
+            values [2] = computeTurbH3D(_localVelocity, _localTurbViscosity, _localMeshsize, _parameters, _parameters.timestep.dt);
         }
     }
 }

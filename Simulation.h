@@ -125,6 +125,7 @@ class Simulation {
     virtual void solveTimestep(){
         // determine and set max. timestep which is allowed in this simulation
         setTimeStep();
+
         // compute fgh
         _fghIterator.iterate();
         // set global boundary values
