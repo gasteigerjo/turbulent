@@ -114,7 +114,7 @@ void VTKStencil::write ( FlowField & flowField, int timeStep ) {
     file << _ssVelocity.str();
 
     if (_turbulent){
-      // write pressure data
+      // write turbulent viscosity data
       file << "\nSCALARS turbViscosity float 1" << std::endl;
       file << "LOOKUP_TABLE default" << std::endl;
       file << _ssTurbViscosity.str();

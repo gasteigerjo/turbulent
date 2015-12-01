@@ -428,7 +428,7 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
             if (subNode != NULL) {
                 readFloatOptional(parameters.turbulenceModel.mixingLengthModel.kappa,
                                   subNode, "kappa", 0.41);
-                subNode = node->FirstChildElement("delta");
+                subNode = subNode->FirstChildElement("delta");
                 if (subNode != NULL) {
                     std::string deltaType;
                     readStringMandatory(deltaType, subNode);
