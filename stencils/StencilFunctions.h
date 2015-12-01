@@ -123,40 +123,40 @@ inline FLOAT dnudx ( const FLOAT * const lnu, const FLOAT * const lm ) { // TODO
 
     // evaluate dudy in the cell center by a central difference
 
-    const int index0 = mapd(1,0,0,0);
-    const int index1 = mapd(-1,0,0,0);
+    const int index0 = mapd(0,0,0,0);
+    const int index1 = mapd(1,0,0,0);
 
     //               dy of this cell            dy of cell above    dy of cell below
-    const FLOAT dx = lm[mapd(0,0,0,0)] + 0.5 * (lm[mapd(1,0,0,0)] + lm[mapd(-1,0,0,0)]);
+    const FLOAT dx = 0.5 * (lm[mapd(0,0,0,0)] + lm[mapd(1,0,0,0)]);
     // dividing by 2 interpolates the values at 0 and 1 as well as at 2 and 3 to the center
     // then dividing by dy is the finite difference
-    return  ( lnu[index0] - lnu[index1] ) / dx * (0.5 * (lm[mapd(0,0,0,0)] + lm[mapd(-1,0,0,0)])/dx);
+    return  ( lnu[index1] - lnu[index0] ) / dx;
 
 }
 
 inline FLOAT dnudy ( const FLOAT * const lnu, const FLOAT * const lm ) { // TODO make sure implementation is correct
 
-    const int index0 = mapd(0,1,0,0);
-    const int index1 = mapd(0,-1,0,0);
+    const int index0 = mapd(0,0,0,0);
+    const int index1 = mapd(0,1,0,0);
 
     //               dy of this cell            dy of cell above    dy of cell below
-    const FLOAT dy = lm[mapd(0,0,0,1)] + 0.5 * (lm[mapd(0,1,0,1)] + lm[mapd(0,-1,0,1)]);
+    const FLOAT dy = 0.5 * (lm[mapd(0,0,0,1)] + lm[mapd(0,1,0,1)]);
     // dividing by 2 interpolates the values at 0 and 1 as well as at 2 and 3 to the center
     // then dividing by dy is the finite difference
-    return  ( lnu[index0] - lnu[index1] ) / dy * (0.5 * ( lm[mapd(0,0,0,1)] + lm[mapd(0,-1,0,1)])/dy);
+    return  ( lnu[index1] - lnu[index0] ) / dy;
 
 }
 
 inline FLOAT dnudz ( const FLOAT * const lnu, const FLOAT * const lm ) { // TODO make sure implementation is correct
 
-    const int index0 = mapd(0,0,1,0);
-    const int index1 = mapd(0,0,-1,0);
+    const int index0 = mapd(0,0,0,0);
+    const int index1 = mapd(0,0,1,0);
 
     //               dy of this cell            dy of cell above    dy of cell below
-    const FLOAT dz = lm[mapd(0,0,0,2)] + 0.5 * (lm[mapd(0,1,0,2)] + lm[mapd(0,-1,0,2)]);
+    const FLOAT dz = 0.5 * (lm[mapd(0,0,0,2)] + lm[mapd(0,1,0,2)]);
     // dividing by 2 interpolates the values at 0 and 1 as well as at 2 and 3 to the center
     // then dividing by dy is the finite difference
-    return  ( lnu[index0] - lnu[index1] ) / dz * (0.5 * ( lm[mapd(0,0,0,2)] + lm[mapd(0,-1,0,2)])/dz);
+    return  ( lnu[index1] - lnu[index0] ) / dz;
 }
 
 // du/dy evaluated at the cell center, hence the location of pressure and turbulent viscosity

@@ -26,6 +26,12 @@ void TurbViscosityStencil::apply ( TurbulentFlowField & turbFlowField, int i, in
                       // + pow(dudz_cc(_localVelocity, _localMeshsize) + dwdx_cc(_localVelocity, _localMeshsize), 2)
                       // + pow(dvdz_cc(_localVelocity, _localMeshsize) + dwdy_cc(_localVelocity, _localMeshsize), 2)
                        );
+        // Turbulent flat plate boundary layer thickness;
+        
+        const FLOAT posX = _parameters.meshsize->getPosX(i,j) + 0.5 * _parameters.meshsize->getDx(i,j);
+        // Downstream Reynolds number
+        FLOAT Re_x = 1.0*posX*_parameters.flow.Re;
+        const FLOAT delta = 0.382 * posX/pow(Re_x,0.2);
 
         // the mixing length of Prandtl's model
         FLOAT mixingLength = 0.0;
@@ -36,12 +42,15 @@ void TurbViscosityStencil::apply ( TurbulentFlowField & turbFlowField, int i, in
           case IgnoreDelta:
             // do not incorporate the boundary layer thickness
             mixingLength = _parameters.turbulenceModel.mixingLengthModel.kappa * h;
+          case TurbulentFlatPlate:
+            // do not incorporate the boundary layer thickness
+            mixingLength = std::min(_parameters.turbulenceModel.mixingLengthModel.kappa * h,0.09*delta);
             break;
           default:
-            mixingLength = _parameters.turbulenceModel.mixingLengthModel.kappa * h; // TODO
-            break;
+            mixingLength = std::min(_parameters.turbulenceModel.mixingLengthModel.kappa * h,0.09*delta);
         }
 
+        // The boundary layer thickness
         // std::cout << SijSij << " " << mixingLength << std::endl;
 
         // calculate the turb visc from the mixing length model
@@ -74,6 +83,14 @@ void TurbViscosityStencil::apply ( TurbulentFlowField & turbFlowField, int i, in
                        );
 
         // the mixing length of Prandtl's model
+        // Turbulent flat plate boundary layer thickness;
+        
+        const FLOAT posX = _parameters.meshsize->getPosX(i,j,k) + 0.5 * _parameters.meshsize->getDx(i,j,k);
+        // Downstream Reynolds number
+        FLOAT Re_x = 1.0*posX*_parameters.flow.Re;
+        const FLOAT delta = 0.382 * posX/pow(Re_x,0.2);
+
+
         FLOAT mixingLength = 0.0;
         // h is the distance to the nearest wall
         const FLOAT h = turbFlowField.getDistNearestWall().getScalar(i, j, k);
@@ -83,9 +100,10 @@ void TurbViscosityStencil::apply ( TurbulentFlowField & turbFlowField, int i, in
             // do not incorporate the boundary layer thickness
             mixingLength = _parameters.turbulenceModel.mixingLengthModel.kappa * h;
             break;
+          case TurbulentFlatPlate:
+          mixingLength = std::min(_parameters.turbulenceModel.mixingLengthModel.kappa * h,0.09*delta);
           default:
-            mixingLength = _parameters.turbulenceModel.mixingLengthModel.kappa * h; // TODO
-            break;
+             mixingLength = std::min(_parameters.turbulenceModel.mixingLengthModel.kappa * h,0.09*delta);
         }
 
         // calculate the turb visc from the mixing length model

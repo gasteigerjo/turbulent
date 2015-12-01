@@ -8,7 +8,7 @@
     <turbulenceModel>
         <type>mixingLength</type>
         <mixingLengthModel kappa="0.41">
-          <delta>ignored</delta>
+          <delta>IgnoreDelta</delta>
         </mixingLengthModel>
     </turbulenceModel>
     <timestep dt="1" tau="0.5" />
