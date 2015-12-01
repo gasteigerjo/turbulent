@@ -35,7 +35,7 @@ void FGHTurbStencil::apply ( TurbulentFlowField & turbulentFlowField, int i, int
 
         loadLocalVelocity3D(  turbulentFlowField, _localVelocity, i, j, k);
         loadLocalMeshsize3D(_parameters, _localMeshsize, i, j, k);
-  		fafaloadLocalTurbViscosity3D(turbulentFlowField, _localTurbViscosity,i,j);
+  		loadLocalTurbViscosity3D( turbulentFlowField, _localTurbViscosity,i,j,k);
 
         if ((obstacle & OBSTACLE_RIGHT) == 0) { // If the right cell is fluid
             values [0] = computeTurbF3D(_localVelocity, _localTurbViscosity, _localMeshsize, _parameters, _parameters.timestep.dt);

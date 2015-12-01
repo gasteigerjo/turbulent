@@ -885,10 +885,10 @@ inline FLOAT computeTurbG3D(const FLOAT * const localVelocity, const FLOAT * con
                 - dvwdz ( localVelocity, parameters, localMeshsize ) + parameters.environment.gy );
 }
 
-inline FLOAT computeTurbH3D(const FLOAT * const localVelocity, const FLOAT * const localMeshsize, const Parameters & parameters, FLOAT dt){
+inline FLOAT computeTurbH3D(const FLOAT * const localVelocity, const FLOAT * const localViscosity, const FLOAT * const localMeshsize, const Parameters & parameters, FLOAT dt){
     return localVelocity [mapd(0,0,0,2)]
                 +  dt * ( (1 / parameters.flow.Re + localViscosity[mapd(0,0,0,0)]) * ( d2wdx2 ( localVelocity, localMeshsize )
-                + d2wdy2 ( localVelocity, localMeshsize ) + d2wdz2 ( localVelocity, localMeshsize ) ) + dnudx(localViscosity, localMeshsize)*(dwdx_cc( localVelocity, localMeshsize ) + dudz_cc( localVelocity, localMeshsize ))+dnudy(localViscosity, localMeshsize)*(dwdy_cc( localVelocity, localMeshsize ) + dvdz_cc( localVelocity, localMeshsize ))+dnudz(localViscosity, localMeshsize)*( 2 * dwdz( localVelocity, localMeshsize )
+                + d2wdy2 ( localVelocity, localMeshsize ) + d2wdz2 ( localVelocity, localMeshsize ) ) + dnudx(localViscosity, localMeshsize)*(dwdx_cc( localVelocity, localMeshsize ) + dudz_cc( localVelocity, localMeshsize ))+dnudy(localViscosity, localMeshsize)*(dwdy_cc( localVelocity, localMeshsize ) + dvdz_cc( localVelocity, localMeshsize ))+dnudz(localViscosity, localMeshsize)*2 * dwdz( localVelocity, localMeshsize )
                 - dw2dz ( localVelocity, parameters, localMeshsize ) - duwdx ( localVelocity, parameters, localMeshsize )
                 - dvwdy ( localVelocity, parameters, localMeshsize ) + parameters.environment.gz );
 }
