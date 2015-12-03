@@ -20,6 +20,7 @@ private:
     FLOAT * _velocitiesTop;          // Array for saving the velocities at the top boundary
     FLOAT * _velocitiesFront;        // Array for saving the velocities at the front boundary
     FLOAT * _velocitiesBack;         // Array for saving the velocities at the back boundary
+    int _lowOffset;
 
     //@brief Refactored stencil functionality
     //@{
@@ -38,7 +39,8 @@ public:
      */
     VelocityBufferFillStencil(const Parameters & parameters,
         FLOAT * velocitiesLeft, FLOAT * velocitiesRight,
-        FLOAT * velocitiesBottom, FLOAT * velocitiesTop);
+        FLOAT * velocitiesBottom, FLOAT * velocitiesTop,
+        int lowOffset = 0);
 
     /** Constructor for 3D case
      * @param parameters Parameters of the simulation
@@ -52,7 +54,8 @@ public:
     VelocityBufferFillStencil(const Parameters & parameters,
         FLOAT * velocitiesLeft, FLOAT * velocitiesRight,
         FLOAT * velocitiesBottom, FLOAT * velocitiesTop,
-        FLOAT * velocitiesFront, FLOAT * velocitiesBack);
+        FLOAT * velocitiesFront, FLOAT * velocitiesBack,
+        int lowOffset = 0);
 
     //@brief Functions for the 2D problem. Coordinates entered in alphabetical order.
     //@{

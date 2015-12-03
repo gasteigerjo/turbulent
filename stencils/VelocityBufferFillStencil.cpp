@@ -2,19 +2,23 @@
 
 VelocityBufferFillStencil::VelocityBufferFillStencil(const Parameters & parameters,
         FLOAT * velocitiesLeft, FLOAT * velocitiesRight,
-        FLOAT * velocitiesBottom, FLOAT * velocitiesTop) :
+        FLOAT * velocitiesBottom, FLOAT * velocitiesTop,
+        int lowOffset) :
     BoundaryStencil<FlowField>(parameters),
     _velocitiesLeft(velocitiesLeft), _velocitiesRight(velocitiesRight),
-    _velocitiesBottom(velocitiesBottom), _velocitiesTop(velocitiesTop) {}
+    _velocitiesBottom(velocitiesBottom), _velocitiesTop(velocitiesTop),
+    _lowOffset(lowOffset) {}
 
 VelocityBufferFillStencil::VelocityBufferFillStencil(const Parameters & parameters,
         FLOAT * velocitiesLeft, FLOAT * velocitiesRight,
         FLOAT * velocitiesBottom, FLOAT * velocitiesTop,
-        FLOAT * velocitiesFront, FLOAT * velocitiesBack) :
+        FLOAT * velocitiesFront, FLOAT * velocitiesBack,
+        int lowOffset) :
     BoundaryStencil<FlowField>(parameters),
     _velocitiesLeft(velocitiesLeft), _velocitiesRight(velocitiesRight),
     _velocitiesBottom(velocitiesBottom), _velocitiesTop(velocitiesTop),
-    _velocitiesFront(velocitiesFront), _velocitiesBack(velocitiesBack) {}
+    _velocitiesFront(velocitiesFront), _velocitiesBack(velocitiesBack),
+    _lowOffset(lowOffset) {}
 
 
 // 2D problem
@@ -24,7 +28,7 @@ void VelocityBufferFillStencil::applyStencil2D(FlowField & flowField, FLOAT * ve
 
     #pragma unroll(2)
     for(int dim = 0; dim < 2; dim++) {
-        velBuffer[ind*2 + dim] = vel[dim];
+        velBuffer[(ind - lowOffset)*2 + dim] = vel[dim];
     }
 }
 
@@ -53,7 +57,7 @@ inline void VelocityBufferFillStencil::applyStencil3D(FlowField & flowField, FLO
 
     // Save pointer to avoid multiple calls to getVector()
     FLOAT * vel = flowField.getVelocity().getVector(i, j, k);
-    int ind = (indSlow * (_parameters.parallel.localSize[dimFast] + 2) + indFast) * 3;
+    int ind = ((indSlow - lowOffset) * (_parameters.parallel.localSize[dimFast] + 2) + (indFast - lowOffset)) * 3;
 
     #pragma unroll(3)
     for(int dim = 0; dim < 3; dim++) {

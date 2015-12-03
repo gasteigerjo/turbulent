@@ -20,6 +20,7 @@ private:
     FLOAT * _pressuresTop;          // Array for saving the pressures at the top boundary
     FLOAT * _pressuresFront;        // Array for saving the pressures at the front boundary
     FLOAT * _pressuresBack;         // Array for saving the pressures at the back boundary
+    int _lowOffset;
 
 public:
 
@@ -32,7 +33,8 @@ public:
      */
     PressureBufferFillStencil(const Parameters & parameters,
         FLOAT * pressuresLeft, FLOAT * pressuresRight,
-        FLOAT * pressuresBottom, FLOAT * pressuresTop);
+        FLOAT * pressuresBottom, FLOAT * pressuresTop,
+        int lowOffset = 0);
 
     /** Constructor for 3D case
      * @param parameters Parameters of the simulation
@@ -46,7 +48,8 @@ public:
     PressureBufferFillStencil(const Parameters & parameters,
         FLOAT * pressuresLeft, FLOAT * pressuresRight,
         FLOAT * pressuresBottom, FLOAT * pressuresTop,
-        FLOAT * pressuresFront, FLOAT * pressuresBack);
+        FLOAT * pressuresFront, FLOAT * pressuresBack,
+        int lowOffset = 0);
 
     //@brief Functions for the 2D problem. Coordinates entered in alphabetical order.
     //@{
