@@ -203,7 +203,7 @@ inline FLOAT dnudx_v ( const FLOAT * const lnu, const FLOAT * const lm ) {
     //                      dy of this cell     dy of cell above                            
     const FLOAT dy = 0.5 * (lm[mapd(0,0,0,1)] + lm[mapd(0,1,0,1)]);
     // Evaluate dnudx at center of cell 0 and 4 and linear interpolate in the middle      
-    return  ( lnu[index1] - lnu[index2] ) / dx + ( ( lnu[index5] - lnu[index3] ) / dx - ( lnu[index1] - lnu[index2] ) / dx )/ dy * 0.5 * lm[mapd(0,0,0,1)];
+    return  ( lnu[index1] - lnu[index2] ) / dx + ( ( lnu[index5] - lnu[index3] ) - ( lnu[index1] - lnu[index2] ) ) / (dx * dy) * 0.5 * lm[mapd(0,0,0,1)];
 }
 
 
@@ -222,7 +222,7 @@ inline FLOAT dnudx_w ( const FLOAT * const lnu, const FLOAT * const lm ) {
     const FLOAT dx = lm[index0] + 0.5 * (lm[index2] + lm[index1]);
     const FLOAT dz = 0.5 * (lm[mapd(0,0,0,2)] + lm[mapd(0,0,1,2)]);
     // Evaluate dnudx at center of cell 0 and 4 and interpolate again     
-    return  ( lnu[index1] - lnu[index2] ) / dx + ( ( lnu[index5] - lnu[index3] ) / dx - ( lnu[index1] - lnu[index2] ) / dx ) / dz * 0.5 * lm[mapd(0,0,0,2)];
+    return  ( lnu[index1] - lnu[index2] ) / dx + ( ( lnu[index5] - lnu[index3] ) - ( lnu[index1] - lnu[index2] ) ) / (dx * dz) * 0.5 * lm[mapd(0,0,0,2)];
 }
 
 inline FLOAT dnudy_u ( const FLOAT * const lnu, const FLOAT * const lm ) { 
@@ -243,7 +243,7 @@ inline FLOAT dnudy_u ( const FLOAT * const lnu, const FLOAT * const lm ) {
     const FLOAT dy = lm[mapd(0,0,0,1)] + 0.5 * (lm[mapd(0,1,0,1)] + lm[mapd(0,-1,0,1)]);
     const FLOAT dx = 0.5 * (lm[index0] + lm[index1]);
     // Evaluate dnudy at center of cell 0 and 1 and interpolate again     
-    return  ( lnu[index4] - lnu[index7] ) / dy + ( ( lnu[index5] - lnu[index8] ) / dy - ( lnu[index4] - lnu[index7] ) / dy ) / dx * 0.5 * lm[index0];
+    return  ( lnu[index4] - lnu[index7] ) / dy + ( ( lnu[index5] - lnu[index8] ) - ( lnu[index4] - lnu[index7] ) ) / (dy * dx) * 0.5 * lm[index0];
 }
 
 inline FLOAT dnudy_v ( const FLOAT * const lnu, const FLOAT * const lm ) { 
@@ -278,7 +278,7 @@ inline FLOAT dnudy_w ( const FLOAT * const lnu, const FLOAT * const lm ) {
     const FLOAT dy = lm[mapd(0,0,0,1)] + 0.5 * (lm[mapd(0,1,0,1)] + lm[mapd(0,-1,0,1)]);
     const FLOAT dz = 0.5 * (lm[mapd(0,0,0,2)] + lm[mapd(0,0,1,2)]);
     // Evaluate dnudy at center of cell 0 and 4 and interpolate again on z direction    
-    return  ( lnu[index1] - lnu[index2] ) / dy + ( ( lnu[index5] - lnu[index3] ) / dy - ( lnu[index1] - lnu[index2] ) / dy ) / dz * 0.5 * lm[mapd(0,0,0,2)];
+    return  ( lnu[index1] - lnu[index2] ) / dy + ( ( lnu[index5] - lnu[index3] ) - ( lnu[index1] - lnu[index2] ) ) / (dy*dz) * 0.5 * lm[mapd(0,0,0,2)];
 }
 
 inline FLOAT dnudz_u ( const FLOAT * const lnu, const FLOAT * const lm ) { 
@@ -299,7 +299,7 @@ inline FLOAT dnudz_u ( const FLOAT * const lnu, const FLOAT * const lm ) {
     const FLOAT dz = lm[mapd(0,0,0,2)] + 0.5 * (lm[mapd(0,0,1,2)] + lm[mapd(0,0,-1,2)]);
     const FLOAT dx = 0.5 * (lm[index0] + lm[index1]);
     // Evaluate dnudy at center of cell 0 and 1 and interpolate again     
-    return  ( lnu[index4] - lnu[index7] ) / dz + ( ( lnu[index5] - lnu[index8] ) / dz - ( lnu[index4] - lnu[index7] ) / dz ) / dx * 0.5 * lm[index0];
+    return  ( lnu[index4] - lnu[index7] ) / dz + ( ( lnu[index5] - lnu[index8] ) - ( lnu[index4] - lnu[index7] ) ) / (dz*dx) * 0.5 * lm[index0];
 }
 
 inline FLOAT dnudz_v ( const FLOAT * const lnu, const FLOAT * const lm ) { 
@@ -320,7 +320,7 @@ inline FLOAT dnudz_v ( const FLOAT * const lnu, const FLOAT * const lm ) {
     const FLOAT dz = lm[mapd(0,0,0,2)] + 0.5 * (lm[mapd(0,0,1,2)] + lm[mapd(0,0,-1,2)]);
     const FLOAT dy = 0.5 * (lm[mapd(0,0,0,1)] + lm[mapd(0,1,0,1)]);
     // Evaluate dnudy at center of cell 0 and 1 and interpolate again     
-    return  ( lnu[index4] - lnu[index7] ) / dz + ( ( lnu[index5] - lnu[index8] ) / dz - ( lnu[index4] - lnu[index7] ) / dz ) / dy * 0.5 * lm[mapd(0,0,0,1)];
+    return  ( lnu[index4] - lnu[index7] ) / dz + ( ( lnu[index5] - lnu[index8] ) - ( lnu[index4] - lnu[index7] ) ) / (dz*dy) * 0.5 * lm[mapd(0,0,0,1)];
 }
 
 inline FLOAT dnudz_w ( const FLOAT * const lnu, const FLOAT * const lm ) { 
@@ -393,7 +393,7 @@ inline FLOAT dudy_v ( const FLOAT * const lv, const FLOAT * const lm ) {
                                             //  |_____|_____|
     
     const FLOAT dy = 0.5 * ( lm[mapd(0,1,0,1)] + lm[mapd(0,0,0,1)] );
-    return ( ( lv [index1] - lv [index0] ) / dy + ( lv [index2] - lv [index3] ) / dy ) / 2.0 ;
+    return ( ( lv [index1] - lv [index0] ) + ( lv [index2] - lv [index3] ) ) / (dy*2.0) ;
 }
 // du/dz evaluated at the cell center, hence the location of pressure and turbulent viscosity
 inline FLOAT dudz_cc ( const FLOAT * const lv, const FLOAT * const lm ) { // TODO make sure implementation is correct
@@ -430,7 +430,7 @@ inline FLOAT dudz_u ( const FLOAT * const lv, const FLOAT * const lm ) {
                                             //  |     2     |
                                             //  |_____|_____|   
     
-    const FLOAT dz = lm[mapd(0,0,0,2)] + 0.5 * ( lm[mapd(0,1,0,2)] + lm[mapd(0,-1,0,2)] );
+    const FLOAT dz = lm[mapd(0,0,0,2)] + 0.5 * ( lm[mapd(0,0,1,2)] + lm[mapd(0,0,-1,2)] );
     return ( lv [index1] - lv [index2] ) / dz ;
 }
 
@@ -446,7 +446,7 @@ inline FLOAT dudz_w ( const FLOAT * const lv, const FLOAT * const lm ) {
                                             //  |_____|_____|
     
     const FLOAT dz = 0.5 * ( lm[mapd(0,0,0,2)] + lm[mapd(0,0,1,2)] );
-    return ( ( lv [index1] - lv [index0] ) / dz + ( lv [index2] - lv [index3] ) / dz ) / 2.0 ;
+    return ( ( lv [index1] - lv [index0] ) + ( lv [index2] - lv [index3] ) ) / (dz * 2.0) ;
 }
 
 
@@ -477,8 +477,8 @@ inline FLOAT dvdx_u ( const FLOAT * const lv, const FLOAT * const lm ) {
     const int index2 = mapd(0,-1,0,1);      //  |     >     |   |     
     const int index3 = mapd(1,-1,0,1);      //  |__2__|__3__|   |______x
     
-    const FLOAT dx = 0.5 * ( lm[index0] + lm[index1] );
-    return ( ( lv [index1] - lv [index0] ) / dx + (lv [index3] - lv [index2] ) / dx ) / 2.0;
+    const FLOAT dx = 0.5 * ( lm[mapd(0,0,0,0)] + lm[mapd(1,0,0,0)] );
+    return ( ( lv [index1] - lv [index0] )  + (lv [index3] - lv [index2] )  ) / (dx*2.0);
 
 }
 
@@ -530,7 +530,7 @@ inline FLOAT dvdz_v ( const FLOAT * const lv, const FLOAT * const lm ) {
                                             //  |     2     |
                                             //  |_____|_____|   
     
-    const FLOAT dz = lm[mapd(0,0,0,2)] + 0.5 * ( lm[mapd(0,1,0,2)] + lm[mapd(0,-1,0,2)] );
+    const FLOAT dz = lm[mapd(0,0,0,2)] + 0.5 * ( lm[mapd(0,0,1,2)] + lm[mapd(0,0,-1,2)] );
     return ( lv [index1] - lv [index2] ) / dz ;
 }
 
@@ -546,7 +546,7 @@ inline FLOAT dvdz_w ( const FLOAT * const lv, const FLOAT * const lm ) {
                                             //  |_____|_____|
     
     const FLOAT dz = 0.5 * ( lm[mapd(0,0,0,2)] + lm[mapd(0,0,1,2)] );
-    return ( ( lv [index1] - lv [index0] ) / dz + ( lv [index2] - lv [index3] ) / dz ) / 2.0 ;
+    return ( ( lv [index1] - lv [index0] ) + ( lv [index2] - lv [index3] ) ) / (dz*2.0) ;
 }
 
 // dw/dx evaluated at the cell center, hence the location of pressure and turbulent viscosity
@@ -583,7 +583,7 @@ inline FLOAT dwdx_u ( const FLOAT * const lv, const FLOAT * const lm ) {
                                             //  |_____|_____|   
     
     const FLOAT dx = 0.5 * ( lm[mapd(0,0,0,0)] + lm[mapd(1,0,0,0)] );
-    return ( ( lv [index1] - lv [index0] ) / dx + ( lv [index3] - lv [index2] ) / dx ) / 2.0 ;
+    return ( ( lv [index1] - lv [index0] ) + ( lv [index3] - lv [index2] ) ) / (dx * 2.0) ;
 }
 
 inline FLOAT dwdx_w ( const FLOAT * const lv, const FLOAT * const lm ) {
@@ -635,8 +635,8 @@ inline FLOAT dwdy_v ( const FLOAT * const lv, const FLOAT * const lm ) {
                                             //  |     |     |
                                             //  |_____|_____|   
     
-    const FLOAT dy = 0.5 * ( lm[mapd(0,0,0,1)] + lm[mapd(1,0,0,1)] );
-    return ( ( lv [index1] - lv [index0] ) / dy + ( lv [index3] - lv [index2] ) / dy ) / 2.0 ;
+    const FLOAT dy = 0.5 * ( lm[mapd(0,0,0,1)] + lm[mapd(0,1,0,1)] );
+    return ( ( lv [index1] - lv [index0] )  + ( lv [index3] - lv [index2] ) ) / (dy* 2.0) ;
 }
 
 inline FLOAT dwdy_w ( const FLOAT * const lv, const FLOAT * const lm ) {
