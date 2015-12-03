@@ -28,7 +28,7 @@ void VelocityBufferFillStencil::applyStencil2D(FlowField & flowField, FLOAT * ve
 
     #pragma unroll(2)
     for(int dim = 0; dim < 2; dim++) {
-        velBuffer[(ind - lowOffset)*2 + dim] = vel[dim];
+        velBuffer[(ind - _lowOffset)*2 + dim] = vel[dim];
     }
 }
 
@@ -57,7 +57,7 @@ inline void VelocityBufferFillStencil::applyStencil3D(FlowField & flowField, FLO
 
     // Save pointer to avoid multiple calls to getVector()
     FLOAT * vel = flowField.getVelocity().getVector(i, j, k);
-    int ind = ((indSlow - lowOffset) * (_parameters.parallel.localSize[dimFast] + 2) + (indFast - lowOffset)) * 3;
+    int ind = ((indSlow - _lowOffset) * (_parameters.parallel.localSize[dimFast] + 2) + (indFast - _lowOffset)) * 3;
 
     #pragma unroll(3)
     for(int dim = 0; dim < 3; dim++) {

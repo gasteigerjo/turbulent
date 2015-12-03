@@ -24,16 +24,16 @@ PressureBufferReadStencil::PressureBufferReadStencil(const Parameters & paramete
 // 2D problem
 
 void PressureBufferReadStencil::applyLeftWall   ( FlowField & flowField, int i, int j ) {
-    flowField.getPressure().getScalar(i, j) = _pressuresLeft[j - lowOffset];
+    flowField.getPressure().getScalar(i, j) = _pressuresLeft[j - _lowOffset];
 }
 void PressureBufferReadStencil::applyRightWall  ( FlowField & flowField, int i, int j ) {
-    flowField.getPressure().getScalar(i, j) = _pressuresRight[j - lowOffset];
+    flowField.getPressure().getScalar(i, j) = _pressuresRight[j - _lowOffset];
 }
 void PressureBufferReadStencil::applyBottomWall ( FlowField & flowField, int i, int j ) {
-    flowField.getPressure().getScalar(i, j) = _pressuresBottom[i - lowOffset];
+    flowField.getPressure().getScalar(i, j) = _pressuresBottom[i - _lowOffset];
 }
 void PressureBufferReadStencil::applyTopWall    ( FlowField & flowField, int i, int j ) {
-    flowField.getPressure().getScalar(i, j) = _pressuresTop[i - lowOffset];
+    flowField.getPressure().getScalar(i, j) = _pressuresTop[i - _lowOffset];
 }
 
 
@@ -41,20 +41,20 @@ void PressureBufferReadStencil::applyTopWall    ( FlowField & flowField, int i, 
 
 // TODO Check if array index is right
 void PressureBufferReadStencil::applyLeftWall   ( FlowField & flowField, int i, int j, int k ) {
-    flowField.getPressure().getScalar(i, j, k) = _pressuresLeft[(j - lowOffset) * (_parameters.parallel.localSize[2] + 2) + (k - lowOffset)]; // k is the inner loop
+    flowField.getPressure().getScalar(i, j, k) = _pressuresLeft[(j - _lowOffset) * (_parameters.parallel.localSize[2] + 2) + (k - _lowOffset)]; // k is the inner loop
 }
 void PressureBufferReadStencil::applyRightWall  ( FlowField & flowField, int i, int j, int k ) {
-    flowField.getPressure().getScalar(i, j, k) = _pressuresRight[(j - lowOffset) * (_parameters.parallel.localSize[2] + 2) + (k - lowOffset)]; // k is the inner loop
+    flowField.getPressure().getScalar(i, j, k) = _pressuresRight[(j - _lowOffset) * (_parameters.parallel.localSize[2] + 2) + (k - _lowOffset)]; // k is the inner loop
 }
 void PressureBufferReadStencil::applyBottomWall ( FlowField & flowField, int i, int j, int k ) {
-    flowField.getPressure().getScalar(i, j, k) = _pressuresBottom[(i - lowOffset) * (_parameters.parallel.localSize[2] + 2) + (k - lowOffset)]; // k is the inner loop
+    flowField.getPressure().getScalar(i, j, k) = _pressuresBottom[(i - _lowOffset) * (_parameters.parallel.localSize[2] + 2) + (k - _lowOffset)]; // k is the inner loop
 }
 void PressureBufferReadStencil::applyTopWall    ( FlowField & flowField, int i, int j, int k ) {
-    flowField.getPressure().getScalar(i, j, k) = _pressuresTop[(i - lowOffset) * (_parameters.parallel.localSize[2] + 2) + (k - lowOffset)]; // k is the inner loop
+    flowField.getPressure().getScalar(i, j, k) = _pressuresTop[(i - _lowOffset) * (_parameters.parallel.localSize[2] + 2) + (k - _lowOffset)]; // k is the inner loop
 }
 void PressureBufferReadStencil::applyFrontWall  ( FlowField & flowField, int i, int j, int k ) {
-    flowField.getPressure().getScalar(i, j, k) = _pressuresFront[(i - lowOffset) * (_parameters.parallel.localSize[1] + 2) + (j - lowOffset)]; // j is the inner loop
+    flowField.getPressure().getScalar(i, j, k) = _pressuresFront[(i - _lowOffset) * (_parameters.parallel.localSize[1] + 2) + (j - _lowOffset)]; // j is the inner loop
 }
 void PressureBufferReadStencil::applyBackWall   ( FlowField & flowField, int i, int j, int k ) {
-    flowField.getPressure().getScalar(i, j, k) = _pressuresBack[(i - lowOffset) * (_parameters.parallel.localSize[1] + 2) + (j - lowOffset)]; // j is the inner loop
+    flowField.getPressure().getScalar(i, j, k) = _pressuresBack[(i - _lowOffset) * (_parameters.parallel.localSize[1] + 2) + (j - _lowOffset)]; // j is the inner loop
 }
