@@ -306,7 +306,7 @@ void PetscSolver::solve(){
     if (_parameters.geometry.dim == 2){
         KSPSetComputeRHS(_ksp, computeRHS2D, &_ctx);
     	KSPSetComputeOperators(_ksp,computeMatrix2D, &_ctx);
-        KSPSolve(_ksp, PETSC_NULL, _x);
+        KSPSolve(_ksp, PETSC_NULL, _x); // TODO gets stuck in this solve method
 
         // Then extract the information
         PetscScalar **array;
@@ -554,10 +554,12 @@ PetscErrorCode computeMatrix2D(KSP ksp, Mat A, Mat pc, MatStructure * matStructu
     MatAssemblyBegin(A,MAT_FINAL_ASSEMBLY);
     MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY);
 
+
     MatNullSpace nullspace;
     MatNullSpaceCreate(PETSC_COMM_WORLD,PETSC_TRUE,0,0,&nullspace);
     MatSetNullSpace(A,nullspace);
     MatNullSpaceDestroy(&nullspace);
+
 
     return 0;
 }

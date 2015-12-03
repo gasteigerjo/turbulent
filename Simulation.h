@@ -140,7 +140,7 @@ class Simulation {
         // WS2: communicate pressure values
         printf("Communicating pressure... (rank %d)\n", _parameters.parallel.rank);
         _petscParallelManager.communicatePressure();
-        printf("Communicated pressure!\n");
+        printf("Communicated pressure!\n\n");
         // compute velocity
         _velocityIterator.iterate();
         // set obstacle boundaries
@@ -148,7 +148,7 @@ class Simulation {
         // WS2: communicate velocity values
         printf("Communicating velocity... (rank %d)\n", _parameters.parallel.rank);
         _petscParallelManager.communicateVelocities();
-        printf("Communicated velocity!\n");
+        printf("Communicated velocity!\n\n");
         // Iterate for velocities on the boundary
         _wallVelocityIterator.iterate();
     }

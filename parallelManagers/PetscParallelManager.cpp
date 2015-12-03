@@ -91,12 +91,13 @@ _flowField(flowField)
         }
 
         // Construct the iterators
-        _parallelBoundaryPressureFillIterator = new ParallelBoundaryIterator(_flowField, _parameters, _pressureBufferFillStencil, lowOffset, highOffset);
-        _parallelBoundaryPressureReadIterator = new ParallelBoundaryIterator(_flowField, _parameters, _pressureBufferReadStencil, lowOffset, highOffset);
-        _parallelBoundaryVelocityFillIterator = new ParallelBoundaryIterator(_flowField, _parameters, _velocityBufferFillStencil, lowOffset, highOffset);
-        _parallelBoundaryVelocityReadIterator = new ParallelBoundaryIterator(_flowField, _parameters, _velocityBufferReadStencil, lowOffset, highOffset);
+        _parallelBoundaryPressureFillIterator = new ParallelBoundaryIterator<FlowField>(_flowField, _parameters, *_pressureBufferFillStencil, lowOffset, highOffset);
+        _parallelBoundaryPressureReadIterator = new ParallelBoundaryIterator<FlowField>(_flowField, _parameters, *_pressureBufferReadStencil, lowOffset, highOffset);
+        _parallelBoundaryVelocityFillIterator = new ParallelBoundaryIterator<FlowField>(_flowField, _parameters, *_velocityBufferFillStencil, lowOffset, highOffset);
+        _parallelBoundaryVelocityReadIterator = new ParallelBoundaryIterator<FlowField>(_flowField, _parameters, *_velocityBufferReadStencil, lowOffset, highOffset);
 
     }
+
 
 void PetscParallelManager::communicatePressure(){
 
@@ -167,6 +168,8 @@ void PetscParallelManager::communicateVelocities(){
                      _velocitiesRightRecv, velBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.rightNb, 1,
                      PETSC_COMM_WORLD, &comm_status);
 
+         MPI_Barrier(PETSC_COMM_WORLD);
+
         // Communicate in the Y-dimension:
         // Top --> + --> Bottom
         MPI_Sendrecv(_velocitiesBottomSend, velBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.bottomNb, 1,
@@ -176,6 +179,8 @@ void PetscParallelManager::communicateVelocities(){
         MPI_Sendrecv(_velocitiesTopSend,    velBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.topNb,    1,
                      _velocitiesBottomRecv, velBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.bottomNb, 1,
                      PETSC_COMM_WORLD, &comm_status);
+
+        MPI_Barrier(PETSC_COMM_WORLD);
 
         if (_parameters.geometry.dim == 3) {
             // Communicate in the Z-dimension:
@@ -187,6 +192,8 @@ void PetscParallelManager::communicateVelocities(){
             MPI_Sendrecv(_velocitiesFrontSend, velBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.frontNb, 1,
                          _velocitiesBackRecv,  velBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.backNb,  1,
                          PETSC_COMM_WORLD, &comm_status);
+
+            MPI_Barrier(PETSC_COMM_WORLD);
         }
 
         // Read the velocity receive buffers
