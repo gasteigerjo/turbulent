@@ -8,6 +8,7 @@
 #include "stencils/TurbViscosityStencil.h"
 #include "stencils/DistNearestWallStencil.h"
 #include "stencils/MinDtStencil.h"
+#include "stencils/TurbViscosityBoundaryStencil.h"
 
 
 class TurbulentSimulation : public Simulation {
@@ -23,6 +24,8 @@ class TurbulentSimulation : public Simulation {
     MinDtStencil _minDtStencil;
     FieldIterator<TurbulentFlowField> _minDtIterator;
 
+    GlobalBoundaryIterator<TurbulentFlowField> _wallTurbVisIterator;
+
   public:
     TurbulentSimulation(Parameters &parameters, TurbulentFlowField &turbFlowField):
       Simulation(parameters, turbFlowField),
@@ -32,7 +35,8 @@ class TurbulentSimulation : public Simulation {
       _turbViscStencil(parameters),
       _turbViscIterator(turbFlowField,parameters,_turbViscStencil),
       _minDtStencil(parameters),
-      _minDtIterator(turbFlowField,parameters,_minDtStencil)
+      _minDtIterator(turbFlowField,parameters,_minDtStencil),
+      _wallTurbVisIterator(createGlobalBoundaryTurbViscIterator())
     {}
 
     void initializeFlowField() {
@@ -49,6 +53,8 @@ class TurbulentSimulation : public Simulation {
       setTimeStep();
       // compute turbulent viscosity
       _turbViscIterator.iterate();
+      // set global boundary values for the turbulent viscosity
+      _wallTurbVisIterator.iterate();
       // compute fgh for turbulent case
       _fghTurbIterator.iterate();
       // set global boundary values
@@ -86,6 +92,26 @@ class TurbulentSimulation : public Simulation {
 
       _parameters.timestep.dt = globalMin;
       _parameters.timestep.dt *= _parameters.timestep.tau;
+    }
+
+    GlobalBoundaryIterator<TurbulentFlowField> createGlobalBoundaryTurbViscIterator(){
+      BoundaryStencil<TurbulentFlowField> * stencils[6];
+      // if (_parameters.simulation.scenario == "channel"){
+        stencils[0] = new BFInputTurbViscosityStencil(_parameters);
+        stencils[1] = new NeumannTurbViscosityBoundaryStencil(_parameters);
+        stencils[2] = new MovingWallTurbViscosityStencil(_parameters);
+        stencils[3] = stencils[2];
+        stencils[4] = stencils[2];
+        stencils[5] = stencils[2];
+      // }
+
+      if (_parameters.geometry.dim == 2){
+        return GlobalBoundaryIterator<TurbulentFlowField>(_turbFlowField, _parameters,
+                *(stencils[0]),*(stencils[1]),*(stencils[2]),*(stencils[3]));
+      }else{
+        return GlobalBoundaryIterator<TurbulentFlowField>(_turbFlowField, _parameters,
+                *(stencils[0]),*(stencils[1]),*(stencils[2]),*(stencils[3]),*(stencils[4]),*(stencils[5]));
+      }
     }
 };
 

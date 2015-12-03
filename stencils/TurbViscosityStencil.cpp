@@ -47,7 +47,7 @@ void TurbViscosityStencil::apply ( TurbulentFlowField & turbFlowField, int i, in
             }
             break;
           default:
-            mixingLength = _parameters.turbulenceModel.mixingLengthModel.kappa * h;
+            mixingLength = 0.0;//_parameters.turbulenceModel.mixingLengthModel.kappa * h;
         }
 
         // calculate the turb visc from the mixing length model
