@@ -8,15 +8,7 @@
 // Constructor
 PetscParallelManager::PetscParallelManager(const Parameters & parameters, FlowField & flowField):
 _parameters(parameters),
-_flowField(flowField),
-_pressureBufferFillStencil(_parameters, _pressuresLeftSend,  _pressuresRightSend,  _pressuresBottomSend,  _pressuresTopSend,  _pressuresFrontSend,  _pressuresBackSend),
-_pressureBufferReadStencil(_parameters, _pressuresLeftRecv,  _pressuresRightRecv,  _pressuresBottomRecv,  _pressuresTopRecv,  _pressuresFrontRecv,  _pressuresBackRecv),
-_velocityBufferFillStencil(_parameters, _velocitiesLeftSend, _velocitiesRightSend, _velocitiesBottomSend, _velocitiesTopSend, _velocitiesFrontSend, _velocitiesBackSend),
-_velocityBufferReadStencil(_parameters, _velocitiesLeftRecv, _velocitiesRightRecv, _velocitiesBottomRecv, _velocitiesTopRecv, _velocitiesFrontRecv, _velocitiesBackRecv),
-_parallelBoundaryPressureFillIterator(_flowField, _parameters, _pressureBufferFillStencil, 1, -1),
-_parallelBoundaryPressureReadIterator(_flowField, _parameters, _pressureBufferReadStencil, 1, -1),
-_parallelBoundaryVelocityFillIterator(_flowField, _parameters, _velocityBufferFillStencil, 1, -1),
-_parallelBoundaryVelocityReadIterator(_flowField, _parameters, _velocityBufferReadStencil, 1, -1)
+_flowField(flowField)
 {
         // Get the domain size
         int Nx = _parameters.parallel.localSize[0];
@@ -83,24 +75,26 @@ _parallelBoundaryVelocityReadIterator(_flowField, _parameters, _velocityBufferRe
             _velocitiesBackRecv      = (FLOAT*) calloc(velBufSizeFB, sizeof(FLOAT));
         }
 
-        // // Construct the stencils
-        // if (_parameters.geometry.dim == 2) {
-        //     _pressureBufferFillStencil(_parameters, _pressuresLeftSend,  _pressuresRightSend,  _pressuresBottomSend,  _pressuresTopSend);
-        //     _pressureBufferReadStencil(_parameters, _pressuresLeftRecv,  _pressuresRightRecv,  _pressuresBottomRecv,  _pressuresTopRecv);
-        //     _velocityBufferFillStencil(_parameters, _velocitiesLeftSend, _velocitiesRightSend, _velocitiesBottomSend, _velocitiesTopSend);
-        //     _velocityBufferReadStencil(_parameters, _velocitiesLeftRecv, _velocitiesRightRecv, _velocitiesBottomRecv, _velocitiesTopRecv);
-        // } else if (_parameters.geometry.dim == 3) {
-        //     _pressureBufferFillStencil(_parameters, _pressuresLeftSend,  _pressuresRightSend,  _pressuresBottomSend,  _pressuresTopSend,  _pressuresFrontSend,  _pressuresBackSend);
-        //     _pressureBufferReadStencil(_parameters, _pressuresLeftRecv,  _pressuresRightRecv,  _pressuresBottomRecv,  _pressuresTopRecv,  _pressuresFrontRecv,  _pressuresBackRecv);
-        //     _velocityBufferFillStencil(_parameters, _velocitiesLeftSend, _velocitiesRightSend, _velocitiesBottomSend, _velocitiesTopSend, _velocitiesFrontSend, _velocitiesBackSend);
-        //     _velocityBufferReadStencil(_parameters, _velocitiesLeftRecv, _velocitiesRightRecv, _velocitiesBottomRecv, _velocitiesTopRecv, _velocitiesFrontRecv, _velocitiesBackRecv);
-        // }
-        //
-        // // Construct the iterators
-        // _parallelBoundaryPressureFillIterator(_flowfield, _parameters, _pressureBufferFillStencil, 1, 0);
-        // _parallelBoundaryPressureReadIterator(_flowfield, _parameters, _pressureBufferReadStencil, 1, 0);
-        // _parallelBoundaryVelocityFillIterator(_flowfield, _parameters, _velocityBufferFillStencil, 1, 0);
-        // _parallelBoundaryVelocityReadIterator(_flowfield, _parameters, _velocityBufferReadStencil, 1, 0);
+        int lowOffset = 2;
+        int highOffset = -1;
+        // Construct the stencils
+        if (_parameters.geometry.dim == 2) {
+            _pressureBufferFillStencil = new PressureBufferFillStencil(_parameters, _pressuresLeftSend,  _pressuresRightSend,  _pressuresBottomSend,  _pressuresTopSend, lowOffset);
+            _pressureBufferReadStencil = new PressureBufferReadStencil(_parameters, _pressuresLeftRecv,  _pressuresRightRecv,  _pressuresBottomRecv,  _pressuresTopRecv, lowOffset);
+            _velocityBufferFillStencil = new VelocityBufferFillStencil(_parameters, _velocitiesLeftSend, _velocitiesRightSend, _velocitiesBottomSend, _velocitiesTopSend, lowOffset);
+            _velocityBufferReadStencil = new VelocityBufferReadStencil(_parameters, _velocitiesLeftRecv, _velocitiesRightRecv, _velocitiesBottomRecv, _velocitiesTopRecv, lowOffset);
+        } else if (_parameters.geometry.dim == 3) {
+            _pressureBufferFillStencil = new PressureBufferFillStencil(_parameters, _pressuresLeftSend,  _pressuresRightSend,  _pressuresBottomSend,  _pressuresTopSend,  _pressuresFrontSend,  _pressuresBackSend, lowOffset);
+            _pressureBufferReadStencil = new PressureBufferReadStencil(_parameters, _pressuresLeftRecv,  _pressuresRightRecv,  _pressuresBottomRecv,  _pressuresTopRecv,  _pressuresFrontRecv,  _pressuresBackRecv, lowOffset);
+            _velocityBufferFillStencil = new VelocityBufferFillStencil(_parameters, _velocitiesLeftSend, _velocitiesRightSend, _velocitiesBottomSend, _velocitiesTopSend, _velocitiesFrontSend, _velocitiesBackSend, lowOffset);
+            _velocityBufferReadStencil = new VelocityBufferReadStencil(_parameters, _velocitiesLeftRecv, _velocitiesRightRecv, _velocitiesBottomRecv, _velocitiesTopRecv, _velocitiesFrontRecv, _velocitiesBackRecv, lowOffset);
+        }
+
+        // Construct the iterators
+        _parallelBoundaryPressureFillIterator = new ParallelBoundaryIterator(_flowField, _parameters, _pressureBufferFillStencil, lowOffset, highOffset);
+        _parallelBoundaryPressureReadIterator = new ParallelBoundaryIterator(_flowField, _parameters, _pressureBufferReadStencil, lowOffset, highOffset);
+        _parallelBoundaryVelocityFillIterator = new ParallelBoundaryIterator(_flowField, _parameters, _velocityBufferFillStencil, lowOffset, highOffset);
+        _parallelBoundaryVelocityReadIterator = new ParallelBoundaryIterator(_flowField, _parameters, _velocityBufferReadStencil, lowOffset, highOffset);
 
     }
 
@@ -108,7 +102,7 @@ void PetscParallelManager::communicatePressure(){
 
     // Fill the pressure send buffers
     printf("BoundaryPressureFillIterator... (rank %d)\n", _parameters.parallel.rank);
-    _parallelBoundaryPressureFillIterator.iterate();
+    _parallelBoundaryPressureFillIterator->iterate();
 
     MPI_Status comm_status;
 
@@ -152,14 +146,14 @@ void PetscParallelManager::communicatePressure(){
 
     // Read the pressure receive buffers
     printf("BoundaryPressureReadIterator... (rank %d)\n", _parameters.parallel.rank);
-    _parallelBoundaryPressureReadIterator.iterate();
+    _parallelBoundaryPressureReadIterator->iterate();
 
 }
 
 void PetscParallelManager::communicateVelocities(){
 
         // Fill the velocity send buffers
-        _parallelBoundaryVelocityFillIterator.iterate();
+        _parallelBoundaryVelocityFillIterator->iterate();
 
         MPI_Status comm_status;
 
@@ -196,7 +190,7 @@ void PetscParallelManager::communicateVelocities(){
         }
 
         // Read the velocity receive buffers
-        _parallelBoundaryVelocityReadIterator.iterate();
+        _parallelBoundaryVelocityReadIterator->iterate();
 
 }
 

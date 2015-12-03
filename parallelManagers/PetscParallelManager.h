@@ -59,16 +59,15 @@ class PetscParallelManager {
         FLOAT * _velocitiesFrontRecv;
         FLOAT * _velocitiesBackRecv;
 
-    protected:
         // Stencil and iterator objects
-        PressureBufferFillStencil _pressureBufferFillStencil;
-        PressureBufferReadStencil _pressureBufferReadStencil;
-        VelocityBufferFillStencil _velocityBufferFillStencil;
-        VelocityBufferReadStencil _velocityBufferReadStencil;
-        ParallelBoundaryIterator<FlowField> _parallelBoundaryPressureFillIterator;
-        ParallelBoundaryIterator<FlowField> _parallelBoundaryPressureReadIterator;
-        ParallelBoundaryIterator<FlowField> _parallelBoundaryVelocityFillIterator;
-        ParallelBoundaryIterator<FlowField> _parallelBoundaryVelocityReadIterator;
+        PressureBufferFillStencil * _pressureBufferFillStencil;
+        PressureBufferReadStencil * _pressureBufferReadStencil;
+        VelocityBufferFillStencil * _velocityBufferFillStencil;
+        VelocityBufferReadStencil * _velocityBufferReadStencil;
+        ParallelBoundaryIterator<FlowField> * _parallelBoundaryPressureFillIterator;
+        ParallelBoundaryIterator<FlowField> * _parallelBoundaryPressureReadIterator;
+        ParallelBoundaryIterator<FlowField> * _parallelBoundaryVelocityFillIterator;
+        ParallelBoundaryIterator<FlowField> * _parallelBoundaryVelocityReadIterator;
 
     public:
 
