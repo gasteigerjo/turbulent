@@ -1,7 +1,7 @@
 #### The petsc environment can also be fixed in the makefile
 # PETSC_DIR =
 # for Thomas:
-PETSC_DIR = /opt/petsc/petsc-3.5.4
+#PETSC_DIR = /opt/petsc/petsc-3.5.4
 # PETSC_ARCH =
 include ${PETSC_DIR}/conf/variables
 

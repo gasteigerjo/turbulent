@@ -20,15 +20,19 @@ PressureBufferFillStencil::PressureBufferFillStencil(const Parameters & paramete
 // 2D problem
 
 void PressureBufferFillStencil::applyLeftWall   ( FlowField & flowField, int i, int j ) {
+    printf("Pressure applyLeftWall for (i,j)=(%d, %d)... (rank %d)\n", i, j, _parameters.parallel.rank);
     _pressuresLeft[j] = flowField.getPressure().getScalar(i, j);
 }
 void PressureBufferFillStencil::applyRightWall  ( FlowField & flowField, int i, int j ) {
+    printf("Pressure applyRightWall for (i,j)=(%d, %d)... (rank %d)\n", i, j, _parameters.parallel.rank);
     _pressuresRight[j] = flowField.getPressure().getScalar(i, j);
 }
 void PressureBufferFillStencil::applyBottomWall ( FlowField & flowField, int i, int j ) {
+    printf("Pressure applyBottomWall for (i,j)=(%d, %d)... (rank %d)\n", i, j, _parameters.parallel.rank);
     _pressuresBottom[i] = flowField.getPressure().getScalar(i, j);
 }
 void PressureBufferFillStencil::applyTopWall    ( FlowField & flowField, int i, int j ) {
+    printf("Pressure applyTopWall for (i,j)=(%d, %d)... (rank %d)\n", i, j, _parameters.parallel.rank);
     _pressuresTop[i] = flowField.getPressure().getScalar(i, j);
 }
 

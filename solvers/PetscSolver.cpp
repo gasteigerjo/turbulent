@@ -111,7 +111,7 @@ PetscSolver::PetscSolver(FlowField & flowField, Parameters & parameters):
     DMDABoundaryType bx = DMDA_BOUNDARY_NONE,
                      by = DMDA_BOUNDARY_NONE,
                      bz = DMDA_BOUNDARY_NONE;
-                     
+
 
     if (parameters.walls.typeLeft==PERIODIC){
         bx = DMDA_BOUNDARY_PERIODIC;
@@ -252,7 +252,7 @@ PetscSolver::PetscSolver(FlowField & flowField, Parameters & parameters):
     KSPSetComputeOperators(_ksp, computeMatrix, &_ctx);
 
     KSPSetType(_ksp,KSPFGMRES);
-    
+
     int comm_size;
     MPI_Comm_size(PETSC_COMM_WORLD,&comm_size);
 
@@ -273,13 +273,13 @@ PetscSolver::PetscSolver(FlowField & flowField, Parameters & parameters):
     KSPSetUp(_ksp);
 
     //from here we can change sub_ksp if necessary
-    //that has to be done after setup. The other solvers above 
+    //that has to be done after setup. The other solvers above
     //can be changed before setup with KSPSetFromOptions
 
     if (comm_size>1){
 	KSP *subksp;
 	PC subpc;
-	
+
 	PCASMGetSubKSP(_pc,NULL,NULL,&subksp);
 	KSPGetPC(subksp[0],&subpc);
 
@@ -295,7 +295,7 @@ PetscSolver::PetscSolver(FlowField & flowField, Parameters & parameters):
     }
 
 
-   
+
 }
 
 
@@ -362,8 +362,9 @@ PetscErrorCode computeMatrix2D(KSP ksp, Mat A, Mat pc, MatStructure * matStructu
 
     Nx = parameters.geometry.sizeX + 2;
     Ny = parameters.geometry.sizeY + 2;
-
-    std::cout << "Limits= " << limitsX[0] << ", " << limitsX[1] << "; " << limitsY[0] << " , " << limitsY[1] << std::endl;
+    int rank;
+    MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+    std::cout << "Limits= " << limitsX[0] << ", " << limitsX[1] << "; " << limitsY[0] << " , " << limitsY[1] << " rank = " << rank<< std::endl;
     // Loop for inner nodes
     for (j = limitsY[0]; j < limitsY[1]; j++){
         for (i = limitsX[0]; i < limitsX[1]; i++){
@@ -1077,4 +1078,3 @@ void PetscSolver::reInitMatrix() {
     else
     	KSPSetComputeOperators(_ksp,computeMatrix3D, &_ctx);
 }
-

@@ -19,7 +19,6 @@ VelocityBufferFillStencil::VelocityBufferFillStencil(const Parameters & paramete
 
 // 2D problem
 void VelocityBufferFillStencil::applyStencil2D(FlowField & flowField, FLOAT * velBuffer, int i, int j, int ind) {
-
     // Save pointer to avoid multiple calls to getVector()
     FLOAT * vel = flowField.getVelocity().getVector(i, j);
 
@@ -30,15 +29,19 @@ void VelocityBufferFillStencil::applyStencil2D(FlowField & flowField, FLOAT * ve
 }
 
 void VelocityBufferFillStencil::applyLeftWall   ( FlowField & flowField, int i, int j ) {
+    printf("Velocity applyLeftWall for (i,j)=(%d, %d)... (rank %d)\n", i, j, _parameters.parallel.rank);
     applyStencil2D(flowField, _velocitiesLeft, i, j, j);
 }
 void VelocityBufferFillStencil::applyRightWall  ( FlowField & flowField, int i, int j ) {
+    printf("Velocity applyRightWall for (i,j)=(%d, %d)... (rank %d)\n", i, j, _parameters.parallel.rank);
     applyStencil2D(flowField, _velocitiesRight, i, j, j);
 }
 void VelocityBufferFillStencil::applyBottomWall ( FlowField & flowField, int i, int j ) {
+    printf("Velocity applyBottomWall for (i,j)=(%d, %d)... (rank %d)\n", i, j, _parameters.parallel.rank);
     applyStencil2D(flowField, _velocitiesBottom, i, j, i);
 }
 void VelocityBufferFillStencil::applyTopWall    ( FlowField & flowField, int i, int j ) {
+    printf("Velocity applyTopWall for (i,j)=(%d, %d)... (rank %d)\n", i, j, _parameters.parallel.rank);
     applyStencil2D(flowField, _velocitiesTop, i, j, i);
 }
 
