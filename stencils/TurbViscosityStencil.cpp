@@ -36,6 +36,11 @@ void TurbViscosityStencil::apply ( TurbulentFlowField & turbFlowField, int i, in
           case IgnoreDelta:
             // do not incorporate the boundary layer thickness
             mixingLength = _parameters.turbulenceModel.mixingLengthModel.kappa * h;
+            break;
+          case FixedDelta:
+            mixingLength = _parameters.turbulenceModel.mixingLengthModel.kappa * h;
+            mixingLength = std::min(0.09*_parameters.turbulenceModel.mixingLengthModel.deltaValue,mixingLength);
+            break;
           case TurbulentFlatPlate:
             {
             // Turbulent flat plate boundary layer thickness;
@@ -47,7 +52,7 @@ void TurbViscosityStencil::apply ( TurbulentFlowField & turbFlowField, int i, in
             }
             break;
           default:
-            mixingLength = 0.0;//_parameters.turbulenceModel.mixingLengthModel.kappa * h;
+            mixingLength = _parameters.turbulenceModel.mixingLengthModel.kappa * h;
         }
 
         // calculate the turb visc from the mixing length model
@@ -90,6 +95,10 @@ void TurbViscosityStencil::apply ( TurbulentFlowField & turbFlowField, int i, in
           case IgnoreDelta:
             // do not incorporate the boundary layer thickness
             mixingLength = _parameters.turbulenceModel.mixingLengthModel.kappa * h;
+            break;
+          case FixedDelta:
+            mixingLength = _parameters.turbulenceModel.mixingLengthModel.kappa * h;
+            mixingLength = std::min(0.09*_parameters.turbulenceModel.mixingLengthModel.deltaValue,mixingLength);
             break;
           case TurbulentFlatPlate:
             // Turbulent flat plate boundary layer thickness;

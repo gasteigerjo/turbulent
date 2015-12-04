@@ -19,7 +19,7 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j ) {
     // skip ghost cells
     if (i < 2 || j < 2) return;
 
-    FLOAT pressure, turbVisc;
+    FLOAT pressure, turbVisc;//, distWall;
     FLOAT* velocity = new FLOAT(2);
     const int obstacle = flowField.getFlags().getValue(i, j);
 
@@ -29,18 +29,22 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j ) {
       if (_turbulent){
         TurbulentFlowField* turbFlowField = static_cast<TurbulentFlowField*>(&flowField);
         turbVisc = turbFlowField->getTurbViscosity().getScalar(i, j);
-        // std::cout << turbVisc;
+        // distWall = turbFlowField->getDistNearestWall().getScalar(i, j);
       }
     } else {
       pressure = 0.0;
       velocity[0] = 0.0;
       velocity[1] = 0.0;
       turbVisc = 0.0;
+      // distWall = 0.0;
     }
 
     _ssPressure << pressure << std::endl;
     _ssVelocity << velocity[0] << " " << velocity[1] << " 0" << std::endl;
-    if (_turbulent) _ssTurbViscosity << turbVisc << std::endl;
+    if (_turbulent){
+      _ssTurbViscosity << turbVisc << std::endl;
+      // _ssDistWall << distWall << std::endl;
+    }
 }
 
 
@@ -53,7 +57,7 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j, int k ) {
     // skip ghost cells
     if (i < 2 || j < 2 || k < 2) return;
 
-    FLOAT pressure, turbVisc;
+    FLOAT pressure, turbVisc;//, distWall;
     FLOAT* velocity = new FLOAT(3);
     const int obstacle = flowField.getFlags().getValue(i, j, k);
 
@@ -63,6 +67,7 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j, int k ) {
       if (_turbulent){
         TurbulentFlowField* turbFlowField = static_cast<TurbulentFlowField*>(&flowField);
         turbVisc = turbFlowField->getTurbViscosity().getScalar(i, j, k);
+        // distWall = turbFlowField->getDistNearestWall().getScalar(i, j, k);
       }
     } else {
       pressure = 0.0;
@@ -70,11 +75,15 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j, int k ) {
       velocity[1] = 0.0;
       velocity[2] = 0.0;
       turbVisc = 0.0;
+      // distWall = 0.0;
     }
 
     _ssPressure << pressure << std::endl;
     _ssVelocity << velocity[0] << " " << velocity[1] << " " << velocity[2] << std::endl;
-    if (_turbulent) _ssTurbViscosity << turbVisc << std::endl;
+    if (_turbulent){
+      _ssTurbViscosity << turbVisc << std::endl;
+      // _ssDistWall << distWall << std::endl;
+    }
 }
 
 void VTKStencil::write ( FlowField & flowField, int timeStep ) {
@@ -118,6 +127,15 @@ void VTKStencil::write ( FlowField & flowField, int timeStep ) {
       file << "\nSCALARS turbViscosity float 1" << std::endl;
       file << "LOOKUP_TABLE default" << std::endl;
       file << _ssTurbViscosity.str();
+
+      // write wall distance data
+      // file << "\nSCALARS distWall float 1" << std::endl;
+      // file << "LOOKUP_TABLE default" << std::endl;
+      // file << _ssDistWall.str();
+
+      // clear the turbulent specific stringstreams
+      _ssTurbViscosity.str("");
+      // _ssDistWall.str("");
     }
 
 
@@ -125,7 +143,6 @@ void VTKStencil::write ( FlowField & flowField, int timeStep ) {
     _ssPoints.str("");
     _ssPressure.str("");
     _ssVelocity.str("");
-    _ssTurbViscosity.str("");
 
     // finally, close the file
     file.close();
