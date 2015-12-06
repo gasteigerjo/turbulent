@@ -33,20 +33,26 @@ void VelocityBufferFillStencil::applyStencil2D(FlowField & flowField, FLOAT * ve
 }
 
 void VelocityBufferFillStencil::applyLeftWall   ( FlowField & flowField, int i, int j ) {
-    printf("Velocity applyLeftWall for (i,j)=(%d, %d)... (rank %d)\n", i, j, _parameters.parallel.rank);
-    applyStencil2D(flowField, _velocitiesLeft, i, j, j);
+    // printf("Velocity applyLeftWall for (i,j)=(%d, %d)... (rank %d)\n", i, j, _parameters.parallel.rank);
+    // applyStencil2D(flowField, _velocitiesLeft, i, j, j);
+    applyStencil2D(flowField, _velocitiesLeft, i+2, j, j);
 }
 void VelocityBufferFillStencil::applyRightWall  ( FlowField & flowField, int i, int j ) {
-    printf("Velocity applyRightWall for (i,j)=(%d, %d)... (rank %d)\n", i, j, _parameters.parallel.rank);
-    applyStencil2D(flowField, _velocitiesRight, i, j, j);
+    // printf("Velocity applyRightWall for (i,j)=(%d, %d)... (rank %d)\n", i, j, _parameters.parallel.rank);
+    // applyStencil2D(flowField, _velocitiesRight, i, j, j);
+    applyStencil2D(flowField, _velocitiesRight, i-1, j, 2*(j-_lowOffset)+1);
+    applyStencil2D(flowField, _velocitiesRight, i-2, j, 2*(j-_lowOffset));
 }
 void VelocityBufferFillStencil::applyBottomWall ( FlowField & flowField, int i, int j ) {
-    printf("Velocity applyBottomWall for (i,j)=(%d, %d)... (rank %d)\n", i, j, _parameters.parallel.rank);
-    applyStencil2D(flowField, _velocitiesBottom, i, j, i);
+    // printf("Velocity applyBottomWall for (i,j)=(%d, %d)... (rank %d)\n", i, j, _parameters.parallel.rank);
+    // applyStencil2D(flowField, _velocitiesBottom, i, j, i);
+    applyStencil2D(flowField, _velocitiesBottom, i, j+2, i);
 }
 void VelocityBufferFillStencil::applyTopWall    ( FlowField & flowField, int i, int j ) {
-    printf("Velocity applyTopWall for (i,j)=(%d, %d)... (rank %d)\n", i, j, _parameters.parallel.rank);
-    applyStencil2D(flowField, _velocitiesTop, i, j, i);
+    // printf("Velocity applyTopWall for (i,j)=(%d, %d)... (rank %d)\n", i, j, _parameters.parallel.rank);
+    // applyStencil2D(flowField, _velocitiesTop, i, j, i);
+    applyStencil2D(flowField, _velocitiesTop, i, j-1, 2*(i-_lowOffset)+1);
+    applyStencil2D(flowField, _velocitiesTop, i, j-2, 2*(i-_lowOffset));
 }
 
 

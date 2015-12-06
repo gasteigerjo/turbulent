@@ -24,15 +24,23 @@ PressureBufferReadStencil::PressureBufferReadStencil(const Parameters & paramete
 // 2D problem
 
 void PressureBufferReadStencil::applyLeftWall   ( FlowField & flowField, int i, int j ) {
-    flowField.getPressure().getScalar(i, j) = _pressuresLeft[j - _lowOffset];
+    // printf("Pressure Read applyLeftWall for (i,j)=(%d, %d)... (rank %d)\n", i, j, _parameters.parallel.rank);
+    // flowField.getPressure().getScalar(i-1, j) = _pressuresLeft[j - _lowOffset];
+    flowField.getPressure().getScalar(i+1, j) = _pressuresLeft[2*(j - _lowOffset)+1];
+    flowField.getPressure().getScalar(i, j) = _pressuresLeft[2*(j - _lowOffset)];
 }
 void PressureBufferReadStencil::applyRightWall  ( FlowField & flowField, int i, int j ) {
+    // flowField.getPressure().getScalar(i+1, j) = _pressuresRight[j - _lowOffset];
     flowField.getPressure().getScalar(i, j) = _pressuresRight[j - _lowOffset];
 }
 void PressureBufferReadStencil::applyBottomWall ( FlowField & flowField, int i, int j ) {
-    flowField.getPressure().getScalar(i, j) = _pressuresBottom[i - _lowOffset];
+    // printf("Pressure Read applyBottomWall for (i,j)=(%d, %d)... (rank %d)\n", i, j, _parameters.parallel.rank);
+    // flowField.getPressure().getScalar(i, j-1) = _pressuresBottom[i - _lowOffset];
+    flowField.getPressure().getScalar(i, j+1) = _pressuresBottom[2*(i - _lowOffset)+1];
+    flowField.getPressure().getScalar(i, j) = _pressuresBottom[2*(i - _lowOffset)];
 }
 void PressureBufferReadStencil::applyTopWall    ( FlowField & flowField, int i, int j ) {
+    // flowField.getPressure().getScalar(i, j+1) = _pressuresTop[i - _lowOffset];
     flowField.getPressure().getScalar(i, j) = _pressuresTop[i - _lowOffset];
 }
 

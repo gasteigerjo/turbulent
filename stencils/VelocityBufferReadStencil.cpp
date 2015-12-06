@@ -34,15 +34,21 @@ void VelocityBufferReadStencil::applyStencil2D(FlowField & flowField, FLOAT * ve
 }
 
 void VelocityBufferReadStencil::applyLeftWall   ( FlowField & flowField, int i, int j ) {
-    applyStencil2D(flowField, _velocitiesLeft, i, j, j);
+    // applyStencil2D(flowField, _velocitiesLeft, i-1, j, j);
+    applyStencil2D(flowField, _velocitiesLeft, i+1, j, 2*(j-_lowOffset)+1);
+    applyStencil2D(flowField, _velocitiesLeft, i,   j, 2*(j-_lowOffset));
 }
 void VelocityBufferReadStencil::applyRightWall  ( FlowField & flowField, int i, int j ) {
+    // applyStencil2D(flowField, _velocitiesRight, i+1, j, j);
     applyStencil2D(flowField, _velocitiesRight, i, j, j);
 }
 void VelocityBufferReadStencil::applyBottomWall ( FlowField & flowField, int i, int j ) {
-    applyStencil2D(flowField, _velocitiesBottom, i, j, i);
+    // applyStencil2D(flowField, _velocitiesBottom, i, j-1, i);
+    applyStencil2D(flowField, _velocitiesBottom, i, j+1, 2*(i-_lowOffset)+1);
+    applyStencil2D(flowField, _velocitiesBottom, i, j,   2*(i-_lowOffset));
 }
 void VelocityBufferReadStencil::applyTopWall    ( FlowField & flowField, int i, int j ) {
+    // applyStencil2D(flowField, _velocitiesTop, i, j+1, i);
     applyStencil2D(flowField, _velocitiesTop, i, j, i);
 }
 

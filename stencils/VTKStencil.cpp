@@ -8,16 +8,39 @@
 
 VTKStencil::VTKStencil ( const Parameters & parameters ) :
   FieldStencil<FlowField> ( parameters ),
-  _turbulent(parameters.simulation.type=="turbulence")
+  _turbulent(parameters.simulation.type=="turbulence"),
+  _includeGhostCells(false)
+  {}
+
+VTKStencil::VTKStencil ( const Parameters & parameters, bool includeGhostCells ) :
+  FieldStencil<FlowField> ( parameters ),
+  _turbulent(parameters.simulation.type=="turbulence"),
+  _includeGhostCells(includeGhostCells)
   {}
 
 
 void VTKStencil::apply ( FlowField & flowField, int i, int j ) {
     Meshsize *ms = _parameters.meshsize;
+    if (_includeGhostCells && i==0){
+      if (j==0){
+        for (int k = 0; k < flowField.getCellsX()+1; k++) {
+          _ssPoints << ms->getPosX(k, 0) << " " << ms->getPosY(k, 0) << " 0" << std::endl;
+        }
+      }
+      _ssPoints << ms->getPosX(0, j+1) << " " << ms->getPosY(0, j+1) << " 0" << std::endl;
+    }
     _ssPoints << ms->getPosX(i+1, j+1) << " " << ms->getPosY(i+1, j+1) << " 0" << std::endl;
+    // if (_includeGhostCells && i==flowField.getCellsX()-1){
+    //   _ssPoints << ms->getPosX(i+2, j+1) << " " << ms->getPosY(i+2, j+1) << " 0" << std::endl;
+    //   if (j==flowField.getCellsY()-1){
+    //     for (int k = 0; k < flowField.getCellsX(); k++) {
+    //       _ssPoints << ms->getPosX(k, j+2) << " " << ms->getPosY(k, j+2) << " 0" << std::endl;
+    //     }
+    //   }
+    // }
 
     // skip ghost cells
-    if (i < 2 || j < 2) return;
+    if (!_includeGhostCells && (i < 2 || j < 2)) return;
 
     FLOAT pressure, turbVisc;
     FLOAT* velocity = new FLOAT(2);
@@ -40,6 +63,7 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j ) {
 
     _ssPressure << pressure << std::endl;
     _ssVelocity << velocity[0] << " " << velocity[1] << " 0" << std::endl;
+    _ssFlags << obstacle << std::endl;
     if (_turbulent) _ssTurbViscosity << turbVisc << std::endl;
 }
 
@@ -51,7 +75,7 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j, int k ) {
               << ms->getPosZ(i+1, j+1, k+1) << std::endl;
 
     // skip ghost cells
-    if (i < 2 || j < 2 || k < 2) return;
+    if (!_includeGhostCells && (i < 2 || j < 2 || k < 2)) return;
 
     FLOAT pressure, turbVisc;
     FLOAT* velocity = new FLOAT(3);
@@ -74,19 +98,28 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j, int k ) {
 
     _ssPressure << pressure << std::endl;
     _ssVelocity << velocity[0] << " " << velocity[1] << " " << velocity[2] << std::endl;
+    _ssFlags << obstacle << std::endl;
     if (_turbulent) _ssTurbViscosity << turbVisc << std::endl;
 }
 
 void VTKStencil::write ( FlowField & flowField, int timeStep ) {
-    const int nx = flowField.getNx();
-    const int ny = flowField.getNy();
-    const int nz = _parameters.geometry.dim == 2 ? 0 : flowField.getNz();
+    int nx = flowField.getNx();
+    int ny = flowField.getNy();
+    int nz = _parameters.geometry.dim == 2 ? 0 : flowField.getNz();
+    if (_includeGhostCells){
+      nx = flowField.getCellsX();
+      ny = flowField.getCellsY();
+      nz = _parameters.geometry.dim == 2 ? 0 : flowField.getCellsZ();
+    }
     const int nPoints = (nx+1)*(ny+1)*(nz+1);
     const int nCells =_parameters.geometry.dim == 2 ? nx*ny :  nx*ny*nz;
 
     // construct the file name and open the corresponding file
     std::stringstream fileName;
-    fileName << _parameters.vtk.prefix << "_" << std::setfill('0') << std::setw(6) << timeStep << ".vtk";
+    fileName << _parameters.vtk.prefix
+             << "_" << std::setfill('0') << std::setw(6) << timeStep
+             << "." << std::setfill('0') << std::setw(3) << _parameters.parallel.rank
+             << ".vtk";
     std::ofstream file;
     file.open(fileName.str().c_str());
     fileName.clear();
@@ -105,13 +138,18 @@ void VTKStencil::write ( FlowField & flowField, int timeStep ) {
     file << "\nCELL_DATA " << nCells << std::endl;
 
     // write pressure data
-    file << "SCALARS pressure float 1" << std::endl;
+    file << "\nSCALARS pressure float 1" << std::endl;
     file << "LOOKUP_TABLE default" << std::endl;
     file << _ssPressure.str();
 
     // write velocity data
     file << "\nVECTORS velocity float" << std::endl;
     file << _ssVelocity.str();
+
+    // // write flags data
+    // file << "\nSCALARS flags integer 1" << std::endl;
+    // file << "LOOKUP_TABLE default" << std::endl;
+    // file << _ssFlags.str();
 
     if (_turbulent){
       // write turbulent viscosity data
@@ -125,6 +163,7 @@ void VTKStencil::write ( FlowField & flowField, int timeStep ) {
     _ssPoints.str("");
     _ssPressure.str("");
     _ssVelocity.str("");
+    _ssFlags.str("");
     _ssTurbViscosity.str("");
 
     // finally, close the file
