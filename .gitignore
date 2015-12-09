@@ -1,4 +1,5 @@
 Output/
+output/
 *.o
 *.out
 *.tags*
