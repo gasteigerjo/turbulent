@@ -113,8 +113,8 @@ void VTKStencil::write ( FlowField & flowField, int timeStep ) {
     // construct the file name and open the corresponding file
     std::stringstream fileName;
     fileName << _parameters.vtk.prefix
-             << "_" << std::setfill('0') << std::setw(6) << timeStep
-             << "." << std::setfill('0') << std::setw(3) << _parameters.parallel.rank
+             << "_" << std::setfill('0') << std::setw(4) << _parameters.parallel.rank
+             << "." << std::setfill('0') << std::setw(6) << timeStep
              << ".vtk";
     std::ofstream file;
     file.open(fileName.str().c_str());
