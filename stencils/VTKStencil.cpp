@@ -21,26 +21,23 @@ VTKStencil::VTKStencil ( const Parameters & parameters, bool includeGhostCells )
 
 void VTKStencil::apply ( FlowField & flowField, int i, int j ) {
     Meshsize *ms = _parameters.meshsize;
+    const int cellsX = flowField.getCellsX();
+    const int cellsY = flowField.getCellsY();
+
     if (_includeGhostCells && i==0){
       if (j==0){
-        for (int k = 0; k < flowField.getCellsX()+1; k++) {
+        for (int k = 0; k < cellsX+1; k++) {
           _ssPoints << ms->getPosX(k, 0) << " " << ms->getPosY(k, 0) << " 0" << std::endl;
         }
       }
       _ssPoints << ms->getPosX(0, j+1) << " " << ms->getPosY(0, j+1) << " 0" << std::endl;
     }
-    _ssPoints << ms->getPosX(i+1, j+1) << " " << ms->getPosY(i+1, j+1) << " 0" << std::endl;
-    // if (_includeGhostCells && i==flowField.getCellsX()-1){
-    //   _ssPoints << ms->getPosX(i+2, j+1) << " " << ms->getPosY(i+2, j+1) << " 0" << std::endl;
-    //   if (j==flowField.getCellsY()-1){
-    //     for (int k = 0; k < flowField.getCellsX(); k++) {
-    //       _ssPoints << ms->getPosX(k, j+2) << " " << ms->getPosY(k, j+2) << " 0" << std::endl;
-    //     }
-    //   }
-    // }
+    if (_includeGhostCells || (i > 1 && j > 1 && i < cellsX-1 && j < cellsY-1)) {
+      _ssPoints << ms->getPosX(i+1, j+1) << " " << ms->getPosY(i+1, j+1) << " 0" << std::endl;
+    }
 
     // skip ghost cells
-    if (!_includeGhostCells && (i < 2 || j < 2)) return;
+    if (!_includeGhostCells && (i < 2 || j < 2 || i > cellsX-2 || j > cellsY-2)) return;
 
     FLOAT pressure, turbVisc;
     FLOAT* velocity = new FLOAT(2);
@@ -52,7 +49,6 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j ) {
       if (_turbulent){
         TurbulentFlowField* turbFlowField = static_cast<TurbulentFlowField*>(&flowField);
         turbVisc = turbFlowField->getTurbViscosity().getScalar(i, j);
-        // std::cout << turbVisc;
       }
     } else {
       pressure = 0.0;
