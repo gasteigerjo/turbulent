@@ -23,9 +23,15 @@ class VTKStencil : public FieldStencil<FlowField> {
 
         /** Constructor
          *
-         * @param prefix String with the prefix of the name of the VTK files
+         * @param parameters Parameters of the problem
          */
         VTKStencil ( const Parameters & parameters );
+
+        /** Constructor
+         *
+         * @param parameters Parameters of the problem
+         * @param includeGhostCells Switch to include the ghost layers in the vtk
+         */
         VTKStencil ( const Parameters & parameters, bool includeGhostCells );
 
         /** 2D operation for one position

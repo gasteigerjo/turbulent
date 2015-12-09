@@ -21,9 +21,12 @@ VTKStencil::VTKStencil ( const Parameters & parameters, bool includeGhostCells )
 
 void VTKStencil::apply ( FlowField & flowField, int i, int j ) {
     Meshsize *ms = _parameters.meshsize;
+    // Sizes per x and y direction, including the three ghost layers of each
     const int cellsX = flowField.getCellsX();
     const int cellsY = flowField.getCellsY();
 
+    // Ghost cells only
+    // TODO: confirm that correct vtk files are produced (correct order of coordinates)
     if (_includeGhostCells && i==0){
       if (j==0){
         for (int k = 0; k < cellsX+1; k++) {
@@ -32,11 +35,12 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j ) {
       }
       _ssPoints << ms->getPosX(0, j+1) << " " << ms->getPosY(0, j+1) << " 0" << std::endl;
     }
-    if (_includeGhostCells || (i > 1 && j > 1 && i < cellsX-1 && j < cellsY-1)) {
-      _ssPoints << ms->getPosX(i+1, j+1) << " " << ms->getPosY(i+1, j+1) << " 0" << std::endl;
+    // NOTE: we need also the first layer to construct CELL data (confirm the implementation)
+    if (_includeGhostCells || (i > 1 && j > 1 && i < cellsX && j < cellsY)) {
+      _ssPoints << ms->getPosX(i, j) << " " << ms->getPosY(i, j) << " 0" << std::endl;
     }
 
-    // skip ghost cells
+    // skip assigning property values to ghost cells, if not asked to include them.
     if (!_includeGhostCells && (i < 2 || j < 2 || i > cellsX-2 || j > cellsY-2)) return;
 
     FLOAT pressure, turbVisc;
@@ -63,15 +67,18 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j ) {
     if (_turbulent) _ssTurbViscosity << turbVisc << std::endl;
 }
 
-
 void VTKStencil::apply ( FlowField & flowField, int i, int j, int k ) {
-    Meshsize *ms = _parameters.meshsize;
-    _ssPoints << ms->getPosX(i+1, j+1, k+1) << " "
-              << ms->getPosY(i+1, j+1, k+1) << " "
-              << ms->getPosZ(i+1, j+1, k+1) << std::endl;
+    // Meshsize *ms = _parameters.meshsize;
+    // Sizes per x, y and z direction, including the three ghost layers of each
+    const int cellsX = flowField.getCellsX();
+    const int cellsY = flowField.getCellsY();
+    const int cellsZ = flowField.getCellsZ();
 
-    // skip ghost cells
-    if (!_includeGhostCells && (i < 2 || j < 2 || k < 2)) return;
+    // Ghost cells only
+    // TODO: implement the ghost layer inclusion in 3D.
+
+    // skip assigning property values to ghost cells, if not asked to include them.
+    if (!_includeGhostCells && (i < 2 || j < 2 || k < 2 || i > cellsX-2 || j > cellsY-2 || k > cellsZ-2 )) return;
 
     FLOAT pressure, turbVisc;
     FLOAT* velocity = new FLOAT(3);
@@ -122,7 +129,7 @@ void VTKStencil::write ( FlowField & flowField, int timeStep ) {
 
     // write VTK header
     file << "# vtk DataFile Version 2.0" << std::endl;
-    file << "I need something to put here" << std::endl;
+    file << "NS-EOF output for rank = " << _parameters.parallel.rank << " and timestep = " << timeStep << std::endl;
     file << "ASCII\n" << std::endl;
 
     // write grid
