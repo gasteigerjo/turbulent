@@ -8,6 +8,9 @@ FLOAT computeVelocity3D (FlowField & flowField, int i, int j, int k, FLOAT stepS
     const FLOAT dz   = parameters.meshsize->getDz(i,j,k);
 
     if (posY+0.5*dy >= stepSize) {
+      if (parameters.simulation.type=="turbulence"){
+        return parameters.walls.vectorLeft[0];
+      }else{
         // Get the size of the inlet in Y. A 3 is subtracted because of the boundary cells
         const FLOAT inletYSize = parameters.geometry.lengthY - stepSize;
         const FLOAT inletZSize = parameters.geometry.lengthZ;
@@ -18,6 +21,7 @@ FLOAT computeVelocity3D (FlowField & flowField, int i, int j, int k, FLOAT stepS
         return 36.0 * parameters.walls.vectorLeft[0] /
                       (inletZSize * inletZSize * inletYSize * inletYSize) *
                       y * (y - inletYSize) * z * (z - inletZSize);
+      }
     } else {
         return 0.0;
     }
@@ -29,6 +33,9 @@ FLOAT computeVelocity2D (FlowField & flowField, int i, int j, FLOAT stepSize,
     const FLOAT dy   = parameters.meshsize->getDy(i,j);
 
     if (posY+0.5*dy >= stepSize) {
+      if (parameters.simulation.type=="turbulence"){
+        return parameters.walls.vectorLeft[0];
+      }else{
         // Get the size of the inlet in Y. A 3 is subtracted because of the boundary cells
         const FLOAT inletYSize = parameters.geometry.lengthY - stepSize;
 
@@ -37,7 +44,7 @@ FLOAT computeVelocity2D (FlowField & flowField, int i, int j, FLOAT stepSize,
         // DMITRIIS VERSION: for turbulence, please use: return parameters.walls.vectorLeft[0];
         return 6.0 * parameters.walls.vectorLeft[0] /
                      (inletYSize * inletYSize) * y * (inletYSize - y);
-        // return parameters.walls.vectorLeft[0];
+      }
     } else {
         return 0.0;
     }
