@@ -132,6 +132,7 @@ class ParallelBoundaryIterator : public Iterator<FlowField> {
                                  BoundaryStencil<FlowField> & stencil,
                                  int lowOffset = 0, int highOffset = 0);
         void iterate();
+        void iterate(int dir);
 };
 #include "Iterators.cpph"
 
