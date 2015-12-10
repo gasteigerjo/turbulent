@@ -53,6 +53,7 @@ class TurbulentSimulation : public Simulation {
       setTimeStep();
       // compute turbulent viscosity
       _turbViscIterator.iterate();
+      // TODO WS2: communicate turbulent viscosity values
       // set global boundary values for the turbulent viscosity
       _wallTurbVisIterator.iterate();
       // compute fgh for turbulent case

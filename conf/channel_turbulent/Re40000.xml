@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
-    <flow Re="10000" />
+    <flow Re="40000" />
     <simulation finalTime="10.0" >
         <type>turbulence</type>
         <scenario>channel</scenario>
@@ -46,9 +46,9 @@
             <vector x="0" y="0" z="0" />
         </back>
     </walls>
-    <!-- <vtk interval="0.1">Output/channel_turbulent/Re10000_fixed</vtk> -->
-    <vtk interval="0.1">Output/channel_turbulent/Re10000_ignored</vtk>
-    <!-- <vtk interval="0.1">Output/channel_turbulent/Re10000_turbFlatPlate</vtk> -->
+    <!-- <vtk interval="0.1">Output/channel_turbulent/Re40000_fixed</vtk> -->
+    <vtk interval="0.1">Output/channel_turbulent/Re40000_ignored</vtk>
+    <!-- <vtk interval="0.1">Output/channel_turbulent/Re40000_turbFlatPlate</vtk> -->
     <stdOut interval="0.0001" />
     <parallel numProcessorsX="1" numProcessorsY="1" numProcessorsZ="1" />
 </configuration>

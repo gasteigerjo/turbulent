@@ -130,5 +130,5 @@ void MovingWallTurbViscosityStencil::applyFrontWall ( TurbulentFlowField & turbF
 
 
 void MovingWallTurbViscosityStencil::applyBackWall ( TurbulentFlowField & turbFlowField, int i, int j, int k ){
-    turbFlowField.getTurbViscosity().getScalar(i,j,k) = -turbFlowField.getTurbViscosity().getScalar(i,j,k11);
+    turbFlowField.getTurbViscosity().getScalar(i,j,k) = -turbFlowField.getTurbViscosity().getScalar(i,j,k-1);
 }
