@@ -72,20 +72,31 @@ inline void VelocityBufferFillStencil::applyStencil3D(FlowField & flowField, FLO
 }
 
 void VelocityBufferFillStencil::applyLeftWall   ( FlowField & flowField, int i, int j, int k ) {
-    applyStencil3D(flowField, _velocitiesLeft, i, j, k, 2, j, k);
+    // applyStencil3D(flowField, _velocitiesLeft, i, j, k, 2, j, k);
+    applyStencil3D(flowField, _velocitiesLeft, i+2, j, k, 2, j, k);
 }
+// TODO: ABSOLUTELY CHECK what is going on here and onwards.
+// TODO: Not sure at all about the 2*(j-_lowOffset)+1 part in each method.
 void VelocityBufferFillStencil::applyRightWall  ( FlowField & flowField, int i, int j, int k ) {
-    applyStencil3D(flowField, _velocitiesRight, i, j, k, 2, j, k);
+    // applyStencil3D(flowField, _velocitiesRight, i, j, k, 2, j, k);
+    applyStencil3D(flowField, _velocitiesRight, i-1, j, k, 2, 2*(j-_lowOffset)+1, k);
+    applyStencil3D(flowField, _velocitiesRight, i-2, j, k, 2, 2*(j-_lowOffset), k);
 }
 void VelocityBufferFillStencil::applyBottomWall ( FlowField & flowField, int i, int j, int k ) {
-    applyStencil3D(flowField, _velocitiesBottom, i, j, k, 2, i, k);
+    // applyStencil3D(flowField, _velocitiesBottom, i, j, k, 2, i, k);
+    applyStencil3D(flowField, _velocitiesBottom, i, j+2, k, 2, i, k);
 }
 void VelocityBufferFillStencil::applyTopWall    ( FlowField & flowField, int i, int j, int k ) {
-    applyStencil3D(flowField, _velocitiesTop, i, j, k, 2, i, k);
+    // applyStencil3D(flowField, _velocitiesTop, i, j, k, 2, i, k);
+    applyStencil3D(flowField, _velocitiesTop, i, j-1, k, 2, 2*(i-_lowOffset)+1, k);
+    applyStencil3D(flowField, _velocitiesTop, i, j-2, k, 2, 2*(i-_lowOffset), k);
 }
 void VelocityBufferFillStencil::applyFrontWall  ( FlowField & flowField, int i, int j, int k ) {
-    applyStencil3D(flowField, _velocitiesFront, i, j, k, 1, i, j);
+    // applyStencil3D(flowField, _velocitiesFront, i, j, k, 1, i, j);
+    applyStencil3D(flowField, _velocitiesFront, i, j, k+2, 1, i, j);
 }
 void VelocityBufferFillStencil::applyBackWall   ( FlowField & flowField, int i, int j, int k ) {
-    applyStencil3D(flowField, _velocitiesBack, i, j, k, 1, i, j);
+    // applyStencil3D(flowField, _velocitiesBack, i, j, k, 1, i, j);
+    applyStencil3D(flowField, _velocitiesBack, i, j, k-1, 1, 2*(i-_lowOffset)+1, j);
+    applyStencil3D(flowField, _velocitiesBack, i, j, k-2, 1, 2*(i-_lowOffset), j);
 }

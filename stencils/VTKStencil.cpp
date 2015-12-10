@@ -68,7 +68,7 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j ) {
 }
 
 void VTKStencil::apply ( FlowField & flowField, int i, int j, int k ) {
-    // Meshsize *ms = _parameters.meshsize;
+    Meshsize *ms = _parameters.meshsize;
     // Sizes per x, y and z direction, including the three ghost layers of each
     const int cellsX = flowField.getCellsX();
     const int cellsY = flowField.getCellsY();
@@ -76,6 +76,10 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j, int k ) {
 
     // Ghost cells only
     // TODO: implement the ghost layer inclusion in 3D.
+
+    if (_includeGhostCells || (i > 1 && j > 1 && k > 1 && i < cellsX && j < cellsY && k < cellsZ)) {
+      _ssPoints << ms->getPosX(i, j, k) << " " << ms->getPosY(i, j, k) << " " << ms->getPosZ(i, j, k) << std::endl;
+    }
 
     // skip assigning property values to ghost cells, if not asked to include them.
     if (!_includeGhostCells && (i < 2 || j < 2 || k < 2 || i > cellsX-2 || j > cellsY-2 || k > cellsZ-2 )) return;

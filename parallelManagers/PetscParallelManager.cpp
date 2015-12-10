@@ -4,6 +4,7 @@
 // - Are the offsets set correctly? We really need to check this!
 // - We needed to initialize the stencils and iterators before the body of the constructor. Do some discussion.
 // - Is there any problem with the calloc-free method, instead of the new-delete?
+// - Iterate the fill and read methods only on the specific boundaries needed.
 
 // Constructor
 PetscParallelManager::PetscParallelManager(const Parameters & parameters, FlowField & flowField):
@@ -17,25 +18,25 @@ _flowField(flowField)
 
         // Define the buffer sizes
         if (_parameters.geometry.dim == 2) {
-            // 2D - complete edges, including ghost layers.
-            // presBufSizeLR = Ny+2;
-            // presBufSizeTB = Nx+2;
+            // 2D - complete edges, including the 3 ghost layers.
+            // pressure points
             presBufSizeLR = Ny+3;
             presBufSizeTB = Nx+3;
             presBufSizeFB = 0;
-            // velBufSizeLR  = 2*(Ny+2);
-            // velBufSizeTB  = 2*(Nx+2);
+            // velocity vectors (2D)
             velBufSizeLR  = 2*(Ny+3);
             velBufSizeTB  = 2*(Nx+3);
             velBufSizeFB  = 0;
         } else if (_parameters.geometry.dim == 3) {
-            // 3D - complete planes, including ghost layers.
-            presBufSizeLR = (Ny+2)*(Nz+2);
-            presBufSizeTB = (Nx+2)*(Nz+2);
-            presBufSizeFB = (Nx+2)*(Ny+2);
-            velBufSizeLR  = 3*(Ny+2)*(Nz+2);
-            velBufSizeTB  = 3*(Nx+2)*(Nz+2);
-            velBufSizeFB  = 3*(Nx+2)*(Ny+2);
+            // 3D - complete planes, including the 3 ghost layers.
+            // pressure points
+            presBufSizeLR = (Ny+3)*(Nz+3);
+            presBufSizeTB = (Nx+3)*(Nz+3);
+            presBufSizeFB = (Nx+3)*(Ny+3);
+            // velocity vectors (3D)
+            velBufSizeLR  = 3*(Ny+3)*(Nz+3);
+            velBufSizeTB  = 3*(Nx+3)*(Nz+3);
+            velBufSizeFB  = 3*(Nx+3)*(Ny+3);
         }
 
         // Initialize the buffers
@@ -46,7 +47,7 @@ _flowField(flowField)
         _pressuresTopSend       = (FLOAT*) calloc(2*presBufSizeTB, sizeof(FLOAT));
         if (_parameters.geometry.dim == 3) {
             _pressuresFrontSend     = (FLOAT*) calloc(presBufSizeFB, sizeof(FLOAT));
-            _pressuresBackSend      = (FLOAT*) calloc(presBufSizeFB, sizeof(FLOAT));
+            _pressuresBackSend      = (FLOAT*) calloc(2*presBufSizeFB, sizeof(FLOAT));
         }
 
         // Pressure receive buffers
@@ -55,7 +56,7 @@ _flowField(flowField)
         _pressuresBottomRecv    = (FLOAT*) calloc(2*presBufSizeTB, sizeof(FLOAT));
         _pressuresTopRecv       = (FLOAT*) calloc(presBufSizeTB, sizeof(FLOAT));
         if (_parameters.geometry.dim == 3) {
-            _pressuresFrontRecv     = (FLOAT*) calloc(presBufSizeFB, sizeof(FLOAT));
+            _pressuresFrontRecv     = (FLOAT*) calloc(2*presBufSizeFB, sizeof(FLOAT));
             _pressuresBackRecv      = (FLOAT*) calloc(presBufSizeFB, sizeof(FLOAT));
         }
 
@@ -66,7 +67,7 @@ _flowField(flowField)
         _velocitiesTopSend       = (FLOAT*) calloc(2*velBufSizeTB, sizeof(FLOAT));
         if (_parameters.geometry.dim == 3) {
             _velocitiesFrontSend     = (FLOAT*) calloc(velBufSizeFB, sizeof(FLOAT));
-            _velocitiesBackSend      = (FLOAT*) calloc(velBufSizeFB, sizeof(FLOAT));
+            _velocitiesBackSend      = (FLOAT*) calloc(2*velBufSizeFB, sizeof(FLOAT));
         }
 
         // Velocities receive buffers
@@ -75,7 +76,7 @@ _flowField(flowField)
         _velocitiesBottomRecv    = (FLOAT*) calloc(2*velBufSizeTB, sizeof(FLOAT));
         _velocitiesTopRecv       = (FLOAT*) calloc(velBufSizeTB, sizeof(FLOAT));
         if (_parameters.geometry.dim == 3) {
-            _velocitiesFrontRecv     = (FLOAT*) calloc(velBufSizeFB, sizeof(FLOAT));
+            _velocitiesFrontRecv     = (FLOAT*) calloc(2*velBufSizeFB, sizeof(FLOAT));
             _velocitiesBackRecv      = (FLOAT*) calloc(velBufSizeFB, sizeof(FLOAT));
         }
 
@@ -109,137 +110,178 @@ _flowField(flowField)
 
 void PetscParallelManager::communicatePressure(){
 
-    // Fill the pressure send buffers
-    printf("BoundaryPressureFillIterator... (rank %d)\n", _parameters.parallel.rank);
-    _parallelBoundaryPressureFillIterator->iterate();
-
     MPI_Status comm_status;
     int count;
 
+    // ------------------------------------------------------------------------
     // Communicate in the X-dimension:
+    // Fill the pressure send buffers
+    _parallelBoundaryPressureFillIterator->iterate();
+
     // Left --> + --> Right
-    printf("Communicating L-->R... (rank %d)\n", _parameters.parallel.rank);
+    // printf("Communicating L-->R... (rank %d)\n", _parameters.parallel.rank);
     MPI_Sendrecv(_pressuresRightSend, 2*presBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.rightNb, 1,
                  _pressuresLeftRecv,  2*presBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.leftNb,  1,
                  PETSC_COMM_WORLD, &comm_status);
     MPI_Get_count(&comm_status,MY_MPI_FLOAT,&count);
-    printf("Communicated L-->R... (rank %d), count %d from %d\n", _parameters.parallel.rank, count, comm_status.MPI_SOURCE);
-
-    MPI_Barrier(PETSC_COMM_WORLD);
-    _parallelBoundaryPressureReadIterator->iterate();
-    _parallelBoundaryPressureFillIterator->iterate();
-
-    // Communicate in the Y-dimension:
-    // Top --> + --> Bottom
-    printf("Communicating T-->B... (rank %d)\n", _parameters.parallel.rank);
-    MPI_Sendrecv(_pressuresBottomSend, presBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.bottomNb, 1,
-                 _pressuresTopRecv,    presBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.topNb,    1,
-                 PETSC_COMM_WORLD, &comm_status);
-    MPI_Get_count(&comm_status,MY_MPI_FLOAT,&count);
-    printf("Communicated T-->B... (rank %d), count %d from %d\n", _parameters.parallel.rank, count, comm_status.MPI_SOURCE);
-
-    MPI_Barrier(PETSC_COMM_WORLD);
-    _parallelBoundaryPressureReadIterator->iterate();
-    _parallelBoundaryPressureFillIterator->iterate();
+    // printf("Communicated L-->R (rank %d), count %d from %d\n", _parameters.parallel.rank, count, comm_status.MPI_SOURCE);
 
     // Left <-- + <-- Right
-    printf("Communicating L<--R... (rank %d)\n", _parameters.parallel.rank);
+    // printf("Communicating L<--R... (rank %d)\n", _parameters.parallel.rank);
     MPI_Sendrecv(_pressuresLeftSend,  presBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.leftNb,  1,
                  _pressuresRightRecv, presBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.rightNb, 1,
                  PETSC_COMM_WORLD, &comm_status);
     MPI_Get_count(&comm_status,MY_MPI_FLOAT,&count);
-    printf("Communicated L<--R... (rank %d), count %d from %d\n", _parameters.parallel.rank, count, comm_status.MPI_SOURCE);
+    // printf("Communicated L<--R (rank %d), count %d from %d\n", _parameters.parallel.rank, count, comm_status.MPI_SOURCE);
 
+    // Wait for the current dimension to complete before continuing to the next
     MPI_Barrier(PETSC_COMM_WORLD);
+
+    // Read the pressure receive buffers
     _parallelBoundaryPressureReadIterator->iterate();
+    // ------------------------------------------------------------------------
+
+
+
+    // ------------------------------------------------------------------------
+    // Communicate in the Y-dimension:
+    // Fill the pressure send buffers
     _parallelBoundaryPressureFillIterator->iterate();
 
-    // Top <-- + <-- Bottom
-    printf("Communicating T<--B... (rank %d)\n", _parameters.parallel.rank);
+    // Bottom --> + --> Top
+    // printf("Communicating B-->T... (rank %d)\n", _parameters.parallel.rank);
     MPI_Sendrecv(_pressuresTopSend,    2*presBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.topNb,    1,
                  _pressuresBottomRecv, 2*presBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.bottomNb, 1,
                  PETSC_COMM_WORLD, &comm_status);
     MPI_Get_count(&comm_status,MY_MPI_FLOAT,&count);
-    printf("Communicated T<--B... (rank %d), count %d from %d\n", _parameters.parallel.rank, count, comm_status.MPI_SOURCE);
+    // printf("Communicated B-->T (rank %d), count %d from %d\n", _parameters.parallel.rank, count, comm_status.MPI_SOURCE);
+
+    // Bottom <-- + <-- Top
+    // printf("Communicating T-->B... (rank %d)\n", _parameters.parallel.rank);
+    MPI_Sendrecv(_pressuresBottomSend, presBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.bottomNb, 1,
+                 _pressuresTopRecv,    presBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.topNb,    1,
+                 PETSC_COMM_WORLD, &comm_status);
+    MPI_Get_count(&comm_status,MY_MPI_FLOAT,&count);
+    // printf("Communicated B<--T (rank %d), count %d from %d\n", _parameters.parallel.rank, count, comm_status.MPI_SOURCE);
+
+    // Wait for the current dimension to complete before continuing to the next
+    MPI_Barrier(PETSC_COMM_WORLD);
+
+    // Read the pressure receive buffers
+    _parallelBoundaryPressureReadIterator->iterate();
+    // ------------------------------------------------------------------------
 
 
+
+    // ------------------------------------------------------------------------
+    // Communicate in the Z-dimension  (z increases from front to back):
     if (_parameters.geometry.dim == 3) {
-        // Communicate in the Z-dimension:
+
+        // Fill the pressure send buffers
+        _parallelBoundaryPressureFillIterator->iterate();
+
         // Front --> + --> Back
-        printf("Communicating F-->B... (rank %d)\n", _parameters.parallel.rank);
-        MPI_Sendrecv(_pressuresBackSend,  presBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.backNb,  1,
-                     _pressuresFrontRecv, presBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.frontNb, 1,
+        // printf("Communicating F-->B (rank %d)\n", _parameters.parallel.rank);
+        MPI_Sendrecv(_pressuresBackSend,  2*presBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.backNb,  1,
+                     _pressuresFrontRecv, 2*presBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.frontNb, 1,
                      PETSC_COMM_WORLD, &comm_status);
+        MPI_Get_count(&comm_status,MY_MPI_FLOAT,&count);
+        // printf("Communicated F-->B (rank %d), count %d from %d\n", _parameters.parallel.rank, count, comm_status.MPI_SOURCE);
+
         // Front <-- + <-- Back
-        printf("Communicating F<--B... (rank %d)\n", _parameters.parallel.rank);
+        // printf("Communicating F<--B (rank %d)\n", _parameters.parallel.rank);
         MPI_Sendrecv(_pressuresFrontSend, presBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.frontNb, 1,
                      _pressuresBackRecv,  presBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.backNb,  1,
                      PETSC_COMM_WORLD, &comm_status);
-    }
+        MPI_Get_count(&comm_status,MY_MPI_FLOAT,&count);
+        // printf("Communicated F<--B (rank %d), count %d from %d\n", _parameters.parallel.rank, count, comm_status.MPI_SOURCE);
 
-    // Read the pressure receive buffers
-    printf("BoundaryPressureReadIterator... (rank %d)\n", _parameters.parallel.rank);
-    _parallelBoundaryPressureReadIterator->iterate();
+        // Wait for the current dimension to complete before continuing to the next
+        MPI_Barrier(PETSC_COMM_WORLD);
+
+        // Read the pressure receive buffers
+        _parallelBoundaryPressureReadIterator->iterate();
+    }
+    // ------------------------------------------------------------------------
 
 }
 
 void PetscParallelManager::communicateVelocities(){
 
-        // Fill the velocity send buffers
+    MPI_Status comm_status;
+
+    // ------------------------------------------------------------------------
+    // Communicate in the X-dimension:
+    // Fill the velocity send buffers
+    _parallelBoundaryVelocityFillIterator->iterate();
+
+    // Left --> + --> Right
+    MPI_Sendrecv(_velocitiesRightSend, 2*velBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.rightNb, 1,
+                 _velocitiesLeftRecv,  2*velBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.leftNb,  1,
+                 PETSC_COMM_WORLD, &comm_status);
+
+    // Left <-- + <-- Right
+    MPI_Sendrecv(_velocitiesLeftSend,  velBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.leftNb,  1,
+                 _velocitiesRightRecv, velBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.rightNb, 1,
+                 PETSC_COMM_WORLD, &comm_status);
+
+    // Wait for the current dimension to complete before continuing to the next
+    MPI_Barrier(PETSC_COMM_WORLD);
+
+    // Read the velocity receive buffers
+    _parallelBoundaryVelocityReadIterator->iterate();
+    // ------------------------------------------------------------------------
+
+
+
+    // ------------------------------------------------------------------------
+    // Communicate in the Y-dimension:
+    // Fill the velocity send buffers
+    _parallelBoundaryVelocityFillIterator->iterate();
+
+    // Bottom --> + --> Top
+    MPI_Sendrecv(_velocitiesTopSend,    2*velBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.topNb,    1,
+                 _velocitiesBottomRecv, 2*velBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.bottomNb, 1,
+                 PETSC_COMM_WORLD, &comm_status);
+
+    // Bottom <-- + <-- Top
+    MPI_Sendrecv(_velocitiesBottomSend, velBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.bottomNb, 1,
+                 _velocitiesTopRecv,    velBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.topNb,    1,
+                 PETSC_COMM_WORLD, &comm_status);
+
+    // Wait for the current dimension to complete before continuing to the next
+    MPI_Barrier(PETSC_COMM_WORLD);
+
+    // Read the velocity receive buffers
+    _parallelBoundaryVelocityReadIterator->iterate();
+    // ------------------------------------------------------------------------
+
+
+
+    // ------------------------------------------------------------------------
+    // Communicate in the Z-dimension (z increases from front to back):
+    if (_parameters.geometry.dim == 3) {
+
+        // Fill the pressure send buffers
         _parallelBoundaryVelocityFillIterator->iterate();
 
-        MPI_Status comm_status;
-
-        // Communicate in the X-dimension:
-        // Left --> + --> Right
-        MPI_Sendrecv(_velocitiesRightSend, 2*velBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.rightNb, 1,
-                     _velocitiesLeftRecv,  2*velBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.leftNb,  1,
+        // Front --> + --> Back
+        MPI_Sendrecv(_velocitiesBackSend,  2*velBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.backNb,  1,
+                     _velocitiesFrontRecv, 2*velBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.frontNb, 1,
                      PETSC_COMM_WORLD, &comm_status);
 
+        // Front <-- + <-- Back
+        MPI_Sendrecv(_velocitiesFrontSend, velBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.frontNb, 1,
+                     _velocitiesBackRecv,  velBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.backNb,  1,
+                     PETSC_COMM_WORLD, &comm_status);
+
+        // Wait for the current dimension to complete
         MPI_Barrier(PETSC_COMM_WORLD);
-        _parallelBoundaryVelocityReadIterator->iterate();
-        _parallelBoundaryVelocityFillIterator->iterate();
-
-        // Communicate in the Y-dimension:
-        // Top --> + --> Bottom
-        MPI_Sendrecv(_velocitiesBottomSend, velBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.bottomNb, 1,
-                     _velocitiesTopRecv,    velBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.topNb,    1,
-                     PETSC_COMM_WORLD, &comm_status);
-
-        MPI_Barrier(PETSC_COMM_WORLD);
-        _parallelBoundaryVelocityReadIterator->iterate();
-        _parallelBoundaryVelocityFillIterator->iterate();
-
-        // Left <-- + <-- Right
-        MPI_Sendrecv(_velocitiesLeftSend,  velBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.leftNb,  1,
-                     _velocitiesRightRecv, velBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.rightNb, 1,
-                     PETSC_COMM_WORLD, &comm_status);
-
-        MPI_Barrier(PETSC_COMM_WORLD);
-        _parallelBoundaryVelocityReadIterator->iterate();
-        _parallelBoundaryVelocityFillIterator->iterate();
-
-        // Top <-- + <-- Bottom
-        MPI_Sendrecv(_velocitiesTopSend,    2*velBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.topNb,    1,
-                     _velocitiesBottomRecv, 2*velBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.bottomNb, 1,
-                     PETSC_COMM_WORLD, &comm_status);
-
-        if (_parameters.geometry.dim == 3) {
-            // Communicate in the Z-dimension:
-            // Front --> + --> Back
-            MPI_Sendrecv(_velocitiesBackSend,  velBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.backNb,  1,
-                         _velocitiesFrontRecv, velBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.frontNb, 1,
-                         PETSC_COMM_WORLD, &comm_status);
-            // Front <-- + <-- Back
-            MPI_Sendrecv(_velocitiesFrontSend, velBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.frontNb, 1,
-                         _velocitiesBackRecv,  velBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.backNb,  1,
-                         PETSC_COMM_WORLD, &comm_status);
-
-            MPI_Barrier(PETSC_COMM_WORLD);
-        }
 
         // Read the velocity receive buffers
         _parallelBoundaryVelocityReadIterator->iterate();
+    }
+    // ------------------------------------------------------------------------
 
 }
 

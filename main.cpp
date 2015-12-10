@@ -86,7 +86,7 @@ int main (int argc, char *argv[]) {
       // std-out: terminal info
       if ( (rank==0) && (timeStdOut <= time) ){
           std::cout << "Current time: " << time << "\ttimestep: " <<
-                        parameters.timestep.dt << "\titeration: " << timeSteps << std::endl;
+                        parameters.timestep.dt << "\titeration: " << timeSteps <<std::endl << std::endl;
           timeStdOut += parameters.stdOut.interval;
       }
       // WS1: trigger VTK output

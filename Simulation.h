@@ -138,17 +138,17 @@ class Simulation {
         // solve for pressure
         _solver.solve();
         // WS2: communicate pressure values
-        printf("Communicating pressure... (rank %d)\n", _parameters.parallel.rank);
+        // printf("Communicating pressure... (rank %d)\n", _parameters.parallel.rank);
         _petscParallelManager.communicatePressure();
-        printf("Communicated pressure!\n\n");
+        // printf("Communicated pressure!(rank %d)\n", _parameters.parallel.rank);
         // compute velocity
         _velocityIterator.iterate();
         // set obstacle boundaries
         _obstacleIterator.iterate();
         // WS2: communicate velocity values
-        printf("Communicating velocity... (rank %d)\n", _parameters.parallel.rank);
+        // printf("Communicating velocity... (rank %d)\n", _parameters.parallel.rank);
         _petscParallelManager.communicateVelocities();
-        printf("Communicated velocity!\n\n");
+        // printf("Communicated velocity! (rank %d)\n", _parameters.parallel.rank);
         // Iterate for velocities on the boundary
         _wallVelocityIterator.iterate();
     }

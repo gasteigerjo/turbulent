@@ -364,7 +364,7 @@ PetscErrorCode computeMatrix2D(KSP ksp, Mat A, Mat pc, MatStructure * matStructu
     Ny = parameters.geometry.sizeY + 2;
     int rank;
     MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
-    std::cout << "Limits= " << limitsX[0] << ", " << limitsX[1] << "; " << limitsY[0] << " , " << limitsY[1] << " rank = " << rank<< std::endl;
+    std::cout << "Limits= " << limitsX[0] << ", " << limitsX[1] << "; " << limitsY[0] << " , " << limitsY[1] << "(rank " << rank << ")"<< std::endl;
     // Loop for inner nodes
     for (j = limitsY[0]; j < limitsY[1]; j++){
         for (i = limitsX[0]; i < limitsX[1]; i++){
