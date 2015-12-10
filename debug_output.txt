@@ -1,0 +1,416 @@
+baloon:~/turbulent_flows/worksheet 02/repository [par_debug]$ mpirun -np 4 ./ns conf/cavity/conf_cavity_2D.xml
+Rank: 0, Nproc: 4
+Start DNS simulation in 2D
+Rank: 2, Nproc: 4
+Rank: 3, Nproc: 4
+Rank: 1, Nproc: 4
+Limits= 1, 11; 6 , 11 rank = 2
+Limits= 11, 21; 6 , 11 rank = 3
+Limits= 11, 21; 1 , 6 rank = 1
+Limits= 1, 11; 1 , 6 rank = 0
+Reinit the matrix
+Reinit the matrix
+Reinit the matrix
+Reinit the matrix
+checkpoint 1
+checkpoint 1
+checkpoint 1
+checkpoint 1
+Limits= Limits= 11, 21; 1 , 6 rank = 1
+Limits= 11, 21; 6 , 11 rank = 3
+1, 11; Limits= 1, 11; 6 , 11 rank = 2
+1 , 6 rank = 0
+Linear solve converged due to CONVERGED_ATOL iterations 0
+checkpoint 2
+checkpoint 2
+checkpoint
+Communicating pressure... (rank 0)
+BoundaryPressureFillIterator... (rank 0)
+Pressure applyRightWall for (i,j)=(11, 2)... (rank 0)
+Pressure applyRightWall for (i,j)=(11, 3)... (rank 0)
+Pressure applyRightWall for (i,j)=(11, 4)... (rank 0)
+Pressure applyRightWall for (i,j)=(11, 5)... (rank 0)
+Pressure applyRightWall for (i,j)=(11, 6)... (rank 0)
+Pressure applyTopWall for (i,j)=(2, 6)... (rank 0)
+Pressure applyTopWall for (i,j)=(3, 6)... (rank 0)
+Pressure applyTopWall for (i,j)=(4, 6)... (rank 0)
+Pressure applyTopWall for (i,j)=(5, 6)... (rank 0)
+Pressure applyTopWall for (i,j)=(6, 6)... (rank 0)
+Pressure applyTopWall for (i,j)=(7, 6)... (rank 0)
+Pressure applyTopWall for (i,j)=(8, 6)... (rank 0)
+Pressure applyTopWall for (i,j)=(9, 6)... (rank 0)
+Pressure applyTopWall for (i,j)=(10, 6)... (rank 0)
+Pressure applyTopWall for (i,j)=(11, 6)... (rank 0)
+Communicating L-->R... (rank 0)
+Communicating L<--R... (rank 0)
+checkpoint 2
+checkpoint
+Communicating pressure... (rank 2)
+BoundaryPressureFillIterator... (rank 2)
+Pressure applyRightWall for (i,j)=(11, 2)... (rank 2)
+Pressure applyRightWall for (i,j)=(11, 3)... (rank 2)
+Pressure applyRightWall for (i,j)=(11, 4)... (rank 2)
+Pressure applyRightWall for (i,j)=(11, 5)... (rank 2)
+Pressure applyRightWall for (i,j)=(11, 6)... (rank 2)
+Pressure applyBottomWall for (i,j)=(2, 2)... (rank 2)
+Pressure applyBottomWall for (i,j)=(3, 2)... (rank 2)
+Pressure applyBottomWall for (i,j)=(4, 2)... (rank 2)
+Pressure applyBottomWall for (i,j)=(5, 2)... (rank 2)
+Pressure applyBottomWall for (i,j)=(6, 2)... (rank 2)
+Pressure applyBottomWall for (i,j)=(7, 2)... (rank 2)
+Pressure applyBottomWall for (i,j)=(8, 2)... (rank 2)
+Pressure applyBottomWall for (i,j)=(9, 2)... (rank 2)
+Pressure applyBottomWall for (i,j)=(10, 2)... (rank 2)
+Pressure applyBottomWall for (i,j)=(11, 2)... (rank 2)
+Communicating L-->R... (rank 2)
+Communicating L<--R... (rank 2)
+checkpoint
+checkpoint 2
+checkpoint
+Communicating pressure... (rank 3)
+BoundaryPressureFillIterator... (rank 3)
+Pressure applyLeftWall for (i,j)=(2, 2)... (rank 3)
+Pressure applyLeftWall for (i,j)=(2, 3)... (rank 3)
+Pressure applyLeftWall for (i,j)=(2, 4)... (rank 3)
+Pressure applyLeftWall for (i,j)=(2, 5)... (rank 3)
+Pressure applyLeftWall for (i,j)=(2, 6)... (rank 3)
+Pressure applyBottomWall for (i,j)=(2, 2)... (rank 3)
+Pressure applyBottomWall for (i,j)=(3, 2)... (rank 3)
+Pressure applyBottomWall for (i,j)=(4, 2)... (rank 3)
+Pressure applyBottomWall for (i,j)=(5, 2)... (rank 3)
+Pressure applyBottomWall for (i,j)=(6, 2)... (rank 3)
+Pressure applyBottomWall for (i,j)=(7, 2)... (rank 3)
+Pressure applyBottomWall for (i,j)=(8, 2)... (rank 3)
+Pressure applyBottomWall for (i,j)=(9, 2)... (rank 3)
+Pressure applyBottomWall for (i,j)=(10, 2)... (rank 3)
+Pressure applyBottomWall for (i,j)=(11, 2)... (rank 3)
+Communicating L-->R... (rank 3)
+Communicating L<--R... (rank 3)
+Communicating T-->B... (rank 3)
+Communicating T<--B... (rank 3)
+Communicating T-->B... (rank 2)
+Communicating T<--B... (rank 2)
+Communicating pressure... (rank 1)
+BoundaryPressureFillIterator... (rank 1)
+Pressure applyLeftWall for (i,j)=(2, 2)... (rank 1)
+Pressure applyLeftWall for (i,j)=(2, 3)... (rank 1)
+Pressure applyLeftWall for (i,j)=(2, 4)... (rank 1)
+Pressure applyLeftWall for (i,j)=(2, 5)... (rank 1)
+Pressure applyLeftWall for (i,j)=(2, 6)... (rank 1)
+Pressure applyTopWall for (i,j)=(2, 6)... (rank 1)
+Pressure applyTopWall for (i,j)=(3, 6)... (rank 1)
+Pressure applyTopWall for (i,j)=(4, 6)... (rank 1)
+Pressure applyTopWall for (i,j)=(5, 6)... (rank 1)
+Pressure applyTopWall for (i,j)=(6, 6)... (rank 1)
+Pressure applyTopWall for (i,j)=(7, 6)... (rank 1)
+Pressure applyTopWall for (i,j)=(8, 6)... (rank 1)
+Pressure applyTopWall for (i,j)=(9, 6)... (rank 1)
+Pressure applyTopWall for (i,j)=(10, 6)... (rank 1)
+Pressure applyTopWall for (i,j)=(11, 6)... (rank 1)
+Communicating L-->R... (rank 1)
+Communicating L<--R... (rank 1)
+Communicating T-->B... (rank 1)
+Communicating T-->B... (rank 0)
+Communicating T<--B... (rank 0)
+BoundaryPressureReadIterator... (rank 0)
+Pressure for (i,j)=(11, 2):0.000000 (rank 0)
+Pressure for (i,j)=(11, 3):0.000000 (rank 0)
+Pressure for (i,j)=(11, 4):0.000000 (rank 0)
+Pressure for (i,j)=(11, 5):0.000000 (rank 0)
+Pressure for (i,j)=(11, 6):0.000000 (rank 0)
+Communicated pressure!
+
+Communicating velocity... (rank 0)
+Velocity applyRightWall for (i,j)=(11, 2)... (rank 0)
+Velocity applyRightWall for (i,j)=(11, 3)... (rank 0)
+Velocity applyRightWall for (i,j)=(11, 4)... (rank 0)
+Velocity applyRightWall for (i,j)=(11, 5)... (rank 0)
+Velocity applyRightWall for (i,j)=(11, 6)... (rank 0)
+Velocity applyTopWall for (i,j)=(2, 6)... (rank 0)
+Velocity applyTopWall for (i,j)=(3, 6)... (rank 0)
+Velocity applyTopWall for (i,j)=(4, 6)... (rank 0)
+Velocity applyTopWall for (i,j)=(5, 6)... (rank 0)
+Velocity applyTopWall for (i,j)=(6, 6)... (rank 0)
+Velocity applyTopWall for (i,j)=(7, 6)... (rank 0)
+Velocity applyTopWall for (i,j)=(8, 6)... (rank 0)
+Velocity applyTopWall for (i,j)=(9, 6)... (rank 0)
+Velocity applyTopWall for (i,j)=(10, 6)... (rank 0)
+Velocity applyTopWall for (i,j)=(11, 6)... (rank 0)
+BoundaryPressureReadIterator... (rank 2)
+Pressure for (i,j)=(11, 2):0.000000 (rank 2)
+Pressure for (i,j)=(11, 3):0.000000 (rank 2)
+Pressure for (i,j)=(11, 4):0.000000 (rank 2)
+Pressure for (i,j)=(11, 5):0.000000 (rank 2)
+Pressure for (i,j)=(11, 6):0.000000 (rank 2)
+Communicated pressure!
+
+Communicating velocity... (rank 2)
+Velocity applyRightWall for (i,j)=(11, 2)... (rank 2)
+Velocity applyRightWall for (i,j)=(11, 3)... (rank 2)
+Velocity applyRightWall for (i,j)=(11, 4)... (rank 2)
+Velocity applyRightWall for (i,j)=(11, 5)... (rank 2)
+Velocity applyRightWall for (i,j)=(11, 6)... (rank 2)
+Velocity applyBottomWall for (i,j)=(2, 2)... (rank 2)
+Velocity applyBottomWall for (i,j)=(3, 2)... (rank 2)
+Velocity applyBottomWall for (i,j)=(4, 2)... (rank 2)
+Velocity applyBottomWall for (i,j)=(5, 2)... (rank 2)
+Velocity applyBottomWall for (i,j)=(6, 2)... (rank 2)
+Velocity applyBottomWall for (i,j)=(7, 2)... (rank 2)
+Velocity applyBottomWall for (i,j)=(8, 2)... (rank 2)
+Velocity applyBottomWall for (i,j)=(9, 2)... (rank 2)
+Velocity applyBottomWall for (i,j)=(10, 2)... (rank 2)
+Velocity applyBottomWall for (i,j)=(11, 2)... (rank 2)
+Communicating T<--B... (rank 1)
+BoundaryPressureReadIterator... (rank 3)
+Communicated pressure!
+
+Communicating velocity... (rank 3)
+Velocity applyLeftWall for (i,j)=(2, 2)... (rank 3)
+Velocity applyLeftWall for (i,j)=(2, 3)... (rank 3)
+Velocity applyLeftWall for (i,j)=(2, 4)... (rank 3)
+Velocity applyLeftWall for (i,j)=(2, 5)... (rank 3)
+Velocity applyLeftWall for (i,j)=(2, 6)... (rank 3)
+Velocity applyBottomWall for (i,j)=(2, 2)... (rank 3)
+Velocity applyBottomWall for (i,j)=(3, 2)... (rank 3)
+Velocity applyBottomWall for (i,j)=(4, 2)... (rank 3)
+Velocity applyBottomWall for (i,j)=(5, 2)... (rank 3)
+Velocity applyBottomWall for (i,j)=(6, 2)... (rank 3)
+Velocity applyBottomWall for (i,j)=(7, 2)... (rank 3)
+Velocity applyBottomWall for (i,j)=(8, 2)... (rank 3)
+Velocity applyBottomWall for (i,j)=(9, 2)... (rank 3)
+Velocity applyBottomWall for (i,j)=(10, 2)... (rank 3)
+Velocity applyBottomWall for (i,j)=(11, 2)... (rank 3)
+BoundaryPressureReadIterator... (rank 1)
+Communicated pressure!
+
+Communicating velocity... (rank 1)
+Velocity applyLeftWall for (i,j)=(2, 2)... (rank 1)
+Velocity applyLeftWall for (i,j)=(2, 3)... (rank 1)
+Velocity applyLeftWall for (i,j)=(2, 4)... (rank 1)
+Velocity applyLeftWall for (i,j)=(2, 5)... (rank 1)
+Velocity applyLeftWall for (i,j)=(2, 6)... (rank 1)
+Velocity applyTopWall for (i,j)=(2, 6)... (rank 1)
+Velocity applyTopWall for (i,j)=(3, 6)... (rank 1)
+Velocity applyTopWall for (i,j)=(4, 6)... (rank 1)
+Velocity applyTopWall for (i,j)=(5, 6)... (rank 1)
+Velocity applyTopWall for (i,j)=(6, 6)... (rank 1)
+Velocity applyTopWall for (i,j)=(7, 6)... (rank 1)
+Velocity applyTopWall for (i,j)=(8, 6)... (rank 1)
+Velocity applyTopWall for (i,j)=(9, 6)... (rank 1)
+Velocity applyTopWall for (i,j)=(10, 6)... (rank 1)
+Velocity applyTopWall for (i,j)=(11, 6)... (rank 1)
+Communicated velocity!
+
+Communicated velocity!
+
+Communicated velocity!
+
+Communicated velocity!
+
+Current time: 0.25	timestep: 0.25
+checkpoint 1
+checkpoint 1
+checkpoint 1
+checkpoint 1
+Limits= 1, 11; 1 , 6 rank = 0
+Limits= 1, 11; 6 , 11 rank = 2
+Limits= 11, 21; 6 , 11 rank = 3
+Limits= 11, 21; 1 , 6 rank = 1
+Linear solve converged due to CONVERGED_ATOL iterations 18
+checkpoint 2
+checkpoint 2
+checkpoint
+Communicating pressure... (rank 0)
+BoundaryPressureFillIterator... (rank 0)
+Pressure applyRightWall for (i,j)=(11, 2)... (rank 0)
+Pressure applyRightWall for (i,j)=(11, 3)... (rank 0)
+Pressure applyRightWall for (i,j)=(11, 4)... (rank 0)
+Pressure applyRightWall for (i,j)=(11, 5)... (rank 0)
+Pressure applyRightWall for (i,j)=(11, 6)... (rank 0)
+Pressure applyTopWall for (i,j)=(2, 6)... (rank 0)
+checkpoint
+Communicating pressure... (rank 1)
+BoundaryPressureFillIterator... (rank 1)
+Pressure applyLeftWall for (i,j)=(2, 2)... (rank 1)
+Pressure applyLeftWall for (i,j)=(2, 3)... (rank 1)
+Pressure applyLeftWall for (i,j)=(2, 4)... (rank 1)
+Pressure applyLeftWall for (i,j)=(2, 5)... (rank 1)
+Pressure applyLeftWall for (i,j)=(2, 6)... (rank 1)
+Pressure applyTopWall for (i,j)=(2, 6)... (rank 1)
+Pressure applyTopWall for (i,j)=(3, 6)... (rank 1)
+Pressure applyTopWall for (i,j)=(4, 6)... (rank 1)
+Pressure applyTopWall for (i,j)=(5, 6)... (rank 1)
+Pressure applyTopWall for (i,j)=(6, 6)... (rank 1)
+Pressure applyTopWall for (i,j)=(3, 6)... (rank 0)
+Pressure applyTopWall for (i,j)=(4, 6)... (rank 0)
+Pressure applyTopWall for (i,j)=(5, 6)... (rank 0)
+Pressure applyTopWall for (i,j)=(6, 6)... (rank 0)
+Pressure applyTopWall for (i,j)=(7, 6)... (rank 0)
+Pressure applyTopWall for (i,j)=(8, 6)... (rank 0)
+Pressure applyTopWall for (i,j)=(9, 6)... (rank 0)
+Pressure applyTopWall for (i,j)=(7, 6)... (rank 1)
+Pressure applyTopWall for (i,j)=(8, 6)... (rank 1)
+Pressure applyTopWall for (i,j)=(9, 6)... (rank 1)
+Pressure applyTopWall for (i,j)=(10, 6)... (rank 1)
+Pressure applyTopWall for (i,j)=(11, 6)... (rank 1)
+Communicating L-->R... (rank 1)
+Pressure applyTopWall for (i,j)=(10, 6)... (rank 0)
+Pressure applyTopWall for (i,j)=(11, 6)... (rank 0)
+Communicating L-->R... (rank 0)
+Communicating L<--R... (rank 0)
+Communicating T-->B... (rank 0)
+Communicating L<--R... (rank 1)
+Communicating T-->B... (rank 1)
+checkpoint 2
+checkpoint
+Communicating pressure... (rank 3)
+BoundaryPressureFillIterator... (rank 3)
+Pressure applyLeftWall for (i,j)=(2, 2)... (rank 3)
+Pressure applyLeftWall for (i,j)=(2, 3)... (rank 3)
+Pressure applyLeftWall for (i,j)=(2, 4)... (rank 3)
+Pressure applyLeftWall for (i,j)=(2, 5)... (rank 3)
+Pressure applyLeftWall for (i,j)=(2, 6)... (rank 3)
+Pressure applyBottomWall for (i,j)=(2, 2)... (rank 3)
+Pressure applyBottomWall for (i,j)=(3, 2)... (rank 3)
+Pressure applyBottomWall for (i,j)=(4, 2)... (rank 3)
+Pressure applyBottomWall for (i,j)=(5, 2)... (rank 3)
+Pressure applyBottomWall for (i,j)=(6, 2)... (rank 3)
+Pressure applyBottomWall for (i,j)=(7, 2)... (rank 3)
+Pressure applyBottomWall for (i,j)=(8, 2)... (rank 3)
+Pressure applyBottomWall for (i,j)=(9, 2)... (rank 3)
+Pressure applyBottomWall for (i,j)=(10, 2)... (rank 3)
+Pressure applyBottomWall for (i,j)=(11, 2)... (rank 3)
+Communicating L-->R... (rank 3)
+checkpoint 2
+checkpoint
+Communicating pressure... (rank 2)
+BoundaryPressureFillIterator... (rank 2)
+Pressure applyRightWall for (i,j)=(11, 2)... (rank 2)
+Pressure applyRightWall for (i,j)=(11, 3)... (rank 2)
+Pressure applyRightWall for (i,j)=(11, 4)... (rank 2)
+Pressure applyRightWall for (i,j)=(11, 5)... (rank 2)
+Pressure applyRightWall for (i,j)=(11, 6)... (rank 2)
+Pressure applyBottomWall for (i,j)=(2, 2)... (rank 2)
+Pressure applyBottomWall for (i,j)=(3, 2)... (rank 2)
+Pressure applyBottomWall for (i,j)=(4, 2)... (rank 2)
+Pressure applyBottomWall for (i,j)=(5, 2)... (rank 2)
+Pressure applyBottomWall for (i,j)=(6, 2)... (rank 2)
+Pressure applyBottomWall for (i,j)=(7, 2)... (rank 2)
+Pressure applyBottomWall for (i,j)=(8, 2)... (rank 2)
+Pressure applyBottomWall for (i,j)=(9, 2)... (rank 2)
+Pressure applyBottomWall for (i,j)=(10, 2)... (rank 2)
+Pressure applyBottomWall for (i,j)=(11, 2)... (rank 2)
+Communicating L-->R... (rank 2)
+Communicating L<--R... (rank 2)
+Communicating L<--R... (rank 3)
+Communicating T<--B... (rank 0)
+Communicating T<--B... (rank 1)
+Communicating T-->B... (rank 2)
+Communicating T<--B... (rank 2)
+Communicating T-->B... (rank 3)
+Communicating T<--B... (rank 3)
+BoundaryPressureReadIterator... (rank 0)
+Pressure for (i,j)=(11, 2):0.000534 (rank 0)
+BoundaryPressureReadIterator... (rank 1)
+Communicated pressure!
+
+Pressure for (i,j)=(11, 3):0.000568 (rank 0)
+Pressure for (i,j)=(11, 4):0.000639 (rank 0)
+Communicating velocity... (rank 1)
+Velocity applyLeftWall for (i,j)=(2, 2)... (rank 1)
+Velocity applyLeftWall for (i,j)=(2, 3)... (rank 1)
+Velocity applyLeftWall for (i,j)=(2, 4)... (rank 1)
+Velocity applyLeftWall for (i,j)=(2, 5)... (rank 1)
+Pressure for (i,j)=(11, 5):0.000752 (rank 0)
+Velocity applyLeftWall for (i,j)=(2, 6)... (rank 1)
+Velocity applyTopWall for (i,j)=(2, 6)... (rank 1)
+Velocity applyTopWall for (i,j)=(3, 6)... (rank 1)
+Velocity applyTopWall for (i,j)=(4, 6)... (rank 1)
+Pressure for (i,j)=(11, 6):0.000913 (rank 0)
+Communicated pressure!
+
+Velocity applyTopWall for (i,j)=(5, 6)... (rank 1)
+Velocity applyTopWall for (i,j)=(6, 6)... (rank 1)
+Velocity applyTopWall for (i,j)=(7, 6)... (rank 1)
+Velocity applyTopWall for (i,j)=(8, 6)... (rank 1)
+Velocity applyTopWall for (i,j)=(9, 6)... (rank 1)
+Velocity applyTopWall for (i,j)=(10, 6)... (rank 1)
+Communicating velocity... (rank 0)
+Velocity applyTopWall for (i,j)=(11, 6)... (rank 1)
+BoundaryPressureReadIterator... (rank 2)
+Pressure for (i,j)=(11, 2):0.001129 (rank 2)
+Pressure for (i,j)=(11, 3):0.001398 (rank 2)
+Velocity applyRightWall for (i,j)=(11, 2)... (rank 0)
+Velocity applyRightWall for (i,j)=(11, 3)... (rank 0)
+Velocity applyRightWall for (i,j)=(11, 4)... (rank 0)
+Velocity applyRightWall for (i,j)=(11, 5)... (rank 0)
+Velocity applyRightWall for (i,j)=(11, 6)... (rank 0)
+Velocity applyTopWall for (i,j)=(2, 6)... (rank 0)
+Velocity applyTopWall for (i,j)=(3, 6)... (rank 0)
+Pressure for (i,j)=(11, 4):0.001701 (rank 2)
+Pressure for (i,j)=(11, 5):0.001989 (rank 2)
+Pressure for (i,j)=(11, 6):0.002175 (rank 2)
+Communicated pressure!
+
+BoundaryPressureReadIterator... (rank 3)
+Communicated pressure!
+
+Velocity applyTopWall for (i,j)=(4, 6)... (rank 0)
+Velocity applyTopWall for (i,j)=(5, 6)... (rank 0)
+Velocity applyTopWall for (i,j)=(6, 6)... (rank 0)
+Velocity applyTopWall for (i,j)=(7, 6)... (rank 0)
+Velocity applyTopWall for (i,j)=(8, 6)... (rank 0)
+Velocity applyTopWall for (i,j)=(9, 6)... (rank 0)
+Velocity applyTopWall for (i,j)=(10, 6)... (rank 0)
+Velocity applyTopWall for (i,j)=(11, 6)... (rank 0)
+Communicating velocity... (rank 2)
+Velocity applyRightWall for (i,j)=(11, 2)... (rank 2)
+Velocity applyRightWall for (i,j)=(11, 3)... (rank 2)
+Velocity applyRightWall for (i,j)=(11, 4)... (rank 2)
+Velocity applyRightWall for (i,j)=(11, 5)... (rank 2)
+Velocity applyRightWall for (i,j)=(11, 6)... (rank 2)
+Velocity applyBottomWall for (i,j)=(2, 2)... (rank 2)
+Communicating velocity... (rank 3)
+Velocity applyLeftWall for (i,j)=(2, 2)... (rank 3)
+Velocity applyLeftWall for (i,j)=(2, 3)... (rank 3)
+Velocity applyLeftWall for (i,j)=(2, 4)... (rank 3)
+Velocity applyLeftWall for (i,j)=(2, 5)... (rank 3)
+Velocity applyLeftWall for (i,j)=(2, 6)... (rank 3)
+Velocity applyBottomWall for (i,j)=(2, 2)... (rank 3)
+Velocity applyBottomWall for (i,j)=(3, 2)... (rank 3)
+Velocity applyBottomWall for (i,j)=(4, 2)... (rank 3)
+Velocity applyBottomWall for (i,j)=(3, 2)... (rank 2)
+Velocity applyBottomWall for (i,j)=(4, 2)... (rank 2)
+Velocity applyBottomWall for (i,j)=(5, 2)... (rank 2)
+Velocity applyBottomWall for (i,j)=(6, 2)... (rank 2)
+Velocity applyBottomWall for (i,j)=(7, 2)... (rank 2)
+Velocity applyBottomWall for (i,j)=(8, 2)... (rank 2)
+Velocity applyBottomWall for (i,j)=(5, 2)... (rank 3)
+Velocity applyBottomWall for (i,j)=(6, 2)... (rank 3)
+Velocity applyBottomWall for (i,j)=(7, 2)... (rank 3)
+Velocity applyBottomWall for (i,j)=(8, 2)... (rank 3)
+Velocity applyBottomWall for (i,j)=(9, 2)... (rank 3)
+Velocity applyBottomWall for (i,j)=(10, 2)... (rank 3)
+Velocity applyBottomWall for (i,j)=(9, 2)... (rank 2)
+Velocity applyBottomWall for (i,j)=(10, 2)... (rank 2)
+Velocity applyBottomWall for (i,j)=(11, 2)... (rank 2)
+Velocity applyBottomWall for (i,j)=(11, 2)... (rank 3)
+Communicated velocity!
+
+Current time: Communicated velocity!
+
+0.2625	timestep: Communicated velocity!
+
+0.0125
+Communicated velocity!
+
+checkpoint 1
+checkpoint 1
+checkpoint 1
+checkpoint 1
+Limits= 1, 11; 1 , 6 rank = Limits= 11, 21; 1 , 6 rank = 1
+0
+Limits= 11, 21; 6 , 11 rank = 3
+Limits= 1, 11; 6 , 11 rank = 2
+^C[mpiexec@makish-baloon] Sending Ctrl-C to processes as requested
+[mpiexec@makish-baloon] Press Ctrl-C again to force abort

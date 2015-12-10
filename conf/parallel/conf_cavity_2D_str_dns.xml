@@ -8,9 +8,11 @@
     <timestep dt="1" tau="0.5" />
     <solver gamma="0.5" />
     <geometry dim="2"
-      lengthX="1.0" lengthY="1.0" lengthZ="1.0" sizeX="20" sizeY="10" sizeZ="1"
+      lengthX="1.0" lengthY="1.0" lengthZ="1.0"
+      sizeX="10" sizeY="10" sizeZ="1"
+      stretchX="true" stretchY="false" stretchZ="false"
     >
-      <mesh>uniform</mesh>
+      <mesh>stretched</mesh>
     </geometry>
     <environment gx="0" gy="0" gz="0" />
     <walls>
@@ -33,7 +35,7 @@
             <vector x="0" y="0" z="0" />
         </back>
     </walls>
-    <vtk interval="10">Output/cavity2D/result</vtk>
-    <stdOut interval="0.01" />
+    <vtk interval="0.0001">output/par_cavity2D/par_cav2D_str_dns</vtk>
+    <stdOut interval="0.0001" />
     <parallel numProcessorsX="2" numProcessorsY="2" numProcessorsZ="1" />
 </configuration>

@@ -24,6 +24,7 @@
 #include "solvers/SORSolver.h"
 #include "solvers/PetscSolver.h"
 
+#include "parallelManagers/PetscParallelManager.h"
 
 
 class Simulation {
@@ -57,6 +58,7 @@ class Simulation {
 
     PetscSolver _solver;
 
+    PetscParallelManager _petscParallelManager;
 
   public:
     Simulation(Parameters &parameters, FlowField &flowField):
@@ -76,9 +78,10 @@ class Simulation {
        _obstacleStencil(parameters),
        _velocityIterator(_flowField,parameters,_velocityStencil),
        _obstacleIterator(_flowField,parameters,_obstacleStencil),
-       _vtkStencil(parameters),
-       _vtkIterator(_flowField,parameters,_vtkStencil),
-       _solver(_flowField,parameters)
+       _vtkStencil(parameters, false),
+       _vtkIterator(_flowField,parameters,_vtkStencil,-1,1),
+       _solver(_flowField,parameters),
+       _petscParallelManager(parameters, _flowField)
        {
        }
 
@@ -134,12 +137,18 @@ class Simulation {
         _rhsIterator.iterate();
         // solve for pressure
         _solver.solve();
-        // TODO WS2: communicate pressure values
+        // WS2: communicate pressure values
+        // printf("Communicating pressure... (rank %d)\n", _parameters.parallel.rank);
+        _petscParallelManager.communicatePressure();
+        // printf("Communicated pressure!(rank %d)\n", _parameters.parallel.rank);
         // compute velocity
         _velocityIterator.iterate();
         // set obstacle boundaries
         _obstacleIterator.iterate();
-        // TODO WS2: communicate velocity values
+        // WS2: communicate velocity values
+        // printf("Communicating velocity... (rank %d)\n", _parameters.parallel.rank);
+        _petscParallelManager.communicateVelocities();
+        // printf("Communicated velocity! (rank %d)\n", _parameters.parallel.rank);
         // Iterate for velocities on the boundary
         _wallVelocityIterator.iterate();
     }

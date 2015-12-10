@@ -15,16 +15,24 @@
  */
 class VTKStencil : public FieldStencil<FlowField> {
     private:
-        std::stringstream _ssPoints, _ssPressure, _ssVelocity, _ssTurbViscosity, _ssDistWall;
+        std::stringstream _ssPoints, _ssPressure, _ssFlags, _ssVelocity, _ssTurbViscosity, _ssWallDistance;
         bool _turbulent;
+        bool _includeGhostCells;
 
     public:
 
         /** Constructor
          *
-         * @param prefix String with the prefix of the name of the VTK files
+         * @param parameters Parameters of the problem
          */
         VTKStencil ( const Parameters & parameters );
+
+        /** Constructor
+         *
+         * @param parameters Parameters of the problem
+         * @param includeGhostCells Switch to include the ghost layers in the vtk
+         */
+        VTKStencil ( const Parameters & parameters, bool includeGhostCells );
 
         /** 2D operation for one position
          *
