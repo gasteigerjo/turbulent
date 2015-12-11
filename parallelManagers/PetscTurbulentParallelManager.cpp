@@ -1,11 +1,5 @@
 #include "PetscTurbulentParallelManager.h"
 
-// TODO: Open issues and notes
-// - Are the offsets set correctly? We really need to check this!
-// - We needed to initialize the stencils and iterators before the body of the constructor. Do some discussion.
-// - Is there any problem with the calloc-free method, instead of the new-delete?
-// - Iterate the fill and read methods only on the specific boundaries needed.
-
 // Constructor
 PetscTurbulentParallelManager::PetscTurbulentParallelManager(const Parameters & parameters, TurbulentFlowField & turbFlowField):
 // PetscParallelManager(parameters,turbFlowField),
@@ -76,7 +70,8 @@ _turbFlowField(turbFlowField)
 void PetscTurbulentParallelManager::communicateTurbViscosity(){
 
     MPI_Status comm_status;
-    // int count;
+    MPI_Request send_requestL, send_requestR, send_requestBt, send_requestT, send_requestF, send_requestBk;
+    MPI_Request recv_requestL, recv_requestR, recv_requestBt, recv_requestT, recv_requestF, recv_requestBk;
 
     // ------------------------------------------------------------------------
     // Communicate in the X-dimension:
@@ -84,23 +79,16 @@ void PetscTurbulentParallelManager::communicateTurbViscosity(){
     _parallelBoundaryTurbViscFillIterator->iterate(0);
 
     // Left --> + --> Right
-    // printf("Communicating L-->R... (rank %d)\n", _parameters.parallel.rank);
-    MPI_Sendrecv(_turbViscRightSend, turbViscBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.rightNb, 1,
-                 _turbViscLeftRecv,  turbViscBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.leftNb,  1,
-                 PETSC_COMM_WORLD, &comm_status);
-    // MPI_Get_count(&comm_status,MY_MPI_FLOAT,&count);
-    // printf("Communicated L-->R (rank %d), count %d from %d\n", _parameters.parallel.rank, count, comm_status.MPI_SOURCE);
+    MPI_Isend(_turbViscRightSend, turbViscBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.rightNb, 1, PETSC_COMM_WORLD, &send_requestR);
+    MPI_Irecv(_turbViscLeftRecv,  turbViscBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.leftNb,  1, PETSC_COMM_WORLD, &recv_requestL);
 
     // Left <-- + <-- Right
-    // printf("Communicating L<--R... (rank %d)\n", _parameters.parallel.rank);
-    MPI_Sendrecv(_turbViscLeftSend,  turbViscBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.leftNb,  1,
-                 _turbViscRightRecv, turbViscBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.rightNb, 1,
-                 PETSC_COMM_WORLD, &comm_status);
-    // MPI_Get_count(&comm_status,MY_MPI_FLOAT,&count);
-    // printf("Communicated L<--R (rank %d), count %d from %d\n", _parameters.parallel.rank, count, comm_status.MPI_SOURCE);
+    MPI_Isend(_turbViscLeftSend,  turbViscBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.leftNb,  2, PETSC_COMM_WORLD, &send_requestL);
+    MPI_Irecv(_turbViscRightRecv, turbViscBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.rightNb, 2, PETSC_COMM_WORLD, &recv_requestR);
 
-    // Wait for the current dimension to complete before continuing to the next
-    MPI_Barrier(PETSC_COMM_WORLD);
+    // Wait for all the requests of the current rank to finish before reading
+    MPI_Wait(&recv_requestL, &comm_status);
+    MPI_Wait(&recv_requestR, &comm_status);
 
     // Read the turbulent viscosity receive buffers L/R
     _parallelBoundaryTurbViscReadIterator->iterate(0);
@@ -114,23 +102,16 @@ void PetscTurbulentParallelManager::communicateTurbViscosity(){
     _parallelBoundaryTurbViscFillIterator->iterate(1);
 
     // Bottom --> + --> Top
-    // printf("Communicating B-->T... (rank %d)\n", _parameters.parallel.rank);
-    MPI_Sendrecv(_turbViscTopSend,    turbViscBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.topNb,    1,
-                 _turbViscBottomRecv, turbViscBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.bottomNb, 1,
-                 PETSC_COMM_WORLD, &comm_status);
-    // MPI_Get_count(&comm_status,MY_MPI_FLOAT,&count);
-    // printf("Communicated B-->T (rank %d), count %d from %d\n", _parameters.parallel.rank, count, comm_status.MPI_SOURCE);
+    MPI_Isend(_turbViscTopSend,    turbViscBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.topNb,    3, PETSC_COMM_WORLD, &send_requestT);
+    MPI_Irecv(_turbViscBottomRecv, turbViscBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.bottomNb, 3, PETSC_COMM_WORLD, &recv_requestBt);
 
     // Bottom <-- + <-- Top
-    // printf("Communicating T-->B... (rank %d)\n", _parameters.parallel.rank);
-    MPI_Sendrecv(_turbViscBottomSend, turbViscBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.bottomNb, 1,
-                 _turbViscTopRecv,    turbViscBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.topNb,    1,
-                 PETSC_COMM_WORLD, &comm_status);
-    // MPI_Get_count(&comm_status,MY_MPI_FLOAT,&count);
-    // printf("Communicated B<--T (rank %d), count %d from %d\n", _parameters.parallel.rank, count, comm_status.MPI_SOURCE);
+    MPI_Isend(_turbViscBottomSend, turbViscBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.bottomNb, 4, PETSC_COMM_WORLD, &send_requestBt);
+    MPI_Irecv(_turbViscTopRecv,    turbViscBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.topNb,    4, PETSC_COMM_WORLD, &recv_requestT);
 
-    // Wait for the current dimension to complete before continuing to the next
-    MPI_Barrier(PETSC_COMM_WORLD);
+    // Wait for all the requests of the current rank to finish before reading
+    MPI_Wait(&recv_requestBt, &comm_status);
+    MPI_Wait(&recv_requestT,  &comm_status);
 
     // Read the turbulent viscosity receive buffers T/B
     _parallelBoundaryTurbViscReadIterator->iterate(1);
@@ -146,28 +127,28 @@ void PetscTurbulentParallelManager::communicateTurbViscosity(){
         _parallelBoundaryTurbViscFillIterator->iterate(2);
 
         // Front --> + --> Back
-        // printf("Communicating F-->B (rank %d)\n", _parameters.parallel.rank);
-        MPI_Sendrecv(_turbViscBackSend,  turbViscBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.backNb,  1,
-                     _turbViscFrontRecv, turbViscBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.frontNb, 1,
-                     PETSC_COMM_WORLD, &comm_status);
-        // MPI_Get_count(&comm_status,MY_MPI_FLOAT,&count);
-        // printf("Communicated F-->B (rank %d), count %d from %d\n", _parameters.parallel.rank, count, comm_status.MPI_SOURCE);
+        MPI_Isend(_turbViscBackSend,  turbViscBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.backNb,  5, PETSC_COMM_WORLD, &send_requestBk);
+        MPI_Irecv(_turbViscFrontRecv, turbViscBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.frontNb, 5, PETSC_COMM_WORLD, &recv_requestF);
 
         // Front <-- + <-- Back
-        // printf("Communicating F<--B (rank %d)\n", _parameters.parallel.rank);
-        MPI_Sendrecv(_turbViscFrontSend, turbViscBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.frontNb, 1,
-                     _turbViscBackRecv,  turbViscBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.backNb,  1,
-                     PETSC_COMM_WORLD, &comm_status);
-        // MPI_Get_count(&comm_status,MY_MPI_FLOAT,&count);
-        // printf("Communicated F<--B (rank %d), count %d from %d\n", _parameters.parallel.rank, count, comm_status.MPI_SOURCE);
+        MPI_Isend(_turbViscFrontSend, turbViscBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.frontNb, 6, PETSC_COMM_WORLD, &send_requestF);
+        MPI_Irecv(_turbViscBackRecv,  turbViscBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.backNb,  6, PETSC_COMM_WORLD, &recv_requestBk);
 
-        // Wait for the current dimension to complete before continuing to the next
-        MPI_Barrier(PETSC_COMM_WORLD);
+        MPI_Wait(&recv_requestF,  &comm_status);
+        MPI_Wait(&recv_requestBk, &comm_status);
 
         // Read the turbulent viscosity receive buffers F/B
         _parallelBoundaryTurbViscReadIterator->iterate(2);
     }
     // ------------------------------------------------------------------------
+
+    // Wait for all the sends of this rank to complete
+    MPI_Wait(&send_requestL,  &comm_status);
+    MPI_Wait(&send_requestR,  &comm_status);
+    MPI_Wait(&send_requestBt, &comm_status);
+    MPI_Wait(&send_requestT,  &comm_status);
+    MPI_Wait(&send_requestF,  &comm_status);
+    MPI_Wait(&send_requestBk, &comm_status);
 
 }
 
