@@ -29,7 +29,7 @@ class MinDtStencil : public FieldStencil<TurbulentFlowField> {
 
         /**
          */
-        const FLOAT getMinValue();
+        FLOAT getMinValue();
 };
 
 #endif

@@ -36,6 +36,8 @@ stencils/BFStepInitStencil.o stencils/NeumannBoundaryStencils.o stencils/BFInput
 TurbulentFlowField.o \
 stencils/FGHTurbStencil.o stencils/TurbViscosityStencil.o stencils/DistNearestWallStencil.o \
 stencils/MinDtStencil.o stencils/TurbViscosityBoundaryStencil.o \
+stencils/TurbViscosityBufferFillStencil.o stencils/TurbViscosityBufferReadStencil.o \
+parallelManagers/PetscTurbulentParallelManager.o \
 
 all: ns
 

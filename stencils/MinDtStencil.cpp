@@ -28,6 +28,6 @@ void MinDtStencil::reset () {
     _minValue = MY_FLOAT_MAX;
 }
 
-const FLOAT MinDtStencil::getMinValue(){
+FLOAT MinDtStencil::getMinValue(){
     return _minValue;
 }

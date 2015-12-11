@@ -82,6 +82,7 @@ int main (int argc, char *argv[]) {
       simulation->solveTimestep();
 
       time += parameters.timestep.dt;
+      timeSteps++;
 
       // std-out: terminal info
       if ( (rank==0) && (timeStdOut <= time) ){
@@ -94,8 +95,6 @@ int main (int argc, char *argv[]) {
           simulation->plotVTK(timeSteps); // TODO Change to time?
           lastPlotTime += parameters.vtk.interval;
       }
-
-      timeSteps++;
     }
 
     // WS1: plot final output

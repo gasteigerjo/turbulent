@@ -36,21 +36,21 @@ _flowField(flowField)
         // Initialize the buffers
         // Pressure send buffers
         _pressuresLeftSend      = (FLOAT*) calloc(presBufSizeLR, sizeof(FLOAT));
-        _pressuresRightSend     = (FLOAT*) calloc(2*presBufSizeLR, sizeof(FLOAT));
+        _pressuresRightSend     = (FLOAT*) calloc(presBufSizeLR, sizeof(FLOAT));
         _pressuresBottomSend    = (FLOAT*) calloc(presBufSizeTB, sizeof(FLOAT));
-        _pressuresTopSend       = (FLOAT*) calloc(2*presBufSizeTB, sizeof(FLOAT));
+        _pressuresTopSend       = (FLOAT*) calloc(presBufSizeTB, sizeof(FLOAT));
         if (_parameters.geometry.dim == 3) {
             _pressuresFrontSend     = (FLOAT*) calloc(presBufSizeFB, sizeof(FLOAT));
-            _pressuresBackSend      = (FLOAT*) calloc(2*presBufSizeFB, sizeof(FLOAT));
+            _pressuresBackSend      = (FLOAT*) calloc(presBufSizeFB, sizeof(FLOAT));
         }
 
         // Pressure receive buffers
-        _pressuresLeftRecv      = (FLOAT*) calloc(2*presBufSizeLR, sizeof(FLOAT));
+        _pressuresLeftRecv      = (FLOAT*) calloc(presBufSizeLR, sizeof(FLOAT));
         _pressuresRightRecv     = (FLOAT*) calloc(presBufSizeLR, sizeof(FLOAT));
-        _pressuresBottomRecv    = (FLOAT*) calloc(2*presBufSizeTB, sizeof(FLOAT));
+        _pressuresBottomRecv    = (FLOAT*) calloc(presBufSizeTB, sizeof(FLOAT));
         _pressuresTopRecv       = (FLOAT*) calloc(presBufSizeTB, sizeof(FLOAT));
         if (_parameters.geometry.dim == 3) {
-            _pressuresFrontRecv     = (FLOAT*) calloc(2*presBufSizeFB, sizeof(FLOAT));
+            _pressuresFrontRecv     = (FLOAT*) calloc(presBufSizeFB, sizeof(FLOAT));
             _pressuresBackRecv      = (FLOAT*) calloc(presBufSizeFB, sizeof(FLOAT));
         }
 
@@ -111,9 +111,9 @@ void PetscParallelManager::communicatePressure(){
     _parallelBoundaryPressureFillIterator->iterate(0);
 
     // Left --> + --> Right
-    MPI_Isend(_pressuresRightSend, 2*presBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.rightNb, 1, PETSC_COMM_WORLD, &send_requestR);
+    MPI_Isend(_pressuresRightSend, presBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.rightNb, 1, PETSC_COMM_WORLD, &send_requestR);
     // printf("[rank %d] L-->R Send pressure request posted.\n", _parameters.parallel.rank);
-    MPI_Irecv(_pressuresLeftRecv, 2*presBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.leftNb,   1, PETSC_COMM_WORLD, &recv_requestL);
+    MPI_Irecv(_pressuresLeftRecv, presBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.leftNb,   1, PETSC_COMM_WORLD, &recv_requestL);
     // printf("[rank %d] L-->R Recv pressure request posted.\n", _parameters.parallel.rank);
 
     // Left <-- + <-- Right
@@ -140,9 +140,9 @@ void PetscParallelManager::communicatePressure(){
     _parallelBoundaryPressureFillIterator->iterate(1);
 
     // Bottom --> + --> Top
-    MPI_Isend(_pressuresTopSend,    2*presBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.topNb,    3, PETSC_COMM_WORLD, &send_requestT);
+    MPI_Isend(_pressuresTopSend,    presBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.topNb,    3, PETSC_COMM_WORLD, &send_requestT);
     // printf("[rank %d] B-->T Send pressure request posted.\n", _parameters.parallel.rank);
-    MPI_Irecv(_pressuresBottomRecv, 2*presBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.bottomNb, 3, PETSC_COMM_WORLD, &recv_requestBt);
+    MPI_Irecv(_pressuresBottomRecv, presBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.bottomNb, 3, PETSC_COMM_WORLD, &recv_requestBt);
     // printf("[rank %d] B-->T Recv pressure request posted.\n", _parameters.parallel.rank);
 
     // Bottom <-- + <-- Top
@@ -171,9 +171,9 @@ void PetscParallelManager::communicatePressure(){
         _parallelBoundaryPressureFillIterator->iterate(2);
 
         // Front --> + --> Back
-        MPI_Isend(_pressuresBackSend,  2*presBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.backNb,  5, PETSC_COMM_WORLD, &send_requestBk);
+        MPI_Isend(_pressuresBackSend,  presBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.backNb,  5, PETSC_COMM_WORLD, &send_requestBk);
         // printf("[rank %d] F-->B Send pressure request posted.\n", _parameters.parallel.rank);
-        MPI_Irecv(_pressuresFrontRecv, 2*presBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.frontNb, 5, PETSC_COMM_WORLD, &recv_requestF);
+        MPI_Irecv(_pressuresFrontRecv, presBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.frontNb, 5, PETSC_COMM_WORLD, &recv_requestF);
         // printf("[rank %d] F-->B Recv pressure request posted.\n", _parameters.parallel.rank);
 
         // Front <-- + <-- Back

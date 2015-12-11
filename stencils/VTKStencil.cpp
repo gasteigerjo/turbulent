@@ -92,6 +92,7 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j, int k ) {
     FLOAT pressure, turbVisc;//, distWall;
     FLOAT* velocity = new FLOAT(3);
     const int obstacle = flowField.getFlags().getValue(i, j, k);
+    // FLOAT* fgh = flowField.getFGH().getVector(i,j,k);
 
     // check whether current cell is a fluid cell or not
     if ((obstacle & OBSTACLE_SELF) == 0) {
@@ -117,6 +118,7 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j, int k ) {
       _ssTurbViscosity << turbVisc << std::endl;
       // _ssDistWall << distWall << std::endl;
     }
+    // _ssFGH << fgh[0] << " " << fgh[1] << " " << fgh[2] << std::endl;
 }
 
 void VTKStencil::write ( FlowField & flowField, int timeStep ) {
@@ -163,6 +165,10 @@ void VTKStencil::write ( FlowField & flowField, int timeStep ) {
     file << "\nVECTORS velocity float" << std::endl;
     file << _ssVelocity.str();
 
+    // // write FGH data
+    // file << "\nVECTORS fgh float" << std::endl;
+    // file << _ssFGH.str();
+
     // // write flags data
     // file << "\nSCALARS flags integer 1" << std::endl;
     // file << "LOOKUP_TABLE default" << std::endl;
@@ -189,8 +195,8 @@ void VTKStencil::write ( FlowField & flowField, int timeStep ) {
     _ssPoints.str("");
     _ssPressure.str("");
     _ssVelocity.str("");
-    _ssFlags.str("");
-    _ssTurbViscosity.str("");
+    // _ssFGH.str("");
+    // _ssFlags.str("");
 
     // finally, close the file
     file.close();
