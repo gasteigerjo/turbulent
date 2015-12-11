@@ -1,11 +1,5 @@
 #include "PetscParallelManager.h"
 
-// TODO: Open issues and notes
-// - Are the offsets set correctly? We really need to check this!
-// - We needed to initialize the stencils and iterators before the body of the constructor. Do some discussion.
-// - Is there any problem with the calloc-free method, instead of the new-delete?
-// - Iterate the fill and read methods only on the specific boundaries needed.
-
 // Constructor
 PetscParallelManager::PetscParallelManager(const Parameters & parameters, FlowField & flowField):
 _parameters(parameters),
@@ -80,11 +74,8 @@ _flowField(flowField)
             _velocitiesBackRecv      = (FLOAT*) calloc(velBufSizeFB, sizeof(FLOAT));
         }
 
-        int lowOffset = 0;//1;//2;
-        int highOffset = 0;//-1;
-
-        // int lowOffset = 2;
-        // int highOffset = -1;
+        int lowOffset = 0;
+        int highOffset = 0;
 
         // Construct the stencils
         if (_parameters.geometry.dim == 2) {
@@ -111,31 +102,31 @@ _flowField(flowField)
 void PetscParallelManager::communicatePressure(){
 
     MPI_Status comm_status;
-    // int count;
+    MPI_Request send_requestL, send_requestR, send_requestBt, send_requestT, send_requestF, send_requestBk;
+    MPI_Request recv_requestL, recv_requestR, recv_requestBt, recv_requestT, recv_requestF, recv_requestBk;
 
     // ------------------------------------------------------------------------
-    // Communicate in the X-dimension:
+    // Communicate pressure in the X-dimension:
     // Fill the pressure send buffers L/R
     _parallelBoundaryPressureFillIterator->iterate(0);
 
     // Left --> + --> Right
-    // printf("Communicating L-->R... (rank %d)\n", _parameters.parallel.rank);
-    MPI_Sendrecv(_pressuresRightSend, 2*presBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.rightNb, 1,
-                 _pressuresLeftRecv,  2*presBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.leftNb,  1,
-                 PETSC_COMM_WORLD, &comm_status);
-    // MPI_Get_count(&comm_status,MY_MPI_FLOAT,&count);
-    // printf("Communicated L-->R (rank %d), count %d from %d\n", _parameters.parallel.rank, count, comm_status.MPI_SOURCE);
+    MPI_Isend(_pressuresRightSend, 2*presBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.rightNb, 1, PETSC_COMM_WORLD, &send_requestR);
+    // printf("[rank %d] L-->R Send pressure request posted.\n", _parameters.parallel.rank);
+    MPI_Irecv(_pressuresLeftRecv, 2*presBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.leftNb,   1, PETSC_COMM_WORLD, &recv_requestL);
+    // printf("[rank %d] L-->R Recv pressure request posted.\n", _parameters.parallel.rank);
 
     // Left <-- + <-- Right
-    // printf("Communicating L<--R... (rank %d)\n", _parameters.parallel.rank);
-    MPI_Sendrecv(_pressuresLeftSend,  presBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.leftNb,  1,
-                 _pressuresRightRecv, presBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.rightNb, 1,
-                 PETSC_COMM_WORLD, &comm_status);
-    // MPI_Get_count(&comm_status,MY_MPI_FLOAT,&count);
-    // printf("Communicated L<--R (rank %d), count %d from %d\n", _parameters.parallel.rank, count, comm_status.MPI_SOURCE);
+    MPI_Isend(_pressuresLeftSend,  presBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.leftNb,  2, PETSC_COMM_WORLD, &send_requestL);
+    // printf("[rank %d] L<--R Send pressure request posted.\n", _parameters.parallel.rank);
+    MPI_Irecv(_pressuresRightRecv, presBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.rightNb, 2, PETSC_COMM_WORLD, &recv_requestR);
+    // printf("[rank %d] L<--R Recv pressure request posted.\n", _parameters.parallel.rank);
 
-    // Wait for the current dimension to complete before continuing to the next
-    MPI_Barrier(PETSC_COMM_WORLD);
+    // Wait for all the requests of the current rank to finish before reading
+    MPI_Wait(&recv_requestL, &comm_status);
+    // printf("[rank %d] L-->R RECV pressure request COMPLETED.\n", _parameters.parallel.rank);
+    MPI_Wait(&recv_requestR, &comm_status);
+    // printf("[rank %d] L<--R RECV pressure request COMPLETED.\n", _parameters.parallel.rank);
 
     // Read the pressure receive buffers L/R
     _parallelBoundaryPressureReadIterator->iterate(0);
@@ -144,28 +135,27 @@ void PetscParallelManager::communicatePressure(){
 
 
     // ------------------------------------------------------------------------
-    // Communicate in the Y-dimension:
+    // Communicate pressure in the Y-dimension:
     // Fill the pressure send buffers T/B
     _parallelBoundaryPressureFillIterator->iterate(1);
 
     // Bottom --> + --> Top
-    // printf("Communicating B-->T... (rank %d)\n", _parameters.parallel.rank);
-    MPI_Sendrecv(_pressuresTopSend,    2*presBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.topNb,    1,
-                 _pressuresBottomRecv, 2*presBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.bottomNb, 1,
-                 PETSC_COMM_WORLD, &comm_status);
-    // MPI_Get_count(&comm_status,MY_MPI_FLOAT,&count);
-    // printf("Communicated B-->T (rank %d), count %d from %d\n", _parameters.parallel.rank, count, comm_status.MPI_SOURCE);
+    MPI_Isend(_pressuresTopSend,    2*presBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.topNb,    3, PETSC_COMM_WORLD, &send_requestT);
+    // printf("[rank %d] B-->T Send pressure request posted.\n", _parameters.parallel.rank);
+    MPI_Irecv(_pressuresBottomRecv, 2*presBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.bottomNb, 3, PETSC_COMM_WORLD, &recv_requestBt);
+    // printf("[rank %d] B-->T Recv pressure request posted.\n", _parameters.parallel.rank);
 
     // Bottom <-- + <-- Top
-    // printf("Communicating T-->B... (rank %d)\n", _parameters.parallel.rank);
-    MPI_Sendrecv(_pressuresBottomSend, presBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.bottomNb, 1,
-                 _pressuresTopRecv,    presBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.topNb,    1,
-                 PETSC_COMM_WORLD, &comm_status);
-    // MPI_Get_count(&comm_status,MY_MPI_FLOAT,&count);
-    // printf("Communicated B<--T (rank %d), count %d from %d\n", _parameters.parallel.rank, count, comm_status.MPI_SOURCE);
+    MPI_Isend(_pressuresBottomSend, presBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.bottomNb, 4, PETSC_COMM_WORLD, &send_requestBt);
+    // printf("[rank %d] B<--T Send pressure request posted.\n", _parameters.parallel.rank);
+    MPI_Irecv(_pressuresTopRecv,    presBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.topNb,    4, PETSC_COMM_WORLD, &recv_requestT);
+    // printf("[rank %d] B<--T Recv pressure request posted.\n", _parameters.parallel.rank);
 
-    // Wait for the current dimension to complete before continuing to the next
-    MPI_Barrier(PETSC_COMM_WORLD);
+    // Wait for all the requests of the current rank to finish before reading
+    MPI_Wait(&recv_requestBt, &comm_status);
+    // printf("[rank %d] B-->T RECV pressure request COMPLETED.\n", _parameters.parallel.rank);
+    MPI_Wait(&recv_requestT,  &comm_status);
+    // printf("[rank %d] B<--T RECV pressure request COMPLETED.\n", _parameters.parallel.rank);
 
     // Read the pressure receive buffers T/B
     _parallelBoundaryPressureReadIterator->iterate(1);
@@ -174,59 +164,67 @@ void PetscParallelManager::communicatePressure(){
 
 
     // ------------------------------------------------------------------------
-    // Communicate in the Z-dimension  (z increases from front to back):
+    // Communicate pressure in the Z-dimension  (z increases from front to back):
     if (_parameters.geometry.dim == 3) {
 
         // Fill the pressure send buffers F/B
         _parallelBoundaryPressureFillIterator->iterate(2);
 
         // Front --> + --> Back
-        // printf("Communicating F-->B (rank %d)\n", _parameters.parallel.rank);
-        MPI_Sendrecv(_pressuresBackSend,  2*presBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.backNb,  1,
-                     _pressuresFrontRecv, 2*presBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.frontNb, 1,
-                     PETSC_COMM_WORLD, &comm_status);
-        // MPI_Get_count(&comm_status,MY_MPI_FLOAT,&count);
-        // printf("Communicated F-->B (rank %d), count %d from %d\n", _parameters.parallel.rank, count, comm_status.MPI_SOURCE);
+        MPI_Isend(_pressuresBackSend,  2*presBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.backNb,  5, PETSC_COMM_WORLD, &send_requestBk);
+        // printf("[rank %d] F-->B Send pressure request posted.\n", _parameters.parallel.rank);
+        MPI_Irecv(_pressuresFrontRecv, 2*presBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.frontNb, 5, PETSC_COMM_WORLD, &recv_requestF);
+        // printf("[rank %d] F-->B Recv pressure request posted.\n", _parameters.parallel.rank);
 
         // Front <-- + <-- Back
-        // printf("Communicating F<--B (rank %d)\n", _parameters.parallel.rank);
-        MPI_Sendrecv(_pressuresFrontSend, presBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.frontNb, 1,
-                     _pressuresBackRecv,  presBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.backNb,  1,
-                     PETSC_COMM_WORLD, &comm_status);
-        // MPI_Get_count(&comm_status,MY_MPI_FLOAT,&count);
-        // printf("Communicated F<--B (rank %d), count %d from %d\n", _parameters.parallel.rank, count, comm_status.MPI_SOURCE);
+        MPI_Isend(_pressuresFrontSend, presBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.frontNb, 6, PETSC_COMM_WORLD, &send_requestF);
+        // printf("[rank %d] F<--B Send pressure request posted.\n", _parameters.parallel.rank);
+        MPI_Irecv(_pressuresBackRecv,  presBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.backNb,  6, PETSC_COMM_WORLD, &recv_requestBk);
+        // printf("[rank %d] F<--B Recv pressure request posted.\n", _parameters.parallel.rank);
 
-        // Wait for the current dimension to complete before continuing to the next
-        MPI_Barrier(PETSC_COMM_WORLD);
+        // Wait for all the requests of the current rank to finish before reading
+        MPI_Wait(&recv_requestF,  &comm_status);
+        // printf("[rank %d] F-->B RECV pressure request COMPLETED.\n", _parameters.parallel.rank);
+        MPI_Wait(&recv_requestBk, &comm_status);
+        // printf("[rank %d] F<--B RECV pressure request COMPLETED.\n", _parameters.parallel.rank);
 
         // Read the pressure receive buffers F/B
         _parallelBoundaryPressureReadIterator->iterate(2);
     }
     // ------------------------------------------------------------------------
 
+    // Wait for all the sends of this rank to complete
+    MPI_Wait(&send_requestL,  &comm_status);
+    MPI_Wait(&send_requestR,  &comm_status);
+    MPI_Wait(&send_requestBt, &comm_status);
+    MPI_Wait(&send_requestT,  &comm_status);
+    MPI_Wait(&send_requestF,  &comm_status);
+    MPI_Wait(&send_requestBk, &comm_status);
+
 }
 
 void PetscParallelManager::communicateVelocities(){
 
     MPI_Status comm_status;
+    MPI_Request send_requestL, send_requestR, send_requestBt, send_requestT, send_requestF, send_requestBk;
+    MPI_Request recv_requestL, recv_requestR, recv_requestBt, recv_requestT, recv_requestF, recv_requestBk;
 
     // ------------------------------------------------------------------------
-    // Communicate in the X-dimension:
+    // Communicate velocities in the X-dimension:
     // Fill the velocity send buffers L/R
     _parallelBoundaryVelocityFillIterator->iterate(0);
 
     // Left --> + --> Right
-    MPI_Sendrecv(_velocitiesRightSend, 2*velBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.rightNb, 1,
-                 _velocitiesLeftRecv,  2*velBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.leftNb,  1,
-                 PETSC_COMM_WORLD, &comm_status);
+    MPI_Isend(_velocitiesRightSend, 2*velBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.rightNb, 11, PETSC_COMM_WORLD, &send_requestR);
+    MPI_Irecv(_velocitiesLeftRecv,  2*velBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.leftNb,  11, PETSC_COMM_WORLD, &recv_requestL);
 
     // Left <-- + <-- Right
-    MPI_Sendrecv(_velocitiesLeftSend,  velBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.leftNb,  1,
-                 _velocitiesRightRecv, velBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.rightNb, 1,
-                 PETSC_COMM_WORLD, &comm_status);
+    MPI_Isend(_velocitiesLeftSend,  velBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.leftNb,  12, PETSC_COMM_WORLD, &send_requestL);
+    MPI_Irecv(_velocitiesRightRecv, velBufSizeLR, MY_MPI_FLOAT, _parameters.parallel.rightNb, 12, PETSC_COMM_WORLD, &recv_requestR);
 
-    // Wait for the current dimension to complete before continuing to the next
-    MPI_Barrier(PETSC_COMM_WORLD);
+    // Wait for all the requests of the current rank to finish before reading
+    MPI_Wait(&recv_requestL, &comm_status);
+    MPI_Wait(&recv_requestR, &comm_status);
 
     // Read the velocity receive buffers L/R
     _parallelBoundaryVelocityReadIterator->iterate(0);
@@ -235,22 +233,21 @@ void PetscParallelManager::communicateVelocities(){
 
 
     // ------------------------------------------------------------------------
-    // Communicate in the Y-dimension:
+    // Communicate velocities in the Y-dimension:
     // Fill the velocity send buffers T/B
     _parallelBoundaryVelocityFillIterator->iterate(1);
 
     // Bottom --> + --> Top
-    MPI_Sendrecv(_velocitiesTopSend,    2*velBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.topNb,    1,
-                 _velocitiesBottomRecv, 2*velBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.bottomNb, 1,
-                 PETSC_COMM_WORLD, &comm_status);
+    MPI_Isend(_velocitiesTopSend,    2*velBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.topNb,    13, PETSC_COMM_WORLD, &send_requestT);
+    MPI_Irecv(_velocitiesBottomRecv, 2*velBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.bottomNb, 13, PETSC_COMM_WORLD, &recv_requestBt);
 
     // Bottom <-- + <-- Top
-    MPI_Sendrecv(_velocitiesBottomSend, velBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.bottomNb, 1,
-                 _velocitiesTopRecv,    velBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.topNb,    1,
-                 PETSC_COMM_WORLD, &comm_status);
+    MPI_Isend(_velocitiesBottomSend, velBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.bottomNb, 14, PETSC_COMM_WORLD, &send_requestBt);
+    MPI_Irecv(_velocitiesTopRecv,    velBufSizeTB, MY_MPI_FLOAT, _parameters.parallel.topNb,    14, PETSC_COMM_WORLD, &recv_requestT);
 
-    // Wait for the current dimension to complete before continuing to the next
-    MPI_Barrier(PETSC_COMM_WORLD);
+    // Wait for all the requests of the current rank to finish before reading
+    MPI_Wait(&recv_requestBt, &comm_status);
+    MPI_Wait(&recv_requestT,  &comm_status);
 
     // Read the velocity receive buffers T/B
     _parallelBoundaryVelocityReadIterator->iterate(1);
@@ -259,29 +256,36 @@ void PetscParallelManager::communicateVelocities(){
 
 
     // ------------------------------------------------------------------------
-    // Communicate in the Z-dimension (z increases from front to back):
+    // Communicate velocities in the Z-dimension (z increases from front to back):
     if (_parameters.geometry.dim == 3) {
 
         // Fill the pressure send buffers F/B
         _parallelBoundaryVelocityFillIterator->iterate(2);
 
         // Front --> + --> Back
-        MPI_Sendrecv(_velocitiesBackSend,  2*velBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.backNb,  1,
-                     _velocitiesFrontRecv, 2*velBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.frontNb, 1,
-                     PETSC_COMM_WORLD, &comm_status);
+        MPI_Isend(_velocitiesBackSend,  2*velBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.backNb,  15, PETSC_COMM_WORLD, &send_requestBk);
+        MPI_Irecv(_velocitiesFrontRecv, 2*velBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.frontNb, 15, PETSC_COMM_WORLD, &recv_requestF);
 
         // Front <-- + <-- Back
-        MPI_Sendrecv(_velocitiesFrontSend, velBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.frontNb, 1,
-                     _velocitiesBackRecv,  velBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.backNb,  1,
-                     PETSC_COMM_WORLD, &comm_status);
+        MPI_Isend(_velocitiesFrontSend, velBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.frontNb, 16, PETSC_COMM_WORLD, &send_requestF);
+        MPI_Irecv(_velocitiesBackRecv,  velBufSizeFB, MY_MPI_FLOAT, _parameters.parallel.backNb,  16, PETSC_COMM_WORLD, &recv_requestBk);
 
-        // Wait for the current dimension to complete
-        MPI_Barrier(PETSC_COMM_WORLD);
+        // Wait for all the requests of the current rank to finish before reading
+        MPI_Wait(&recv_requestF,  &comm_status);
+        MPI_Wait(&recv_requestBk, &comm_status);
 
         // Read the velocity receive buffers F/B
         _parallelBoundaryVelocityReadIterator->iterate(2);
     }
     // ------------------------------------------------------------------------
+
+    // Wait for all the sends of this rank to complete
+    MPI_Wait(&send_requestL,  &comm_status);
+    MPI_Wait(&send_requestR,  &comm_status);
+    MPI_Wait(&send_requestBt, &comm_status);
+    MPI_Wait(&send_requestT,  &comm_status);
+    MPI_Wait(&send_requestF,  &comm_status);
+    MPI_Wait(&send_requestBk, &comm_status);
 
 }
 
