@@ -1,0 +1,47 @@
+# Example of blocking communication output (MPI_Sendrecv)
+Note:   All the ranks race for the output!
+Note:   For example, rank 1 finishes the B-->T and starts the B<--T, but doesn't
+        complete before the rank 3 is ready to receive in the B<--T stage.
+
+Communicating B-->T... (rank 0)
+Communicating B-->T... (rank 1)
+Communicating B-->T... (rank 2)
+Communicated B-->T (rank 1), count 0 from -1
+Communicating B<--T... (rank 1)
+Communicated B-->T (rank 0), count 0 from -1
+Communicated B-->T (rank 2), count 56 from 0
+Communicating B<--T... (rank 2)
+Communicated B<--T (rank 2), count 0 from -1
+Communicating B-->T... (rank 3)
+Communicated B-->T (rank 3), count 56 from 1
+Communicating B<--T... (rank 3)
+Communicated B<--T (rank 1), count 28 from 3
+Communicated B<--T (rank 3), count 0 from -1
+Communicating B<--T... (rank 0)
+Communicated B<--T (rank 0), count 28 from 2
+
+# Example of non-blocking communication output (MPI_Isend + MPI_Irecv + MPI_Wait)
+Note:   This is an early implementation, with a barrier before changing dimension.
+Note:   Although here the messages just mean that the respective request was posted,
+        we see that the ranks don't wait for each other. Probably every rank posts
+        all its requests and they only look somehow ordered because of delays in their
+        overall execution.
+
+
+
+Communicating L-->R... (rank 0)
+Communicating L-->R... (rank 1)
+Communicated L-->R (rank 1), count 1 from 13868512
+Communicating L<--R... (rank 1)
+Communicated L-->R (rank 0), count -32766 from 19107552
+Communicating L<--R... (rank 0)
+Communicated L<--R (rank 0), count -32766 from 19107552
+Communicated L<--R (rank 1), count 1 from 13868512
+Communicating L-->R... (rank 2)
+Communicated L-->R (rank 2), count 1 from 16637360
+Communicating L<--R... (rank 2)
+Communicated L<--R (rank 2), count 1 from 16637360
+Communicating L-->R... (rank 3)
+Communicated L-->R (rank 3), count 1 from 29068768
+Communicating L<--R... (rank 3)
+Communicated L<--R (rank 3), count 1 from 29068768
