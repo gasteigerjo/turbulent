@@ -5,7 +5,7 @@ DistNearestWallStencil::DistNearestWallStencil ( const Parameters & parameters )
     sizeY(parameters.geometry.lengthY),
     sizeZ(parameters.geometry.lengthZ),
     stepX(parameters.bfStep.xRatio*parameters.geometry.lengthX),
-    stepY(parameters.bfStep.xRatio*parameters.geometry.lengthY)
+    stepY(parameters.bfStep.yRatio*parameters.geometry.lengthY)
 {}
 
 
@@ -20,11 +20,20 @@ void DistNearestWallStencil::apply ( TurbulentFlowField & turbFlowField, int i, 
 
         FLOAT distance = 0.0;
 
+        // calculate the NORMAL distance to the nearest wall
         if (_parameters.simulation.scenario == "channel"){
-          // check whether cell is located above the step
+          // check where the cell is located relative to the step
           if (posX <= stepX){
+            // cell is located above the step
             distance = std::min(sizeY - posY, posY - stepY);
+          }else if (posX < stepX + stepY && posY <= stepY){
+            // cell is located behind the step in its proximity
+            // decide whether nearest wall is top/bottom wall or vertical wall of the step
+            distance = std::min(sizeY - posY, posY);
+            distance = std::min(distance, posX - stepX);
           }else{
+            // cell is located well downstream of the step and
+            // the distance is thus not influenced by the step
             distance = std::min(sizeY - posY, posY);
           }
         }else{
@@ -48,11 +57,20 @@ void DistNearestWallStencil::apply ( TurbulentFlowField & turbFlowField, int i, 
 
         FLOAT distance = 0.0;
 
+        // calculate the NORMAL distance to the nearest wall
         if (_parameters.simulation.scenario == "channel"){
-          // check whether cell is located above the step
+          // check where the cell is located relative to the step
           if (posX <= stepX){
+            // cell is located above the step
             distance = std::min(sizeY - posY, posY - stepY);
+          }else if (posX < stepX + stepY && posY <= stepY){
+            // cell is located behind the step in its proximity
+            // decide whether nearest wall is top/bottom wall or vertical wall of the step
+            distance = std::min(sizeY - posY, posY);
+            distance = std::min(distance, posX - stepX);
           }else{
+            // cell is located well downstream of the step and
+            // the distance is thus not influenced by the step
             distance = std::min(sizeY - posY, posY);
           }
 

@@ -15,7 +15,9 @@
  */
 class VTKStencil : public FieldStencil<FlowField> {
     private:
-        std::stringstream _ssPoints, _ssPressure, _ssFlags, _ssVelocity, _ssTurbViscosity, _ssWallDistance, _ssFGH;
+        std::stringstream _ssPoints, _ssPressure, _ssFlags, _ssVelocity, _ssTurbViscosity;
+        // std::stringstream _ssFGH;
+        // std::stringstream _ssDistWall;
         bool _turbulent;
         bool _includeGhostCells;
 

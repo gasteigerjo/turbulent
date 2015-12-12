@@ -43,7 +43,8 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j ) {
     // skip assigning property values to ghost cells, if not asked to include them.
     if (!_includeGhostCells && (i < 2 || j < 2 || i > cellsX-2 || j > cellsY-2)) return;
 
-    FLOAT pressure, turbVisc;//, distWall;
+    FLOAT pressure, turbVisc;
+    // FLOAT distWall;
     FLOAT* velocity = new FLOAT(2);
     const int obstacle = flowField.getFlags().getValue(i, j);
 
@@ -89,7 +90,8 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j, int k ) {
     // skip assigning property values to ghost cells, if not asked to include them.
     if (!_includeGhostCells && (i < 2 || j < 2 || k < 2 || i > cellsX-2 || j > cellsY-2 || k > cellsZ-2 )) return;
 
-    FLOAT pressure, turbVisc;//, distWall;
+    FLOAT pressure, turbVisc;
+    // FLOAT distWall;
     FLOAT* velocity = new FLOAT(3);
     const int obstacle = flowField.getFlags().getValue(i, j, k);
     // FLOAT* fgh = flowField.getFGH().getVector(i,j,k);
@@ -180,7 +182,7 @@ void VTKStencil::write ( FlowField & flowField, int timeStep ) {
       file << "LOOKUP_TABLE default" << std::endl;
       file << _ssTurbViscosity.str();
 
-      // write wall distance data
+      // // write wall distance data
       // file << "\nSCALARS distWall float 1" << std::endl;
       // file << "LOOKUP_TABLE default" << std::endl;
       // file << _ssDistWall.str();
