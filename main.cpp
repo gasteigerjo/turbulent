@@ -7,6 +7,7 @@
 #include "MeshsizeFactory.h"
 #include <iomanip>
 #include "TurbulentSimulation.h"
+#include "SimpleTimer.h"
 
 int main (int argc, char *argv[]) {
 
@@ -29,6 +30,7 @@ int main (int argc, char *argv[]) {
     MeshsizeFactory::getInstance().initMeshsize(parameters);
     FlowField *flowField = NULL;
     Simulation *simulation = NULL;
+    SimpleTimer timer = SimpleTimer();
 
     #ifdef DEBUG
     std::cout << "Processor " << parameters.parallel.rank << " with index ";
@@ -76,6 +78,9 @@ int main (int argc, char *argv[]) {
     // WS1: plot initial state
     simulation->plotVTK(0);
 
+    // start timer
+    timer.start();
+
     // time loop
     while (time < parameters.simulation.finalTime){
 
@@ -95,6 +100,12 @@ int main (int argc, char *argv[]) {
           simulation->plotVTK(timeSteps); // TODO Change to time?
           lastPlotTime += parameters.vtk.interval;
       }
+    }
+
+    // take computation time
+    FLOAT exec_time = timer.getTimeAndContinue();
+    if (rank == 0) {
+        std::cerr << parameters.parallel.numProcessors[0] << "x" << parameters.parallel.numProcessors[1] << "x" << parameters.parallel.numProcessors[2] << ": " << exec_time << std::endl; // Output time in cerr for easy redirection into file
     }
 
     // WS1: plot final output
