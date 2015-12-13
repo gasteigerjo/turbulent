@@ -1,21 +1,23 @@
 #### The petsc environment can also be fixed in the makefile
-# PETSC_DIR =
+# Using the externally defined $PETSC_DIR:
+include ${PETSC_DIR}/conf/variables
+# For MAC-Cluster:
+# include ${PETSC_DIR}/conf/petscvariables
 # for Thomas:
 #PETSC_DIR = /opt/petsc/petsc-3.5.4
 # PETSC_ARCH =
-include ${PETSC_DIR}/conf/variables
 
 # default gnu compiler (currently not used)
 # CC = g++
 # compiler wrapper for mac-cluster
-# CC = mpiCC
+#CC = mpiCC
+#CFLAGS = -Wall -Werror -O3 -xHost -unroll
 # compiler on Ubuntu
-#
-#
 CC = mpic++
 CFLAGS = -Wall -Werror -O3 -Wno-unknown-pragmas -Wno-unused-value
 SRCDIR = ./
 INCLUDE = -I. -Istencils ${PETSC_CC_INCLUDES}
+
 
 
 NSMAIN = main.o

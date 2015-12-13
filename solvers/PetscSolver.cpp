@@ -1,6 +1,5 @@
 #include "PetscSolver.h"
 
-
 // This function returns the ranges to work on the pressure with the non-boundary stencil.
 // Since the domain PETSc deals with has an additional layer of cells, the size is clipped to
 // ignore them.
@@ -588,7 +587,7 @@ PetscErrorCode computeMatrix3D(KSP ksp, Mat A, Mat pc, MatStructure * matStructu
     Nz = parameters.geometry.sizeZ + 2;
 
     // Loop for inner nodes
-    std::cout << "Limits: " << limitsX[0] << ", " << limitsX[1] << ", " << limitsY[0] << ", " << limitsY[1] << ", " << limitsZ[0] << ", " << limitsZ[1] << std::endl;
+    // std::cout << "Limits: " << limitsX[0] << ", " << limitsX[1] << ", " << limitsY[0] << ", " << limitsY[1] << ", " << limitsZ[0] << ", " << limitsZ[1] << std::endl;
     for (k = limitsZ[0]; k < limitsZ[1]; k++){
         for (j = limitsY[0]; j < limitsY[1]; j++){
             for (i = limitsX[0]; i < limitsX[1]; i++){
