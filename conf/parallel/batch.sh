@@ -7,6 +7,7 @@
 #SBATCH --time=2:00:00
 #SBATCH --nodes={nodes}
 #SBATCH --partition=snb
+#SBATCH --constraint=turbo_off
 #SBATCH --begin=now
 
 source /etc/profile.d/modules.sh
