@@ -21,6 +21,10 @@ def enqueue_sim(conf_template, name, solver, mesh, dim, lenX, lenY, lenZ, sizeX,
     outConf.write(conf_file)
     outConf.close()
 
+    # Create output folder
+    if not os.path.exists("../../output/{0}/{1}".format(run_name, name)):
+        os.mkdir("../../output/{0}/{1}".format(run_name, name))
+
     # Enqueue simulation
     names.append(name)
     nodeslist.append(nProcX * nProcY * nProcZ)
@@ -51,12 +55,12 @@ def validation():
     lX = 1.0
     lY = 1.0
     lZ = 1.0
-    # enqueue_sim(cav, "cav_2D_seq", "dns", "uniform", 2, lX, lY, lZ, sX, sY, sZ, 1, 1, 1)
-    # enqueue_sim(cav, "cav_2D", "dns", "uniform", 2, lX, lY, lZ, sX, sY, sZ, 4, 2, 1)
-    # enqueue_sim(cav, "cav_3D_seq", "dns", "uniform", 3, lX, lY, lZ, sX, sY, sZ, 1, 1, 1)
-    # enqueue_sim(cav, "cav_3D_2", "dns", "uniform", 3, lX, lY, lZ, sX, sY, sZ, 2, 1, 1)
-    # enqueue_sim(cav, "cav_3D_8", "dns", "uniform", 3, lX, lY, lZ, sX, sY, sZ, 2, 2, 2)
-    # enqueue_sim(cav, "cav_3D_16", "dns", "uniform", 3, lX, lY, lZ, sX, sY, sZ, 4, 2, 2)
+    enqueue_sim(cav, "cav_2D_seq", "dns", "uniform", 2, lX, lY, lZ, sX, sY, sZ, 1, 1, 1)
+    enqueue_sim(cav, "cav_2D", "dns", "uniform", 2, lX, lY, lZ, sX, sY, sZ, 4, 2, 1)
+    enqueue_sim(cav, "cav_3D_seq", "dns", "uniform", 3, lX, lY, lZ, sX, sY, sZ, 1, 1, 1)
+    enqueue_sim(cav, "cav_3D_2", "dns", "uniform", 3, lX, lY, lZ, sX, sY, sZ, 2, 1, 1)
+    enqueue_sim(cav, "cav_3D_8", "dns", "uniform", 3, lX, lY, lZ, sX, sY, sZ, 2, 2, 2)
+    enqueue_sim(cav, "cav_3D_16", "dns", "uniform", 3, lX, lY, lZ, sX, sY, sZ, 4, 2, 2)
     lY = 5.0
     enqueue_sim(cav, "cav_y5.0_seq", "dns", "uniform", 3, lX, lY, lZ, sX, sY, sZ, 1, 1, 1)
     enqueue_sim(cav, "cav_y5.0", "dns", "uniform", 3, lX, lY, lZ, sX, sY, sZ, 2, 2, 2)
@@ -78,9 +82,9 @@ def validation():
 
 if __name__ == '__main__':
 
-    
+
     # Name of this run
-    run_name = "validation_1"
+    run_name = "validation_2"
 
 
     # Create folders

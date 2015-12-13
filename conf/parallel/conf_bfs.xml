@@ -13,7 +13,6 @@
       sizeX="{sX}" sizeY="{sY}" sizeZ="{sZ}"
       stretchX="false" stretchY="true" stretchZ="true"
     >
-      <!--mesh>uniform</mesh-->
       <mesh>{mesh}</mesh>
     </geometry>
     <environment gx="0" gy="0" gz="0" />
@@ -37,7 +36,7 @@
             <vector x="0" y="0" z="0" />
         </back>
     </walls>
-    <vtk interval="0.1">output/{run_name}/{name}</vtk>
+    <vtk interval="0.1">output/{run_name}/{name}/{name}</vtk>
     <stdOut interval="0.0001" />
     <parallel numProcessorsX="{npX}" numProcessorsY="{npY}" numProcessorsZ="{npZ}" />
 </configuration>
