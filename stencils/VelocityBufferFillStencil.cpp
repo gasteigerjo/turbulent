@@ -58,7 +58,6 @@ void VelocityBufferFillStencil::applyTopWall    ( FlowField & flowField, int i, 
 
 // 3D problem
 
-// TODO Check if array index (ind) is right
 inline void VelocityBufferFillStencil::applyStencil3D(FlowField & flowField, FLOAT * velBuffer, int i, int j, int k, int dimFast, int indSlow, int indFast) {
 
     // Save pointer to avoid multiple calls to getVector()
@@ -75,8 +74,6 @@ void VelocityBufferFillStencil::applyLeftWall   ( FlowField & flowField, int i, 
     // applyStencil3D(flowField, _velocitiesLeft, i, j, k, 2, j, k);
     applyStencil3D(flowField, _velocitiesLeft, i+2, j, k, 2, j, k);
 }
-// TODO: ABSOLUTELY CHECK what is going on here and onwards.
-// TODO: Not sure at all about the 2*(j-_lowOffset)+1 part in each method.
 void VelocityBufferFillStencil::applyRightWall  ( FlowField & flowField, int i, int j, int k ) {
     // applyStencil3D(flowField, _velocitiesRight, i, j, k, 2, j, k);
     applyStencil3D(flowField, _velocitiesRight, i-1, j, k, 2, 2*j+1, k);

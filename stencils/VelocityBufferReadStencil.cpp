@@ -55,7 +55,6 @@ void VelocityBufferReadStencil::applyTopWall    ( FlowField & flowField, int i, 
 
 // 3D problem
 
-// TODO Check if array index (ind) is right
 void VelocityBufferReadStencil::applyStencil3D(FlowField & flowField, FLOAT * velBuffer, int i, int j, int k, int dimFast, int indSlow, int indFast) {
 
     // Save pointer to avoid multiple calls to getVector()

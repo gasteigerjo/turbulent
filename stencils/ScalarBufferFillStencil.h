@@ -62,7 +62,6 @@ public:
 
     // 2D problem
 
-
     void applyLeftWall   ( FlowField & flowField, int i, int j ) {
         _bufferLeft[j - _lowOffset] = getScalar(flowField, i+2, j);
     }
@@ -81,8 +80,6 @@ public:
 
 
     // 3D problem
-
-    // TODO Check if array index is right
 
     void applyLeftWall   ( FlowField & flowField, int i, int j, int k ) {
         _bufferLeft[(j - _lowOffset) * (BoundaryStencil<FlowField>::_parameters.parallel.localSize[2] + 2) + (k - _lowOffset)] = getScalar(flowField, i+2, j, k);

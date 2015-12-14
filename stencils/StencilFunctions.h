@@ -54,7 +54,7 @@ inline void loadLocalMeshsize3D(const Parameters& parameters, FLOAT * const loca
     }
 }
 
-// TODO WS2: Load local turbulence viscosity for 2D
+// WS2: Load local turbulence viscosity for 2D
 
 inline void loadLocalTurbViscosity2D(TurbulentFlowField & turbulentFlowField, FLOAT * const localViscosity, int i, int j){
     for (int row = -1; row <= 1; row++ ){
@@ -65,7 +65,7 @@ inline void loadLocalTurbViscosity2D(TurbulentFlowField & turbulentFlowField, FL
 }
 
 
-// TODO WS2: Load local turbulence viscosity for 3D
+// WS2: Load local turbulence viscosity for 3D
 
 inline void loadLocalTurbViscosity3D(TurbulentFlowField & turbulentFlowField, FLOAT * const localViscosity, int i, int j, int k){
     for ( int layer = -1; layer <= 1; layer ++ ){

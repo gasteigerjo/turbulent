@@ -37,7 +37,7 @@ void DistNearestWallStencil::apply ( TurbulentFlowField & turbFlowField, int i, 
             distance = std::min(sizeY - posY, posY);
           }
         }else{
-          // TODO what to do in other scenarios?
+          handleError(1, "Only channel scenario supported for turbulence simulation");
         }
 
         turbFlowField.getDistNearestWall().getScalar(i, j) = distance;
@@ -77,7 +77,7 @@ void DistNearestWallStencil::apply ( TurbulentFlowField & turbFlowField, int i, 
           distance = std::min(distance, sizeZ - posZ);
           distance = std::min(distance, posZ);
         }else{
-          // TODO what to do in other scenarios?
+          handleError(1, "Only channel scenario supported for turbulence simulation");
         }
 
         turbFlowField.getDistNearestWall().getScalar(i, j, k) = distance;

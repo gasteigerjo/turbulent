@@ -305,7 +305,7 @@ void PetscSolver::solve(){
     if (_parameters.geometry.dim == 2){
         KSPSetComputeRHS(_ksp, computeRHS2D, &_ctx);
     	KSPSetComputeOperators(_ksp,computeMatrix2D, &_ctx);
-        KSPSolve(_ksp, PETSC_NULL, _x); // TODO gets stuck in this solve method
+        KSPSolve(_ksp, PETSC_NULL, _x);
 
         // Then extract the information
         PetscScalar **array;

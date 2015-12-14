@@ -25,7 +25,7 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j ) {
     const int cellsX = flowField.getCellsX();
     const int cellsY = flowField.getCellsY();
 
-    // Ghost cells only
+    // Ghost cells only // NOTE: This is used for debugging only.
     // TODO: confirm that correct vtk files are produced (correct order of coordinates)
     if (_includeGhostCells && i==0){
       if (j==0){
@@ -80,7 +80,7 @@ void VTKStencil::apply ( FlowField & flowField, int i, int j, int k ) {
     const int cellsY = flowField.getCellsY();
     const int cellsZ = flowField.getCellsZ();
 
-    // Ghost cells only
+    // Ghost cells only // NOTE: This is used for debugging only.
     // TODO: implement the ghost layer inclusion in 3D.
 
     if (_includeGhostCells || (i > 1 && j > 1 && k > 1 && i < cellsX && j < cellsY && k < cellsZ)) {

@@ -67,7 +67,7 @@ class TurbulentSimulation : public Simulation {
       _turbViscIterator.iterate();
 
       _timer_comm.start();
-      // TODO WS2: communicate turbulent viscosity values
+      // WS2: communicate turbulent viscosity values
       _petscTurbParallelManager.communicateTurbViscosity();
       // set global boundary values for the turbulent viscosity
       _time_comm += _timer_comm.getTimeAndContinue();
@@ -86,7 +86,7 @@ class TurbulentSimulation : public Simulation {
       _time_solve += _timer_solve.getTimeAndContinue();
 
       _timer_comm.start();
-      // TODO WS2: communicate pressure values
+      // WS2: communicate pressure values
       _petscParallelManager.communicatePressure();
       _time_comm += _timer_comm.getTimeAndContinue();
 
@@ -96,7 +96,7 @@ class TurbulentSimulation : public Simulation {
       _obstacleIterator.iterate();
 
       _timer_comm.start();
-      // TODO WS2: communicate velocity values
+      // WS2: communicate velocity values
       _petscParallelManager.communicateVelocities();
       _time_comm += _timer_comm.getTimeAndContinue();
 

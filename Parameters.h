@@ -176,7 +176,7 @@ class Parameters {
         ParallelParameters      parallel;
         StdOutParameters        stdOut;
         BFStepParameters        bfStep;
-        // TODO WS2: include parameters for turbulence
+        // WS2: include parameters for turbulence
         TurbulenceModelParameters turbulenceModel;
         Meshsize                *meshsize;
 };
