@@ -28,7 +28,7 @@ void VelocityBufferFillStencil::applyStencil2D(FlowField & flowField, FLOAT * ve
 
     #pragma unroll(2)
     for(int dim = 0; dim < 2; dim++) {
-        velBuffer[(ind - _lowOffset)*2 + dim] = vel[dim];
+        velBuffer[ind*2 + dim] = vel[dim];
     }
 }
 
@@ -40,8 +40,8 @@ void VelocityBufferFillStencil::applyLeftWall   ( FlowField & flowField, int i, 
 void VelocityBufferFillStencil::applyRightWall  ( FlowField & flowField, int i, int j ) {
     // printf("Velocity applyRightWall for (i,j)=(%d, %d)... (rank %d)\n", i, j, _parameters.parallel.rank);
     // applyStencil2D(flowField, _velocitiesRight, i, j, j);
-    applyStencil2D(flowField, _velocitiesRight, i-1, j, 2*(j-_lowOffset)+1);
-    applyStencil2D(flowField, _velocitiesRight, i-2, j, 2*(j-_lowOffset));
+    applyStencil2D(flowField, _velocitiesRight, i-1, j, 2*j+1);
+    applyStencil2D(flowField, _velocitiesRight, i-2, j, 2*j);
 }
 void VelocityBufferFillStencil::applyBottomWall ( FlowField & flowField, int i, int j ) {
     // printf("Velocity applyBottomWall for (i,j)=(%d, %d)... (rank %d)\n", i, j, _parameters.parallel.rank);
@@ -51,8 +51,8 @@ void VelocityBufferFillStencil::applyBottomWall ( FlowField & flowField, int i, 
 void VelocityBufferFillStencil::applyTopWall    ( FlowField & flowField, int i, int j ) {
     // printf("Velocity applyTopWall for (i,j)=(%d, %d)... (rank %d)\n", i, j, _parameters.parallel.rank);
     // applyStencil2D(flowField, _velocitiesTop, i, j, i);
-    applyStencil2D(flowField, _velocitiesTop, i, j-1, 2*(i-_lowOffset)+1);
-    applyStencil2D(flowField, _velocitiesTop, i, j-2, 2*(i-_lowOffset));
+    applyStencil2D(flowField, _velocitiesTop, i, j-1, 2*i+1);
+    applyStencil2D(flowField, _velocitiesTop, i, j-2, 2*i);
 }
 
 
@@ -63,7 +63,7 @@ inline void VelocityBufferFillStencil::applyStencil3D(FlowField & flowField, FLO
 
     // Save pointer to avoid multiple calls to getVector()
     FLOAT * vel = flowField.getVelocity().getVector(i, j, k);
-    int ind = ((indSlow - _lowOffset) * (_parameters.parallel.localSize[dimFast] + 2) + (indFast - _lowOffset)) * 3;
+    int ind = (indSlow * (_parameters.parallel.localSize[dimFast] + 2) + indFast) * 3;
 
     #pragma unroll(3)
     for(int dim = 0; dim < 3; dim++) {
@@ -79,8 +79,8 @@ void VelocityBufferFillStencil::applyLeftWall   ( FlowField & flowField, int i, 
 // TODO: Not sure at all about the 2*(j-_lowOffset)+1 part in each method.
 void VelocityBufferFillStencil::applyRightWall  ( FlowField & flowField, int i, int j, int k ) {
     // applyStencil3D(flowField, _velocitiesRight, i, j, k, 2, j, k);
-    applyStencil3D(flowField, _velocitiesRight, i-1, j, k, 2, 2*(j-_lowOffset)+1, k);
-    applyStencil3D(flowField, _velocitiesRight, i-2, j, k, 2, 2*(j-_lowOffset), k);
+    applyStencil3D(flowField, _velocitiesRight, i-1, j, k, 2, 2*j+1, k);
+    applyStencil3D(flowField, _velocitiesRight, i-2, j, k, 2, 2*j, k);
 }
 void VelocityBufferFillStencil::applyBottomWall ( FlowField & flowField, int i, int j, int k ) {
     // applyStencil3D(flowField, _velocitiesBottom, i, j, k, 2, i, k);
@@ -88,8 +88,8 @@ void VelocityBufferFillStencil::applyBottomWall ( FlowField & flowField, int i, 
 }
 void VelocityBufferFillStencil::applyTopWall    ( FlowField & flowField, int i, int j, int k ) {
     // applyStencil3D(flowField, _velocitiesTop, i, j, k, 2, i, k);
-    applyStencil3D(flowField, _velocitiesTop, i, j-1, k, 2, 2*(i-_lowOffset)+1, k);
-    applyStencil3D(flowField, _velocitiesTop, i, j-2, k, 2, 2*(i-_lowOffset), k);
+    applyStencil3D(flowField, _velocitiesTop, i, j-1, k, 2, 2*i+1, k);
+    applyStencil3D(flowField, _velocitiesTop, i, j-2, k, 2, 2*i, k);
 }
 void VelocityBufferFillStencil::applyFrontWall  ( FlowField & flowField, int i, int j, int k ) {
     // applyStencil3D(flowField, _velocitiesFront, i, j, k, 1, i, j);
@@ -97,6 +97,6 @@ void VelocityBufferFillStencil::applyFrontWall  ( FlowField & flowField, int i, 
 }
 void VelocityBufferFillStencil::applyBackWall   ( FlowField & flowField, int i, int j, int k ) {
     // applyStencil3D(flowField, _velocitiesBack, i, j, k, 1, i, j);
-    applyStencil3D(flowField, _velocitiesBack, i, j, k-1, 1, 2*(i-_lowOffset)+1, j);
-    applyStencil3D(flowField, _velocitiesBack, i, j, k-2, 1, 2*(i-_lowOffset), j);
+    applyStencil3D(flowField, _velocitiesBack, i, j, k-1, 1, 2*i+1, j);
+    applyStencil3D(flowField, _velocitiesBack, i, j, k-2, 1, 2*i, j);
 }
