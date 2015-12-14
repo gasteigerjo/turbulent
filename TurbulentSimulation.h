@@ -12,6 +12,7 @@
 
 #include "parallelManagers/PetscTurbulentParallelManager.h"
 
+#include "SimpleTimer.h"
 
 class TurbulentSimulation : public Simulation {
   protected:
@@ -30,6 +31,9 @@ class TurbulentSimulation : public Simulation {
 
     PetscTurbulentParallelManager _petscTurbParallelManager;
 
+    SimpleTimer _timer_solve;
+    SimpleTimer _timer_comm;
+
   public:
     TurbulentSimulation(Parameters &parameters, TurbulentFlowField &turbFlowField):
       Simulation(parameters,turbFlowField),
@@ -41,7 +45,9 @@ class TurbulentSimulation : public Simulation {
       _minDtStencil(parameters),
       _minDtIterator(turbFlowField,parameters,_minDtStencil,1,0), // must not run over ghost layers
       _wallTurbViscIterator(createGlobalBoundaryTurbViscIterator()),
-      _petscTurbParallelManager(parameters,turbFlowField)
+      _petscTurbParallelManager(parameters,turbFlowField),
+      _timer_solve(),
+      _timer_comm()
     {
     }
 
@@ -55,13 +61,17 @@ class TurbulentSimulation : public Simulation {
       iterator.iterate();
     }
 
-    void solveTimestep(){
+    void solveTimestep(FLOAT &_time_solve, FLOAT &_time_comm){
       setTimeStep();
       // compute turbulent viscosity
       _turbViscIterator.iterate();
+
+      _timer_comm.start();
       // TODO WS2: communicate turbulent viscosity values
       _petscTurbParallelManager.communicateTurbViscosity();
       // set global boundary values for the turbulent viscosity
+      _time_comm += _timer_comm.getTimeAndContinue();
+
       _wallTurbViscIterator.iterate();
       // compute fgh for turbulent case
       _fghTurbIterator.iterate();
@@ -69,16 +79,27 @@ class TurbulentSimulation : public Simulation {
       _wallFGHIterator.iterate();
       // compute the right hand side
       _rhsIterator.iterate();
+
+      _timer_solve.start();
       // solve for pressure
       _solver.solve();
+      _time_solve += _timer_solve.getTimeAndContinue();
+
+      _timer_comm.start();
       // TODO WS2: communicate pressure values
       _petscParallelManager.communicatePressure();
+      _time_comm += _timer_comm.getTimeAndContinue();
+
       // compute velocity
       _velocityIterator.iterate();
       // set obstacle boundaries
       _obstacleIterator.iterate();
+
+      _timer_comm.start();
       // TODO WS2: communicate velocity values
       _petscParallelManager.communicateVelocities();
+      _time_comm += _timer_comm.getTimeAndContinue();
+
       // Iterate for velocities on the boundary
       _wallVelocityIterator.iterate();
     }

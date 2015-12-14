@@ -61,8 +61,6 @@ class Simulation {
 
     PetscParallelManager _petscParallelManager;
 
-    SimpleTimer _timer_fgh;
-    SimpleTimer _timer_rhs;
     SimpleTimer _timer_solve;
     SimpleTimer _timer_comm;
 
@@ -88,8 +86,6 @@ class Simulation {
        _vtkIterator(_flowField,parameters,_vtkStencil,-1,1),
        _solver(_flowField,parameters),
        _petscParallelManager(parameters, _flowField),
-       _timer_fgh(),
-       _timer_rhs(),
        _timer_solve(),
        _timer_comm()
        {
@@ -135,21 +131,16 @@ class Simulation {
       _solver.reInitMatrix();
     }
 
-    virtual void solveTimestep(FLOAT &_time_fgh, FLOAT &_time_rhs, FLOAT &_time_solve, FLOAT &_time_comm){
+    virtual void solveTimestep(FLOAT &_time_solve, FLOAT &_time_comm){
         // determine and set max. timestep which is allowed in this simulation
         setTimeStep();
 
-        _timer_fgh.start();
         // compute fgh
         _fghIterator.iterate();
         // set global boundary values
         _wallFGHIterator.iterate();
-        _time_fgh += _timer_fgh.getTimeAndContinue();
-
-        _timer_rhs.start();
         // compute the right hand side
         _rhsIterator.iterate();
-        _time_rhs += _timer_rhs.getTimeAndContinue();
 
         _timer_solve.start();
         // solve for pressure
@@ -160,7 +151,7 @@ class Simulation {
         // printf("Time to solution: %f s.\n", _time_solve_it);
         // _time_solve += _time_solve_it;
         // Use this version to just increment the timer.
-        _time_solve += _timer_fgh.getTimeAndContinue();
+        _time_solve += _timer_solve.getTimeAndContinue();
 
         _timer_comm.start();
         // WS2: communicate pressure values

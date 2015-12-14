@@ -78,18 +78,18 @@ int main (int argc, char *argv[]) {
     // WS1: plot initial state
     simulation->plotVTK(0);
 
-    // start timer
-    timer.start();
-
-    FLOAT time_fgh   = 0; FLOAT time_fgh_tot   = 0;
-    FLOAT time_rhs   = 0; FLOAT time_rhs_tot   = 0;
+    // initialize the region timers
+    FLOAT time_loop  = 0; FLOAT time_loop_tot  = 0;
     FLOAT time_solve = 0; FLOAT time_solve_tot = 0;
     FLOAT time_comm  = 0; FLOAT time_comm_tot  = 0;
+
+    // start the global timer
+    timer.start();
 
     // time loop
     while (time < parameters.simulation.finalTime){
 
-      simulation->solveTimestep(time_fgh, time_rhs, time_solve, time_comm);
+      simulation->solveTimestep(time_solve, time_comm);
 
       time += parameters.timestep.dt;
       timeSteps++;
@@ -108,16 +108,15 @@ int main (int argc, char *argv[]) {
     }
 
     // take computation time
-    FLOAT exec_time = timer.getTimeAndContinue();
-    printf("[Rank %d] Timers (s):\tFGH: %f\trhs: %f\tsolve: %f\tcomm: %f\n", rank, time_fgh, time_rhs, time_solve, time_comm);
-    MPI_Reduce(&time_fgh,   &time_fgh_tot,   1, MY_MPI_FLOAT, MPI_SUM, 0, PETSC_COMM_WORLD);
-    MPI_Reduce(&time_rhs,   &time_rhs_tot,   1, MY_MPI_FLOAT, MPI_SUM, 0, PETSC_COMM_WORLD);
+    time_loop = timer.getTimeAndContinue();
+    printf("[Rank %d] Timers (s):\tloop: %f | solve: %f  comm: %f  other: %f\n", rank, time_loop, time_solve, time_comm, time_loop-time_solve-time_comm);
+    MPI_Reduce(&time_loop,  &time_loop_tot,  1, MY_MPI_FLOAT, MPI_SUM, 0, PETSC_COMM_WORLD);
     MPI_Reduce(&time_solve, &time_solve_tot, 1, MY_MPI_FLOAT, MPI_SUM, 0, PETSC_COMM_WORLD);
     MPI_Reduce(&time_comm,  &time_comm_tot,  1, MY_MPI_FLOAT, MPI_SUM, 0, PETSC_COMM_WORLD);
     MPI_Barrier(PETSC_COMM_WORLD);
     if (rank==0) {
-        printf("[Average] Timers (s):\tFGH: %f\trhs: %f\tsolve: %f\tcomm: %f\n", time_fgh_tot/nproc, time_rhs_tot/nproc, time_solve_tot/nproc, time_comm_tot/nproc);
-        std::cerr << parameters.parallel.numProcessors[0] << "x" << parameters.parallel.numProcessors[1] << "x" << parameters.parallel.numProcessors[2] << ": " << exec_time << std::endl; // Output time in cerr for easy redirection into file
+        printf("[Average] Timers (s):\tloop: %f | solve: %f  comm: %f  other: %f\n", time_loop_tot/nproc, time_solve_tot/nproc, time_comm_tot/nproc, (time_loop_tot-time_solve_tot-time_comm_tot)/nproc);
+        std::cerr << parameters.parallel.numProcessors[0] << "x" << parameters.parallel.numProcessors[1] << "x" << parameters.parallel.numProcessors[2] << ": " << time_loop_tot/nproc << std::endl; // Output time in cerr for easy redirection into file
     }
 
     // WS1: plot final output
