@@ -9,14 +9,14 @@
  */
 class TurbViscosityStencil : public FieldStencil<TurbulentFlowField> {
 
-    private:
+    protected:
 
         // A local velocity variable that will be used to approximate derivatives. Size matches 3D
         // case, but can be used for 2D as well.
         FLOAT _localVelocity [ 27 * 3 ];
         // local meshsize
         FLOAT _localMeshsize [ 27 * 3 ];
-        
+
     public:
 
         /** Constructor
@@ -38,6 +38,54 @@ class TurbViscosityStencil : public FieldStencil<TurbulentFlowField> {
          * @param k Position in the Z direction
          */
         void apply ( TurbulentFlowField & turbFlowField, int i, int j, int k );
+
+    protected:
+        virtual FLOAT getMixingLength( TurbulentFlowField & turbFlowField, int i, int j ) = 0;
+        virtual FLOAT getMixingLength( TurbulentFlowField & turbFlowField, int i, int j, int k ) = 0;
+};
+
+class IgnoreDeltaTurbViscosityStencil : public TurbViscosityStencil {
+
+    public:
+        IgnoreDeltaTurbViscosityStencil(const Parameters & parameters);
+
+    protected:
+        FLOAT getMixingLength( TurbulentFlowField & turbFlowField, int i, int j );
+        FLOAT getMixingLength( TurbulentFlowField & turbFlowField, int i, int j, int k );
+
+};
+
+class FixedDeltaTurbViscosityStencil : public TurbViscosityStencil {
+
+    public:
+        FixedDeltaTurbViscosityStencil(const Parameters & parameters);
+
+    protected:
+        FLOAT getMixingLength( TurbulentFlowField & turbFlowField, int i, int j );
+        FLOAT getMixingLength( TurbulentFlowField & turbFlowField, int i, int j, int k );
+
+};
+
+class TurbFlatPlateTurbViscosityStencil : public TurbViscosityStencil {
+
+    public:
+        TurbFlatPlateTurbViscosityStencil(const Parameters & parameters);
+
+    protected:
+        FLOAT getMixingLength( TurbulentFlowField & turbFlowField, int i, int j );
+        FLOAT getMixingLength( TurbulentFlowField & turbFlowField, int i, int j, int k );
+
+};
+
+class BlasiusLayerTurbViscosityStencil : public TurbViscosityStencil {
+
+    public:
+        BlasiusLayerTurbViscosityStencil(const Parameters & parameters);
+
+    protected:
+        FLOAT getMixingLength( TurbulentFlowField & turbFlowField, int i, int j );
+        FLOAT getMixingLength( TurbulentFlowField & turbFlowField, int i, int j, int k );
+
 };
 
 #endif

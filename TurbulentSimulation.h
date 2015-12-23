@@ -21,7 +21,7 @@ class TurbulentSimulation : public Simulation {
     FGHTurbStencil _fghTurbStencil;
     FieldIterator<TurbulentFlowField> _fghTurbIterator;
 
-    TurbViscosityStencil _turbViscStencil;
+    TurbViscosityStencil &_turbViscStencil;
     FieldIterator<TurbulentFlowField> _turbViscIterator;
 
     MinDtStencil _minDtStencil;
@@ -40,7 +40,7 @@ class TurbulentSimulation : public Simulation {
       _turbFlowField(turbFlowField),
       _fghTurbStencil(parameters),
       _fghTurbIterator(turbFlowField,parameters,_fghTurbStencil),
-      _turbViscStencil(parameters),
+      _turbViscStencil(createTurbViscosityStencil()),
       _turbViscIterator(turbFlowField,parameters,_turbViscStencil),
       _minDtStencil(parameters),
       _minDtIterator(turbFlowField,parameters,_minDtStencil,1,0), // must not run over ghost layers
@@ -150,6 +150,22 @@ class TurbulentSimulation : public Simulation {
       }else{
         return GlobalBoundaryIterator<TurbulentFlowField>(_turbFlowField, _parameters,
                 *(stencils[0]),*(stencils[1]),*(stencils[2]),*(stencils[3]),*(stencils[4]),*(stencils[5]),1,0);
+      }
+    }
+
+    TurbViscosityStencil & createTurbViscosityStencil(){
+      switch (_parameters.turbulenceModel.mixingLengthModel.deltaType) {
+        case IgnoreDelta:
+          return *new IgnoreDeltaTurbViscosityStencil(_parameters);
+        case FixedDelta:
+          return *new FixedDeltaTurbViscosityStencil(_parameters);
+        case TurbulentFlatPlate:
+          return *new TurbFlatPlateTurbViscosityStencil(_parameters);
+        case BlasiusLayer:
+          return *new BlasiusLayerTurbViscosityStencil(_parameters);
+        default:
+          // should not be reached
+          return *new IgnoreDeltaTurbViscosityStencil(_parameters);
       }
     }
 };
