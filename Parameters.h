@@ -43,6 +43,8 @@ class SolverParameters{
 
 class GeometricParameters{
     public:
+        GeometricParameters() : deltaS(2.7) {} // set standard parameters
+
         // Dimensions
         int dim;
 
@@ -58,6 +60,8 @@ class GeometricParameters{
 
         // meshsize type
         int meshsizeType;
+        // stretching parameter for stretched meshes
+        FLOAT deltaS;
         // for meshstretching
         int stretchX;
         int stretchY;
@@ -144,9 +148,11 @@ class MixingLengthModelParameters{  // example: <mixingLengthModel kappa="0.41">
                                     //            <delta fixedValue="0.001">fixed</delta>
                                     //          </mixingLengthModel>
     public:
+        MixingLengthModelParameters() : deltaValue(0.41) {} // standard parameters
+
         int deltaType;              // type of estimation of boundary layer thickness, 0=ignored, 1=fixed, 2=Blasius or 3=turbulentFlatPlate
         FLOAT deltaValue;           // value of the boundary layer thickness for type "fixed"
-        FLOAT kappa;                // defaults to 0.41
+        FLOAT kappa;         // defaults to 0.41
 };
 
 class TurbulenceModelParameters{

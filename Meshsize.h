@@ -7,7 +7,7 @@
 // forward declaration of Parameters
 class Parameters;
 
-enum MeshsizeType{Uniform=0,TanhStretching=1};
+enum MeshsizeType{Uniform=0,TanhStretching=1,BfsStretching=2};
 
 /** defines the local mesh size.
  *  @author Philipp Neumann
@@ -74,98 +74,66 @@ class UniformMeshsize: public Meshsize {
 };
 
 
-/** implements a stretched mesh for e.g. channel flow. For each dimension, a stretching of the mesh can be introduced towards
- *  the outer boundaries, i.e. if stretchX is true (in constructor), then the mesh will be finer close to the left and right
- *  boundary. The stretching is based on a formular involving tanh-functions, as e.g. used in the dissertation by Tobias Neckel,
- *  chair of scientific computing (TUM).
- *  For non-stretched meshes, the UniformMeshsize implementation is used to create a uniform mesh.
- *  @author Philipp Neumann
- */
 class TanhMeshStretching: public Meshsize {
   public:
-    TanhMeshStretching(const Parameters & parameters,bool stretchX, bool stretchY, bool stretchZ);
+    TanhMeshStretching(const Parameters & parameters,bool stretchX, bool stretchY, bool stretchZ, const FLOAT deltaS = 2.7);
     virtual ~TanhMeshStretching();
 
-    virtual FLOAT getDx(int i,int j) const {
-      if (_stretchX){
-        return getMeshsize(i,_firstCornerX,_sizeX,_lengthX,_dxMin);
-      } else { return _uniformMeshsize.getDx(i,j); }
-    }
-    virtual FLOAT getDy(int i,int j) const {
-      if (_stretchY){
-        return getMeshsize(j,_firstCornerY,_sizeY,_lengthY,_dyMin);
-      } else { return _uniformMeshsize.getDy(i,j); }
-    }
     virtual FLOAT getDx(int i,int j,int k) const {
-      return getDx(i,j);
+      if (_stretchX){
+        return _coordinatesX[i+1] - _coordinatesX[i];
+      } else { return _uniformMeshsize.getDx(i,j,k); }
     }
     virtual FLOAT getDy(int i,int j,int k) const {
-      return getDy(i,j);
+      if (_stretchY){
+        return _coordinatesY[j+1] - _coordinatesY[j];
+      } else { return _uniformMeshsize.getDy(i,j,k); }
     }
     virtual FLOAT getDz(int i,int j,int k) const {
       if (_stretchZ){
-        return getMeshsize(k,_firstCornerZ,_sizeZ,_lengthZ,_dzMin);
+        return _coordinatesZ[k+1] - _coordinatesZ[k];
       } else { return _uniformMeshsize.getDz(i,j,k); }
     }
+    virtual FLOAT getDx(int i,int j) const { return getDx(i,j,0); }
+    virtual FLOAT getDy(int i,int j) const { return getDy(i,j,0); }
 
     virtual FLOAT getPosX(int i,int j, int k) const {
       if (_stretchX){
-        return computeCoordinate(i,_firstCornerX,_sizeX,_lengthX,_dxMin);
+        return _coordinatesX[i];
       } else { return _uniformMeshsize.getPosX(i,j,k); }
     }
     virtual FLOAT getPosY(int i,int j, int k) const {
-      if (_stretchY){ return computeCoordinate(j,_firstCornerY,_sizeY,_lengthY,_dyMin);
+      if (_stretchY){
+        return _coordinatesY[j];
       } else { return _uniformMeshsize.getPosY(i,j,k); }
     }
     virtual FLOAT getPosZ(int i,int j, int k) const {
-      if (_stretchZ){ return computeCoordinate(k,_firstCornerZ,_sizeZ,_lengthZ,_dzMin);
+      if (_stretchZ){
+        return _coordinatesZ[k];
       } else { return _uniformMeshsize.getPosZ(i,j,k); }
     }
     virtual FLOAT getPosX(int i,int j) const { return getPosX(i,j,0); }
     virtual FLOAT getPosY(int i,int j) const { return getPosY(i,j,0); }
 
 
-    virtual FLOAT getDxMin() const {return _dxMin; }
-    virtual FLOAT getDyMin() const {return _dyMin; }
-    virtual FLOAT getDzMin() const {return _dzMin; }
+    virtual FLOAT getDxMin() const { return _dxMin; }
+    virtual FLOAT getDyMin() const { return _dyMin; }
+    virtual FLOAT getDzMin() const { return _dzMin; }
 
 
-  private:
+    virtual void precomputeCoordinates();
+
+  protected:
     // computes the coordinate of the lower/left/front corner of the 1D-cell at index i w.r.t. having "size" cells along
     // an interval of length "length". We refer to local indexing, so "firstCorner" denotes the first non-ghost cell index
     // of this process. We use a stretched mesh for all nodes inside the comput. bounding box, and a regular mesh outside this box,
     // using the meshsize of the next inner cell.
-    FLOAT computeCoordinate(int i, int firstCorner,int size, FLOAT length, FLOAT dxMin) const {
-      const int index = i-2+firstCorner;
-      // equidistant mesh on lower/left part
-      if (index < 0){
-        return dxMin*index;
-      // equidistant mesh on upper/right part
-      } else if (index > size-1){
-        return length+dxMin*(index-size);
-      } else {
-        // stretched mesh on lower half of channel -> we check if we are in lower 50% and then use stretching for 2.0*p
-        FLOAT p = ((FLOAT) index)/size;
-        if (p<0.5){
-          return 0.5*length*(1.0 + tanh(_deltaS*(2.0*p-1.0))/_tanhDeltaS);
-        // stretched mesh on upper half of channel -> we mirror the stretching
-        } else {
-          p = ((FLOAT) size-index)/size;
-          return length-0.5*length*(1.0 + tanh(_deltaS*(2.0*p-1.0))/_tanhDeltaS);
-        }
-      }
-    }
+    virtual FLOAT computeCoordinate(int i, int firstCorner,int size, FLOAT length, FLOAT dxMin) const;
+    virtual FLOAT computeCoordinateX(int i) const;
+    virtual FLOAT computeCoordinateY(int i) const;
+    virtual FLOAT computeCoordinateZ(int i) const;
 
-    // returns the meshsize based on vertex coordinates that span the respective 1D-cell
-    FLOAT getMeshsize(int i,int firstCorner,int size, FLOAT length,FLOAT dxMin) const {
-      const FLOAT pos0 = computeCoordinate(i,firstCorner,size,length,dxMin);
-      const FLOAT pos1 = computeCoordinate(i+1,firstCorner,size,length,dxMin);
-      #ifdef DEBUG
-      if (pos1-pos0<1.0e-12){handleError(1,"Error TanhMeshStretching::getMeshsize(): dx < 1.0e-12!");}
-      #endif
-      return pos1-pos0;
-    }
-
+    const Parameters & _parameters;
     const UniformMeshsize _uniformMeshsize;
     const FLOAT _lengthX;
     const FLOAT _lengthY;
@@ -184,5 +152,33 @@ class TanhMeshStretching: public Meshsize {
     const FLOAT _dxMin;
     const FLOAT _dyMin;
     const FLOAT _dzMin;
+    FLOAT * _coordinatesX;
+    FLOAT * _coordinatesY;
+    FLOAT * _coordinatesZ;
+};
+
+
+class BfsMeshStretching: public TanhMeshStretching {
+  public:
+    BfsMeshStretching(const Parameters & parameters, const FLOAT deltaS = 2.7);
+    virtual ~BfsMeshStretching();
+
+    virtual FLOAT getDxMin() const;
+    virtual FLOAT getDyMin() const { return std::min(_dyMinBelow, _dyMinAbove); }
+
+    virtual void precomputeCoordinates();
+
+  protected:
+    // computes the coordinate of the lower/left/front corner of the 1D-cell at index i w.r.t. having "size" cells along
+    // an interval of length "length". We refer to local indexing, so "firstCorner" denotes the first non-ghost cell index
+    // of this process. We use a stretched mesh for all nodes inside the comput. bounding box, and a regular mesh outside this box,
+    // using the meshsize of the next inner cell.
+    virtual FLOAT computeCoordinateX(int i) const;
+    virtual FLOAT computeCoordinateY(int i) const;
+
+    int _sizeYBelowStep;
+    int _sizeYAboveStep;
+    FLOAT _dyMinBelow;
+    FLOAT _dyMinAbove;
 };
 #endif // _MESHSIZE_H_

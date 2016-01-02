@@ -203,6 +203,10 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
           } else {
             parameters.geometry.stretchZ = false;
           }
+          readFloatOptional(parameters.geometry.deltaS,subNode,"deltaS",parameters.geometry.deltaS);
+        } else if (meshsizeType == "bfs"){
+          parameters.geometry.meshsizeType = BfsStretching;
+          readFloatOptional(parameters.geometry.deltaS,subNode,"deltaS",parameters.geometry.deltaS);
         } else {
           handleError(1, "Unknown 'mesh'!");
         }
@@ -427,7 +431,7 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
             subNode = node->FirstChildElement("mixingLengthModel");
             if (subNode != NULL) {
                 readFloatOptional(parameters.turbulenceModel.mixingLengthModel.kappa,
-                                  subNode, "kappa", 0.41);
+                                  subNode, "kappa", parameters.turbulenceModel.mixingLengthModel.kappa);
                 subNode = subNode->FirstChildElement("delta");
                 if (subNode != NULL) {
                     std::string deltaType;
@@ -436,6 +440,8 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
                         parameters.turbulenceModel.mixingLengthModel.deltaType = IgnoreDelta;
                     }else if (deltaType == "fixed"){
                         parameters.turbulenceModel.mixingLengthModel.deltaType = FixedDelta;
+                        readFloatMandatory(parameters.turbulenceModel.mixingLengthModel.deltaValue,
+                                          subNode, "fixedValue");
                     }else if (deltaType == "Blasius"){
                         parameters.turbulenceModel.mixingLengthModel.deltaType = BlasiusLayer;
                     }else if (deltaType == "turbulentFlatPlate"){
@@ -443,8 +449,6 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
                     }else{
                       handleError(1, "Error loading mixing length model parameters (delta)")
                     }
-                    readFloatOptional(parameters.turbulenceModel.mixingLengthModel.deltaValue,
-                                      subNode, "fixedValue");
                 }
                 // TODO: revise mixing length model parameters
             }
@@ -459,6 +463,7 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
     MPI_Bcast(&(parameters.geometry.dim), 1, MPI_INT, 0, communicator);
 
     MPI_Bcast(&(parameters.geometry.meshsizeType), 1, MPI_INT, 0, communicator);
+    MPI_Bcast(&(parameters.geometry.deltaS), 1, MY_MPI_FLOAT, 0, communicator);
     MPI_Bcast(&(parameters.geometry.stretchX),1,MPI_INT,0,communicator);
     MPI_Bcast(&(parameters.geometry.stretchY),1,MPI_INT,0,communicator);
     MPI_Bcast(&(parameters.geometry.stretchZ),1,MPI_INT,0,communicator);

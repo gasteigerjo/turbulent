@@ -12,7 +12,7 @@
 class MeshsizeFactory {
   public:
     static MeshsizeFactory& getInstance(){
-      static MeshsizeFactory singleton; 
+      static MeshsizeFactory singleton;
       return singleton;
     }
 
@@ -24,12 +24,28 @@ class MeshsizeFactory {
           parameters.meshsize = new UniformMeshsize(parameters);
           break;
         // tanh-stretched mesh
-        case TanhStretching:
-          parameters.meshsize = new TanhMeshStretching(
+        case TanhStretching:{
+          TanhMeshStretching * mesh = new TanhMeshStretching(
                                   parameters,
-                                  (bool)parameters.geometry.stretchX,(bool)parameters.geometry.stretchY,(bool)parameters.geometry.stretchZ
+                                  (bool)parameters.geometry.stretchX,(bool)parameters.geometry.stretchY,(bool)parameters.geometry.stretchZ,
+                                  parameters.geometry.deltaS
                                 );
-          break;
+          mesh->precomputeCoordinates();
+          parameters.meshsize = mesh;
+          // parameters.meshsize = new TanhMeshStretching(
+          //                         parameters,
+          //                         (bool)parameters.geometry.stretchX,(bool)parameters.geometry.stretchY,(bool)parameters.geometry.stretchZ
+          //                       );
+          break;}
+        // stretched mesh for bfs
+        case BfsStretching:{
+          BfsMeshStretching * mesh = new BfsMeshStretching(parameters,parameters.geometry.deltaS);
+          mesh->precomputeCoordinates();
+          parameters.meshsize = mesh;
+          // parameters.meshsize = new BfsMeshStretching(
+          //                         parameters
+          //                       );
+          break;}
         default:
           handleError(1,"Unknown meshsize type!");
           break;
@@ -45,4 +61,3 @@ class MeshsizeFactory {
 
 
 #endif // _MESHSIZEFACTORY_H_
-
