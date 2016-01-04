@@ -9,7 +9,6 @@
 #include "stencils/RHSStencil.h"
 #include "stencils/VelocityStencil.h"
 #include "stencils/ObstacleStencil.h"
-#include "stencils/VTKStencil.h"
 #include "stencils/MaxUStencil.h"
 #include "stencils/PeriodicBoundaryStencils.h"
 #include "stencils/BFStepInitStencil.h"
@@ -19,6 +18,7 @@
 #include "GlobalBoundaryFactory.h"
 #include "Iterators.h"
 #include "Definitions.h"
+#include "VtkOutput.h"
 
 #include "LinearSolver.h"
 #include "solvers/SORSolver.h"
@@ -54,8 +54,7 @@ class Simulation {
     FieldIterator<FlowField> _velocityIterator;
     FieldIterator<FlowField> _obstacleIterator;
 
-    VTKStencil _vtkStencil;
-    FieldIterator<FlowField> _vtkIterator;
+    VtkOutput _vtkOutput;
 
     PetscSolver _solver;
 
@@ -82,8 +81,7 @@ class Simulation {
        _obstacleStencil(parameters),
        _velocityIterator(_flowField,parameters,_velocityStencil),
        _obstacleIterator(_flowField,parameters,_obstacleStencil),
-       _vtkStencil(parameters, false),
-       _vtkIterator(_flowField,parameters,_vtkStencil,-1,1),
+       _vtkOutput(_flowField,parameters),
        _solver(_flowField,parameters),
        _petscParallelManager(parameters, _flowField),
        _timer_solve(),
@@ -180,8 +178,7 @@ class Simulation {
     virtual void plotVTK(int timeStep){
         // WS1: create VTKStencil and respective iterator; iterate stencil
         //           over _flowField and write flow field information to vtk file
-        _vtkIterator.iterate();
-        _vtkStencil.write(_flowField, timeStep);
+        _vtkOutput.write(timeStep);
     }
 
   protected:
@@ -219,7 +216,6 @@ class Simulation {
       _parameters.timestep.dt = globalMin;
       _parameters.timestep.dt *= _parameters.timestep.tau;
     }
-
 };
 
 #endif // _SIMULATION_H_

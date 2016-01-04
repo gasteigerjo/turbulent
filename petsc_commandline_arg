@@ -2,7 +2,7 @@
 #-ksp_view
 -ksp_converged_reason
 ### plotting the convergence of the solver
--ksp_monitor
+#-ksp_monitor
 
 -ksp_type fgmres
 -pc_type asm -sub_pc_type icc

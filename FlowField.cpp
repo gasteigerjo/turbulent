@@ -106,17 +106,27 @@ ScalarField & FlowField::getRHS () {
 }
 
 void FlowField::getPressureAndVelocity(FLOAT &pressure, FLOAT* const velocity,  int i, int j){
+    getVelocityCenter(velocity,i,j);
+
+    pressure = getPressure().getScalar(i,j);
+}
+
+void FlowField::getVelocityCenter(FLOAT* const velocity, int i, int j){
     FLOAT * v_here = getVelocity().getVector(i, j);
     FLOAT * v_left = getVelocity().getVector(i-1, j);
     FLOAT * v_down = getVelocity().getVector(i, j-1);
 
     velocity[0] = ( v_here[0] + v_left[0] ) / 2;
     velocity[1] = ( v_here[1] + v_down[1] ) / 2;
-
-    pressure = getPressure().getScalar(i,j);
 }
 
 void FlowField::getPressureAndVelocity(FLOAT &pressure, FLOAT* const velocity, int i, int j, int k){
+    getVelocityCenter(velocity,i,j,k);
+
+    pressure = getPressure().getScalar(i,j,k);
+}
+
+void FlowField::getVelocityCenter(FLOAT* const velocity, int i, int j, int k){
     FLOAT * v_here = getVelocity().getVector(i, j, k);
     FLOAT * v_left = getVelocity().getVector(i-1, j, k);
     FLOAT * v_down = getVelocity().getVector(i, j-1, k);
@@ -125,6 +135,4 @@ void FlowField::getPressureAndVelocity(FLOAT &pressure, FLOAT* const velocity, i
     velocity[0] = ( v_here[0] + v_left[0] ) / 2;
     velocity[1] = ( v_here[1] + v_down[1] ) / 2;
     velocity[2] = ( v_here[2] + v_back[2] ) / 2;
-
-    pressure = getPressure().getScalar(i,j,k);
 }

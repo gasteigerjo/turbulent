@@ -116,9 +116,9 @@ FLOAT BfsMeshStretching::getDxMin() const {
 void BfsMeshStretching::precomputeCoordinates(){
   _dyMinBelow = 1.0;
   _dyMinAbove = 0.0;
-  _sizeYBelowStep = _parameters.bfStep.yRatio * _sizeY;
+  _sizeYBelowStep = _parameters.bfStep.yRatio * _sizeY - 1;
   _sizeYAboveStep = _sizeY - _sizeYBelowStep;
-  while(_dyMinAbove < _dyMinBelow) {
+  while(_dyMinAbove <= _dyMinBelow) {
     _sizeYBelowStep++;
     _sizeYAboveStep--;
     _dyMinBelow = 0.5*_parameters.bfStep.yRatio*_lengthY*(1.0 + tanh(_deltaS*(2.0/_sizeYBelowStep-1.0))/_tanhDeltaS);

@@ -28,7 +28,6 @@ NSOBJ = FlowField.o LinearSolver.o Meshsize.o\
 stencils/MaxUStencil.o stencils/MovingWallStencils.o stencils/PeriodicBoundaryStencils.o\
 stencils/FGHStencil.o solvers/SORSolver.o solvers/PetscSolver.o \
 stencils/RHSStencil.o stencils/VelocityStencil.o \
-stencils/VTKStencil.o \
 stencils/PressureBufferFillStencil.o stencils/PressureBufferReadStencil.o\
 stencils/VelocityBufferFillStencil.o stencils/VelocityBufferReadStencil.o\
 parallelManagers/PetscParallelConfiguration.o\
@@ -36,6 +35,8 @@ parallelManagers/PetscParallelManager.o\
 GlobalBoundaryFactory.o\
 stencils/BFStepInitStencil.o stencils/NeumannBoundaryStencils.o stencils/BFInputStencils.o stencils/ObstacleStencil.o\
 TurbulentFlowField.o \
+stencils/PostStencil.o stencils/TurbulentPostStencil.o \
+VtkOutput.o \
 stencils/FGHTurbStencil.o stencils/TurbViscosityStencil.o stencils/DistNearestWallStencil.o \
 stencils/MinDtStencil.o stencils/TurbViscosityBoundaryStencil.o \
 stencils/TurbViscosityBufferFillStencil.o stencils/TurbViscosityBufferReadStencil.o \

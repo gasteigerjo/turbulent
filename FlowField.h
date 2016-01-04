@@ -108,7 +108,9 @@ class FlowField {
         ScalarField & getRHS ();
 
         void getPressureAndVelocity(FLOAT &pressure, FLOAT* const velocity, int i, int j);
+        void getVelocityCenter(FLOAT* const velocity, int i, int j);
         void getPressureAndVelocity(FLOAT &pressure, FLOAT* const velocity, int i, int j, int k);
+        void getVelocityCenter(FLOAT* const velocity, int i, int j, int k);
 };
 
 #endif
