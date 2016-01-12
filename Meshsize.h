@@ -163,7 +163,7 @@ class BfsMeshStretching: public TanhMeshStretching {
     BfsMeshStretching(const Parameters & parameters, const FLOAT deltaS = 2.7);
     virtual ~BfsMeshStretching();
 
-    virtual FLOAT getDxMin() const;
+    virtual FLOAT getDxMin() const { return std::min(_dxMinBefore, _dxMinAfter); }
     virtual FLOAT getDyMin() const { return std::min(_dyMinBelow, _dyMinAbove); }
 
     virtual void precomputeCoordinates();
@@ -176,6 +176,11 @@ class BfsMeshStretching: public TanhMeshStretching {
     virtual FLOAT computeCoordinateX(int i) const;
     virtual FLOAT computeCoordinateY(int i) const;
 
+    const FLOAT _stepX;
+    int _sizeXBeforeStep;
+    int _sizeXAfterStep;
+    FLOAT _dxMinBefore;
+    FLOAT _dxMinAfter;
     int _sizeYBelowStep;
     int _sizeYAboveStep;
     FLOAT _dyMinBelow;

@@ -104,21 +104,22 @@ FLOAT TanhMeshStretching::computeCoordinateZ(int i) const {
 
 BfsMeshStretching::BfsMeshStretching(
   const Parameters & parameters, const FLOAT deltaS
-): TanhMeshStretching(parameters,true,true,true,deltaS)
+): TanhMeshStretching(parameters,true,true,true,deltaS), _stepX(parameters.bfStep.xRatio * parameters.geometry.lengthX)
 { }
 
 BfsMeshStretching::~BfsMeshStretching(){}
 
-FLOAT BfsMeshStretching::getDxMin() const {
-  return (1.0 - _parameters.bfStep.xRatio) * _lengthX / ((int) ((1.0 - _parameters.bfStep.xRatio) * _sizeX));
-}
-
 void BfsMeshStretching::precomputeCoordinates(){
+  _sizeXBeforeStep = _parameters.bfStep.xRatio * (_sizeX - 4) + 2;
+  _sizeXAfterStep = _sizeX - _sizeXBeforeStep;
+  _dxMinBefore = _stepX/(_sizeXBeforeStep - 2)*(1.0 + tanh(_deltaS*(1.0/3.0-1.0))/_tanhDeltaS);
+  _dxMinAfter = (_lengthX - _stepX)/(_sizeXAfterStep - 2)*(1.0 + tanh(_deltaS*(1.0/3.0-1.0))/_tanhDeltaS);
+
   _dyMinBelow = 1.0;
   _dyMinAbove = 0.0;
   _sizeYBelowStep = _parameters.bfStep.yRatio * _sizeY - 1;
   _sizeYAboveStep = _sizeY - _sizeYBelowStep;
-  while(_dyMinAbove <= _dyMinBelow) {
+  while(_dyMinAbove < _dyMinBelow) {
     _sizeYBelowStep++;
     _sizeYAboveStep--;
     _dyMinBelow = 0.5*_parameters.bfStep.yRatio*_lengthY*(1.0 + tanh(_deltaS*(2.0/_sizeYBelowStep-1.0))/_tanhDeltaS);
@@ -130,11 +131,22 @@ void BfsMeshStretching::precomputeCoordinates(){
 
 FLOAT BfsMeshStretching::computeCoordinateX(int i) const {
   const int index = i - 2 + _firstCornerX;
-  const int nOnStep = _parameters.bfStep.xRatio * _sizeX;
-  if (index < nOnStep){
-    return index * _parameters.bfStep.xRatio * _lengthX / nOnStep;
+  if (index < _sizeXBeforeStep){
+    const FLOAT dx = _stepX / (_sizeXBeforeStep - 2);
+    if (index <= _sizeXBeforeStep - 3){
+      return index * dx;
+    }else{
+      return _stepX - dx*(1.0 + tanh(_deltaS*((_sizeXBeforeStep-index)/3.0-1.0))/_tanhDeltaS);
+    }
+  }else if (index == _sizeXBeforeStep){
+    return _stepX;
   }else{
-    return _parameters.bfStep.xRatio * _lengthX + (index - nOnStep) * (1.0 - _parameters.bfStep.xRatio) * _lengthX / (_sizeX - nOnStep);
+    const FLOAT dx = (_lengthX - _stepX) / (_sizeXAfterStep - 2);
+    if (index < _sizeXBeforeStep + 3){
+      return _stepX +  dx*(1.0 + tanh(_deltaS*((index-_sizeXBeforeStep)/3.0-1.0))/_tanhDeltaS);
+    }else{
+      return _stepX + (index - _sizeXBeforeStep - 2) * dx;
+    }
   }
 }
 
