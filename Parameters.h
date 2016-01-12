@@ -43,7 +43,7 @@ class SolverParameters{
 
 class GeometricParameters{
     public:
-        GeometricParameters() : deltaS(2.7) {} // set standard parameters
+        GeometricParameters() : deltaSX(2.7), deltaSY(2.7), deltaSZ(2.7) {} // set standard parameters
 
         // Dimensions
         int dim;
@@ -61,7 +61,9 @@ class GeometricParameters{
         // meshsize type
         int meshsizeType;
         // stretching parameter for stretched meshes
-        FLOAT deltaS;
+        FLOAT deltaSX;
+        FLOAT deltaSY;
+        FLOAT deltaSZ;
         // for meshstretching
         int stretchX;
         int stretchY;

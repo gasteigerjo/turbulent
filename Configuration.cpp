@@ -203,10 +203,14 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
           } else {
             parameters.geometry.stretchZ = false;
           }
-          readFloatOptional(parameters.geometry.deltaS,subNode,"deltaS",parameters.geometry.deltaS);
+          readFloatOptional(parameters.geometry.deltaSX,subNode,"deltaSX",parameters.geometry.deltaSX);
+          readFloatOptional(parameters.geometry.deltaSY,subNode,"deltaSY",parameters.geometry.deltaSY);
+          readFloatOptional(parameters.geometry.deltaSZ,subNode,"deltaSZ",parameters.geometry.deltaSZ);
         } else if (meshsizeType == "bfs"){
           parameters.geometry.meshsizeType = BfsStretching;
-          readFloatOptional(parameters.geometry.deltaS,subNode,"deltaS",parameters.geometry.deltaS);
+          readFloatOptional(parameters.geometry.deltaSX,subNode,"deltaSX",parameters.geometry.deltaSX);
+          readFloatOptional(parameters.geometry.deltaSY,subNode,"deltaSY",parameters.geometry.deltaSY);
+          readFloatOptional(parameters.geometry.deltaSZ,subNode,"deltaSZ",parameters.geometry.deltaSZ);
         } else {
           handleError(1, "Unknown 'mesh'!");
         }
@@ -463,7 +467,9 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
     MPI_Bcast(&(parameters.geometry.dim), 1, MPI_INT, 0, communicator);
 
     MPI_Bcast(&(parameters.geometry.meshsizeType), 1, MPI_INT, 0, communicator);
-    MPI_Bcast(&(parameters.geometry.deltaS), 1, MY_MPI_FLOAT, 0, communicator);
+    MPI_Bcast(&(parameters.geometry.deltaSX), 1, MY_MPI_FLOAT, 0, communicator);
+    MPI_Bcast(&(parameters.geometry.deltaSY), 1, MY_MPI_FLOAT, 0, communicator);
+    MPI_Bcast(&(parameters.geometry.deltaSZ), 1, MY_MPI_FLOAT, 0, communicator);
     MPI_Bcast(&(parameters.geometry.stretchX),1,MPI_INT,0,communicator);
     MPI_Bcast(&(parameters.geometry.stretchY),1,MPI_INT,0,communicator);
     MPI_Bcast(&(parameters.geometry.stretchZ),1,MPI_INT,0,communicator);

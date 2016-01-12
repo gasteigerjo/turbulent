@@ -27,8 +27,8 @@ class MeshsizeFactory {
         case TanhStretching:{
           TanhMeshStretching * mesh = new TanhMeshStretching(
                                   parameters,
-                                  (bool)parameters.geometry.stretchX,(bool)parameters.geometry.stretchY,(bool)parameters.geometry.stretchZ,
-                                  parameters.geometry.deltaS
+                                  (bool)parameters.geometry.stretchX,(bool)parameters.geometry.stretchY,(bool)parameters.geometry.stretchZ
+                                  // ,parameters.geometry.deltaSX,parameters.geometry.deltaSY,parameters.geometry.deltaSZ
                                 );
           mesh->precomputeCoordinates();
           parameters.meshsize = mesh;
@@ -39,7 +39,9 @@ class MeshsizeFactory {
           break;}
         // stretched mesh for bfs
         case BfsStretching:{
-          BfsMeshStretching * mesh = new BfsMeshStretching(parameters,parameters.geometry.deltaS);
+          BfsMeshStretching * mesh = new BfsMeshStretching(parameters
+                                  // ,parameters.geometry.deltaSX,parameters.geometry.deltaSY,parameters.geometry.deltaSZ
+                                );
           mesh->precomputeCoordinates();
           parameters.meshsize = mesh;
           // parameters.meshsize = new BfsMeshStretching(

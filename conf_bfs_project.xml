@@ -23,7 +23,7 @@
       sizeX="40" sizeY="40" sizeZ="20"
       stretchX="false" stretchY="true" stretchZ="true"
     >
-      <mesh deltaS="2.7">bfs</mesh>
+      <mesh deltaSX="2.7" deltaSY="2.7" deltaSZ="2.7">bfs</mesh>
     </geometry>
     <environment gx="0" gy="0" gz="0" />
     <walls>

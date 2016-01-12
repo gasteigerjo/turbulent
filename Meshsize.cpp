@@ -24,7 +24,7 @@ UniformMeshsize::~UniformMeshsize(){}
 
 
 TanhMeshStretching::TanhMeshStretching(
-  const Parameters & parameters,bool stretchX, bool stretchY, bool stretchZ, const FLOAT deltaS
+  const Parameters & parameters,bool stretchX, bool stretchY, bool stretchZ
 ): Meshsize(), _parameters(parameters), _uniformMeshsize(parameters),
    _lengthX(parameters.geometry.lengthX), _lengthY(parameters.geometry.lengthY),
    _lengthZ(parameters.geometry.dim==3 ? parameters.geometry.lengthZ : 0.0),
@@ -33,10 +33,9 @@ TanhMeshStretching::TanhMeshStretching(
    _firstCornerX(parameters.parallel.firstCorner[0]), _firstCornerY(parameters.parallel.firstCorner[1]),
    _firstCornerZ(parameters.geometry.dim==3 ? parameters.parallel.firstCorner[2] : 0),
    _stretchX(stretchX), _stretchY(stretchY), _stretchZ(stretchZ),
-   _deltaS(deltaS), _tanhDeltaS(tanh(deltaS)),
-   _dxMin(stretchX ? 0.5*parameters.geometry.lengthX*(1.0 + tanh(deltaS*(2.0/parameters.geometry.sizeX-1.0))/tanh(deltaS)) : _uniformMeshsize.getDx(0,0,0)),
-   _dyMin(stretchY ? 0.5*parameters.geometry.lengthY*(1.0 + tanh(deltaS*(2.0/parameters.geometry.sizeY-1.0))/tanh(deltaS)) : _uniformMeshsize.getDy(0,0,0)),
-   _dzMin(stretchZ ? 0.5*parameters.geometry.lengthZ*(1.0 + tanh(deltaS*(2.0/parameters.geometry.sizeZ-1.0))/tanh(deltaS)) : _uniformMeshsize.getDz(0,0,0))
+   _dxMin(stretchX ? 0.5*parameters.geometry.lengthX*(1.0 + tanh(parameters.geometry.deltaSX*(2.0/parameters.geometry.sizeX-1.0))/tanh(parameters.geometry.deltaSX)) : _uniformMeshsize.getDx(0,0,0)),
+   _dyMin(stretchY ? 0.5*parameters.geometry.lengthY*(1.0 + tanh(parameters.geometry.deltaSY*(2.0/parameters.geometry.sizeY-1.0))/tanh(parameters.geometry.deltaSY)) : _uniformMeshsize.getDy(0,0,0)),
+   _dzMin(stretchZ ? 0.5*parameters.geometry.lengthZ*(1.0 + tanh(parameters.geometry.deltaSZ*(2.0/parameters.geometry.sizeZ-1.0))/tanh(parameters.geometry.deltaSZ)) : _uniformMeshsize.getDz(0,0,0))
 { }
 
 TanhMeshStretching::~TanhMeshStretching(){
@@ -67,7 +66,7 @@ void TanhMeshStretching::precomputeCoordinates(){
   }
 }
 
-FLOAT TanhMeshStretching::computeCoordinate(int i, int firstCorner,int size, FLOAT length, FLOAT dxMin) const {
+FLOAT TanhMeshStretching::computeCoordinate(int i, int firstCorner, int size, FLOAT length, FLOAT deltaS, FLOAT dxMin) const {
   const int index = i-2+firstCorner;
   // equidistant mesh on lower/left part
   if (index < 0){
@@ -79,42 +78,44 @@ FLOAT TanhMeshStretching::computeCoordinate(int i, int firstCorner,int size, FLO
     // stretched mesh on lower half of channel -> we check if we are in lower 50% and then use stretching for 2.0*p
     FLOAT p = ((FLOAT) index)/size;
     if (p<0.5){
-      return 0.5*length*(1.0 + tanh(_deltaS*(2.0*p-1.0))/_tanhDeltaS);
+      return 0.5*length*(1.0 + tanh(deltaS*(2.0*p-1.0))/tanh(deltaS));
     // stretched mesh on upper half of channel -> we mirror the stretching
     } else {
       p = ((FLOAT) size-index)/size;
-      return length-0.5*length*(1.0 + tanh(_deltaS*(2.0*p-1.0))/_tanhDeltaS);
+      return length-0.5*length*(1.0 + tanh(deltaS*(2.0*p-1.0))/tanh(deltaS));
     }
   }
 }
 
 FLOAT TanhMeshStretching::computeCoordinateX(int i) const {
-  return computeCoordinate(i,_firstCornerX,_sizeX,_lengthX,_dxMin);
+  return computeCoordinate(i,_firstCornerX,_sizeX,_lengthX,_parameters.geometry.deltaSX,_dxMin);
 }
 
 FLOAT TanhMeshStretching::computeCoordinateY(int i) const {
-  return computeCoordinate(i,_firstCornerY,_sizeY,_lengthY,_dyMin);
+  return computeCoordinate(i,_firstCornerY,_sizeY,_lengthY,_parameters.geometry.deltaSY,_dyMin);
 }
 
 FLOAT TanhMeshStretching::computeCoordinateZ(int i) const {
-  return computeCoordinate(i,_firstCornerZ,_sizeZ,_lengthZ,_dzMin);
+  return computeCoordinate(i,_firstCornerZ,_sizeZ,_lengthZ,_parameters.geometry.deltaSZ,_dzMin);
 }
 
 
 
 BfsMeshStretching::BfsMeshStretching(
-  const Parameters & parameters, const FLOAT deltaS
-): TanhMeshStretching(parameters,true,true,true,deltaS), _stepX(parameters.bfStep.xRatio * parameters.geometry.lengthX)
+  const Parameters & parameters
+): TanhMeshStretching(parameters,true,true,true), _stepX(parameters.bfStep.xRatio * parameters.geometry.lengthX)
 { }
 
 BfsMeshStretching::~BfsMeshStretching(){}
 
 void BfsMeshStretching::precomputeCoordinates(){
+  FLOAT deltaS = _parameters.geometry.deltaSX;
   _sizeXBeforeStep = _parameters.bfStep.xRatio * (_sizeX - 4) + 2;
   _sizeXAfterStep = _sizeX - _sizeXBeforeStep;
-  _dxMinBefore = _stepX/(_sizeXBeforeStep - 2)*(1.0 + tanh(_deltaS*(1.0/3.0-1.0))/_tanhDeltaS);
-  _dxMinAfter = (_lengthX - _stepX)/(_sizeXAfterStep - 2)*(1.0 + tanh(_deltaS*(1.0/3.0-1.0))/_tanhDeltaS);
+  _dxMinBefore = _stepX/(_sizeXBeforeStep - 2)*(1.0 + tanh(deltaS*(1.0/3.0-1.0))/tanh(deltaS));
+  _dxMinAfter = (_lengthX - _stepX)/(_sizeXAfterStep - 2)*(1.0 + tanh(deltaS*(1.0/3.0-1.0))/tanh(deltaS));
 
+  deltaS = _parameters.geometry.deltaSY;
   _dyMinBelow = 1.0;
   _dyMinAbove = 0.0;
   _sizeYBelowStep = _parameters.bfStep.yRatio * _sizeY - 1;
@@ -122,28 +123,29 @@ void BfsMeshStretching::precomputeCoordinates(){
   while(_dyMinAbove < _dyMinBelow) {
     _sizeYBelowStep++;
     _sizeYAboveStep--;
-    _dyMinBelow = 0.5*_parameters.bfStep.yRatio*_lengthY*(1.0 + tanh(_deltaS*(2.0/_sizeYBelowStep-1.0))/_tanhDeltaS);
-    _dyMinAbove = 0.5*(1.0-_parameters.bfStep.yRatio)*_lengthY*(1.0 + tanh(_deltaS*(2.0/_sizeYAboveStep-1.0))/_tanhDeltaS);
+    _dyMinBelow = 0.5*_parameters.bfStep.yRatio*_lengthY*(1.0 + tanh(deltaS*(2.0/_sizeYBelowStep-1.0))/tanh(deltaS));
+    _dyMinAbove = 0.5*(1.0-_parameters.bfStep.yRatio)*_lengthY*(1.0 + tanh(deltaS*(2.0/_sizeYAboveStep-1.0))/tanh(deltaS));
   }
 
   TanhMeshStretching::precomputeCoordinates();
 }
 
 FLOAT BfsMeshStretching::computeCoordinateX(int i) const {
+  const FLOAT deltaS = _parameters.geometry.deltaSX;
   const int index = i - 2 + _firstCornerX;
   if (index < _sizeXBeforeStep){
     const FLOAT dx = _stepX / (_sizeXBeforeStep - 2);
     if (index <= _sizeXBeforeStep - 3){
       return index * dx;
     }else{
-      return _stepX - dx*(1.0 + tanh(_deltaS*((_sizeXBeforeStep-index)/3.0-1.0))/_tanhDeltaS);
+      return _stepX - dx*(1.0 + tanh(deltaS*((_sizeXBeforeStep-index)/3.0-1.0))/tanh(deltaS));
     }
   }else if (index == _sizeXBeforeStep){
     return _stepX;
   }else{
     const FLOAT dx = (_lengthX - _stepX) / (_sizeXAfterStep - 2);
     if (index < _sizeXBeforeStep + 3){
-      return _stepX +  dx*(1.0 + tanh(_deltaS*((index-_sizeXBeforeStep)/3.0-1.0))/_tanhDeltaS);
+      return _stepX +  dx*(1.0 + tanh(deltaS*((index-_sizeXBeforeStep)/3.0-1.0))/tanh(deltaS));
     }else{
       return _stepX + (index - _sizeXBeforeStep - 2) * dx;
     }
@@ -153,8 +155,8 @@ FLOAT BfsMeshStretching::computeCoordinateX(int i) const {
 FLOAT BfsMeshStretching::computeCoordinateY(int i) const {
   const int index = i - 2 + _firstCornerY;
   if (index < _sizeYBelowStep){
-    return computeCoordinate(i,_firstCornerY,_sizeYBelowStep,_parameters.bfStep.yRatio*_lengthY,_dyMinBelow);
+    return computeCoordinate(i,_firstCornerY,_sizeYBelowStep,_parameters.bfStep.yRatio*_lengthY,_parameters.geometry.deltaSY,_dyMinBelow);
   }else{
-    return _parameters.bfStep.yRatio*_lengthY + computeCoordinate(i-_sizeYBelowStep,_firstCornerY,_sizeYAboveStep,(1.0-_parameters.bfStep.yRatio)*_lengthY,_dyMinAbove);
+    return _parameters.bfStep.yRatio*_lengthY + computeCoordinate(i-_sizeYBelowStep,_firstCornerY,_sizeYAboveStep,(1.0-_parameters.bfStep.yRatio)*_lengthY,_parameters.geometry.deltaSY,_dyMinAbove);
   }
 }

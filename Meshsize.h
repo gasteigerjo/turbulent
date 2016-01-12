@@ -76,7 +76,7 @@ class UniformMeshsize: public Meshsize {
 
 class TanhMeshStretching: public Meshsize {
   public:
-    TanhMeshStretching(const Parameters & parameters,bool stretchX, bool stretchY, bool stretchZ, const FLOAT deltaS = 2.7);
+    TanhMeshStretching(const Parameters & parameters,bool stretchX, bool stretchY, bool stretchZ);
     virtual ~TanhMeshStretching();
 
     virtual FLOAT getDx(int i,int j,int k) const {
@@ -128,7 +128,7 @@ class TanhMeshStretching: public Meshsize {
     // an interval of length "length". We refer to local indexing, so "firstCorner" denotes the first non-ghost cell index
     // of this process. We use a stretched mesh for all nodes inside the comput. bounding box, and a regular mesh outside this box,
     // using the meshsize of the next inner cell.
-    virtual FLOAT computeCoordinate(int i, int firstCorner,int size, FLOAT length, FLOAT dxMin) const;
+    virtual FLOAT computeCoordinate(int i, int firstCorner,int size, FLOAT length, FLOAT deltaS, FLOAT dxMin) const;
     virtual FLOAT computeCoordinateX(int i) const;
     virtual FLOAT computeCoordinateY(int i) const;
     virtual FLOAT computeCoordinateZ(int i) const;
@@ -147,8 +147,6 @@ class TanhMeshStretching: public Meshsize {
     const bool _stretchX;
     const bool _stretchY;
     const bool _stretchZ;
-    const FLOAT _deltaS;
-    const FLOAT _tanhDeltaS;
     const FLOAT _dxMin;
     const FLOAT _dyMin;
     const FLOAT _dzMin;
@@ -160,7 +158,7 @@ class TanhMeshStretching: public Meshsize {
 
 class BfsMeshStretching: public TanhMeshStretching {
   public:
-    BfsMeshStretching(const Parameters & parameters, const FLOAT deltaS = 2.7);
+    BfsMeshStretching(const Parameters & parameters);
     virtual ~BfsMeshStretching();
 
     virtual FLOAT getDxMin() const { return std::min(_dxMinBefore, _dxMinAfter); }
