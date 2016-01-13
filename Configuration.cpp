@@ -324,6 +324,27 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
         readFloatOptional(parameters.stdOut.interval, node, "interval", 1);
 
         //--------------------------------------------------
+        // Checkpoint parameters
+        //--------------------------------------------------
+        node = confFile.FirstChildElement()->FirstChildElement("checkpoint");
+
+        if (node == NULL){
+            handleError(1, "Error loading checkpointing parameters");
+        }
+
+        readIntOptional(parameters.checkpoint.iterations, node, "iterations", 1000);
+        readStringMandatory(parameters.checkpoint.prefix, node);
+
+        //--------------------------------------------------
+        // Restart parameters
+        //--------------------------------------------------
+        node = confFile.FirstChildElement()->FirstChildElement("restart");
+
+        if (node != NULL){
+            readStringMandatory(parameters.restart.filename, node);
+        }
+
+        //--------------------------------------------------
         // Parallel parameters
         //--------------------------------------------------
 
@@ -492,9 +513,12 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
     MPI_Bcast(&(parameters.simulation.finalTime), 1, MY_MPI_FLOAT, 0, communicator);
 
     MPI_Bcast(&(parameters.vtk.interval), 1, MY_MPI_FLOAT, 0, communicator);
-    MPI_Bcast(&(parameters.stdOut.interval), 1, MPI_INT, 0, communicator);
+    MPI_Bcast(&(parameters.stdOut.interval), 1, MY_MPI_FLOAT, 0, communicator);
+    MPI_Bcast(&(parameters.checkpoint.iterations), 1, MPI_INT, 0, communicator);
 
     broadcastString (parameters.vtk.prefix, communicator);
+    broadcastString (parameters.checkpoint.prefix, communicator);
+    broadcastString (parameters.restart.filename, communicator);
     broadcastString (parameters.simulation.type, communicator);
     broadcastString (parameters.simulation.scenario, communicator);
 

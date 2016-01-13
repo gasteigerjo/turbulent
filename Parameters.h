@@ -108,6 +108,17 @@ class StdOutParameters{
         FLOAT interval;
 };
 
+class CheckointParameters{
+    public:
+        int iterations;     //! Number of iterations between checkpoints.
+        std::string prefix; //! Prefix of the checkpoint data to create.
+};
+
+class RestartParameters{
+    public:
+        std::string filename; //! Specific name of the file to use for restarting.
+};
+
 class ParallelParameters{
     public:
 
@@ -183,6 +194,8 @@ class Parameters {
         VTKParameters           vtk;
         ParallelParameters      parallel;
         StdOutParameters        stdOut;
+        CheckointParameters     checkpoint;
+        RestartParameters       restart;
         BFStepParameters        bfStep;
         // WS2: include parameters for turbulence
         TurbulenceModelParameters turbulenceModel;

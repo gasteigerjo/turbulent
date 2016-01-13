@@ -47,6 +47,10 @@ int main (int argc, char *argv[]) {
     std::cout << "Min. meshsizes: " << parameters.meshsize->getDxMin() << ", " << parameters.meshsize->getDyMin() << ", " << parameters.meshsize->getDzMin() << std::endl;
     #endif
 
+    // DEBUG
+    std::cout << "Checkpoint iterations: " << parameters.checkpoint.iterations << ", prefix: " << parameters.checkpoint.prefix << std::endl;
+    std::cout << "Restart filename: " << parameters.restart.filename << std::endl;
+
     // initialise simulation
     if (parameters.simulation.type=="turbulence"){
       if(rank==0){ std::cout << "Start RANS simulation in " << parameters.geometry.dim << "D" << std::endl; }
