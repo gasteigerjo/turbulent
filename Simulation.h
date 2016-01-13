@@ -19,6 +19,7 @@
 #include "Iterators.h"
 #include "Definitions.h"
 #include "VtkOutput.h"
+#include "Checkpoint.h"
 
 #include "LinearSolver.h"
 #include "solvers/SORSolver.h"
@@ -56,6 +57,8 @@ class Simulation {
 
     VtkOutput _vtkOutput;
 
+    Checkpoint _checkpoint;
+
     PetscSolver _solver;
 
     PetscParallelManager _petscParallelManager;
@@ -82,6 +85,7 @@ class Simulation {
        _velocityIterator(_flowField,parameters,_velocityStencil),
        _obstacleIterator(_flowField,parameters,_obstacleStencil),
        _vtkOutput(_flowField,parameters),
+       _checkpoint(_flowField, parameters),
        _solver(_flowField,parameters),
        _petscParallelManager(parameters, _flowField),
        _timer_solve(),
@@ -179,6 +183,10 @@ class Simulation {
         // WS1: create VTKStencil and respective iterator; iterate stencil
         //           over _flowField and write flow field information to vtk file
         _vtkOutput.write(timeStep);
+    }
+
+    virtual void createCheckpoint(int timeStep, FLOAT time){
+        _checkpoint.create(timeStep, time);
     }
 
   protected:

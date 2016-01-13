@@ -14,7 +14,7 @@ include ${PETSC_DIR}/conf/variables
 #CFLAGS = -Wall -Werror -O3 -xHost -unroll
 # compiler on Ubuntu
 CC = mpic++
-CFLAGS = -Wall -Werror -O3 -Wno-unknown-pragmas -Wno-unused-value
+CFLAGS = -Wall -O3 -Wno-unknown-pragmas
 SRCDIR = ./
 INCLUDE = -I. -Istencils ${PETSC_CC_INCLUDES}
 
@@ -37,6 +37,7 @@ stencils/BFStepInitStencil.o stencils/NeumannBoundaryStencils.o stencils/BFInput
 TurbulentFlowField.o \
 stencils/PostStencil.o stencils/TurbulentPostStencil.o \
 VtkOutput.o \
+Checkpoint.o \
 stencils/FGHTurbStencil.o stencils/TurbViscosityStencil.o stencils/DistNearestWallStencil.o \
 stencils/MinDtStencil.o stencils/TurbViscosityBoundaryStencil.o \
 stencils/TurbViscosityBufferFillStencil.o stencils/TurbViscosityBufferReadStencil.o \
