@@ -108,7 +108,7 @@ class StdOutParameters{
         FLOAT interval;
 };
 
-class CheckointParameters{
+class CheckpointParameters{
     public:
         int iterations;     //! Number of iterations between checkpoints.
         std::string prefix; //! Prefix of the checkpoint data to create.
@@ -194,7 +194,7 @@ class Parameters {
         VTKParameters           vtk;
         ParallelParameters      parallel;
         StdOutParameters        stdOut;
-        CheckointParameters     checkpoint;
+        CheckpointParameters     checkpoint;
         RestartParameters       restart;
         BFStepParameters        bfStep;
         // WS2: include parameters for turbulence
