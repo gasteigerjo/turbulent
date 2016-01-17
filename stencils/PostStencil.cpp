@@ -65,3 +65,100 @@ void BasicPostStencil::writeVtk ( std::ostream & stream ) {
     _ssVelocity.str("");
     // _ssFlags.str("");
 }
+
+
+
+WallPostStencil::WallPostStencil ( const Parameters & parameters )
+  : PostStencil<FlowField>(parameters),
+    _sizeX(parameters.geometry.lengthX),
+    _sizeY(parameters.geometry.lengthY),
+    _sizeZ(parameters.geometry.lengthZ),
+    _stepX(_parameters.bfStep.xRatio * parameters.geometry.lengthX),
+    _stepY(_parameters.bfStep.yRatio * parameters.geometry.lengthY) { // not working if the domain is split in y and/or z direction
+
+    // find the j-index of the first fluid cells on top of the step
+    for (int j = 2; j < 2 + _parameters.parallel.localSize[1]; j++) {
+      if (_stepY < _parameters.meshsize->getPosY(0,j,0) + 0.5 * _parameters.meshsize->getDy(0,j,0)){
+        _jOnStep = j;
+        break;
+      }
+    }
+
+    // find the i-index of the first fluid cells after the step
+    _iBehindStep = -1; // indication that the step is not in this domain
+    if (_parameters.parallel.firstCorner[0] < _stepX){
+      // only get the index of the cells behind the step if the step is in this domain
+      for (int i = 2; i < 2 + _parameters.parallel.localSize[1]; i++) {
+        if (_stepX < _parameters.meshsize->getPosX(i,0,0) + 0.5 * _parameters.meshsize->getDx(i,0,0)){
+          _iBehindStep = i;
+          break;
+        }
+      }
+    }
+}
+
+WallPostStencil::~WallPostStencil(){
+}
+
+void WallPostStencil::preapply ( FlowField & flowField ) {
+
+}
+
+void WallPostStencil::apply ( FlowField & flowField, int i, int j ) {
+  // not yet implemented for 2D
+  // TODO: is it necessary for 2D? will we need it?
+}
+
+void WallPostStencil::apply ( FlowField & flowField, int i, int j, int k ) {
+    Meshsize *ms = _parameters.meshsize;
+    FLOAT tauw[3];
+    tauw[0] = 0.0;
+    tauw[1] = 0.0;
+    tauw[2] = 0.0;
+
+    const int obstacle = flowField.getFlags().getValue(i,j,k);
+
+    // check whether current cell is a fluid cell or not
+    if ((obstacle & OBSTACLE_SELF) == 0) {
+      FLOAT velocity[3];
+      flowField.getVelocityCenter(velocity, i, j, k);
+
+      const FLOAT posX = ms->getPosX(i,j,k) + 0.5*ms->getDx(i,j,k);
+      const FLOAT posY = ms->getPosY(i,j,k) + 0.5*ms->getDy(i,j,k);
+      // const FLOAT posZ = ms->getPosZ(i,j,k) + 0.5*ms->getDz(i,j,k);
+
+      if ((j == 2 && posX > _stepX) || (j == _jOnStep && posX < _stepX)){
+        // bottom cell
+        tauw[0] = velocity[0] / (0.5 * ms->getDy(i,j,k));
+        tauw[2] = velocity[2] / (0.5 * ms->getDy(i,j,k));
+      } else if (j == flowField.getNy() + 1) {
+        // top cell
+        tauw[0] = velocity[0] / (0.5 * ms->getDy(i,j,k));
+        tauw[2] = velocity[2] / (0.5 * ms->getDy(i,j,k));
+      } else if (k == 2) {
+        // front cell
+        tauw[0] = velocity[0] / (0.5 * ms->getDz(i,j,k));
+        tauw[1] = velocity[1] / (0.5 * ms->getDz(i,j,k));
+      } else if (k == flowField.getNz() + 1) {
+        // back cell
+        tauw[0] = velocity[0] / (0.5 * ms->getDz(i,j,k));
+        tauw[1] = velocity[1] / (0.5 * ms->getDz(i,j,k));
+      } else if (i == _iBehindStep && posY < _stepY) {
+        // cell behind step
+        tauw[1] = velocity[1] / (0.5 * ms->getDx(i,j,k));
+        tauw[2] = velocity[2] / (0.5 * ms->getDx(i,j,k));
+      }
+    } else {
+    }
+
+    _ssTauw << tauw[0] << " " << tauw[1] << " " << tauw[2] << std::endl;
+}
+
+void WallPostStencil::writeVtk ( std::ostream & stream ) {
+    // write wall shear stress
+    stream << "\nVECTORS wallShearStress float" << std::endl;
+    stream << _ssTauw.str();
+
+    // clear the stringstreams
+    _ssTauw.str("");
+}

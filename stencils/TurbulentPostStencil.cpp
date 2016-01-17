@@ -107,7 +107,7 @@ TurbulentWallPostStencil::TurbulentWallPostStencil ( const Parameters & paramete
 
 TurbulentWallPostStencil::~TurbulentWallPostStencil(){
     if (!_possible) return;
-    
+
     free(_uTau_bottom);
     free(_uTau_top);
     if (_parameters.geometry.dim == 3){
@@ -173,7 +173,7 @@ void TurbulentWallPostStencil::apply ( TurbulentFlowField & turbFlowField, int i
     Meshsize *ms = _parameters.meshsize;
     FLOAT uTau = 0.0;
     FLOAT yPlus = 0.0;
-    FLOAT* uPlus = new FLOAT(3);
+    FLOAT uPlus[3];
 
     const int obstacle = turbFlowField.getFlags().getValue(i,j,k);
 

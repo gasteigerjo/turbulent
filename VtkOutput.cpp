@@ -14,9 +14,10 @@ VtkOutput::VtkOutput ( FlowField & flowField, const Parameters & parameters ) :
   _flowField(flowField),
   _postIterator(flowField,parameters,*this,1,0)
 {
-    _nPostStencils = 1;
+    _nPostStencils = 2;
     _postStencils = new PostStencil<FlowField>*[_nPostStencils];
     _postStencils[0] = new BasicPostStencil(_parameters);
+    _postStencils[1] = new WallPostStencil(_parameters); // only in channel/bfs scenarios
 
     if (_turbulent){
       _turbFlowField = (TurbulentFlowField*) &flowField;
@@ -24,7 +25,7 @@ VtkOutput::VtkOutput ( FlowField & flowField, const Parameters & parameters ) :
       _nTurbPostStencils = 2;
       _turbPostStencils = new PostStencil<TurbulentFlowField>*[_nTurbPostStencils];
       _turbPostStencils[0] = new TurbulentPostStencil(_parameters);
-      _turbPostStencils[1] = new TurbulentWallPostStencil(_parameters);
+      _turbPostStencils[1] = new TurbulentWallPostStencil(_parameters); // only in channel/bfs scenarios
     }
 }
 
