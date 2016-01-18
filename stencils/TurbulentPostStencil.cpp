@@ -74,7 +74,7 @@ TurbulentWallPostStencil::TurbulentWallPostStencil ( const Parameters & paramete
 
     // find the i-index of the first fluid cells after the step
     _iBehindStep = -1; // indication that the step is not in this domain
-    if (_parameters.parallel.firstCorner[0] < _stepX){
+    if (_parameters.meshsize->getPosX(1,0,0) < _stepX){
       // only get the index of the cells behind the step if the step is in this domain
       for (int i = 2; i < 2 + _parameters.parallel.localSize[1]; i++) {
         if (_stepX < _parameters.meshsize->getPosX(i,0,0) + 0.5 * _parameters.meshsize->getDx(i,0,0)){

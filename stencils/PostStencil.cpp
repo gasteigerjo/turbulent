@@ -77,17 +77,21 @@ WallPostStencil::WallPostStencil ( const Parameters & parameters )
     _stepY(_parameters.bfStep.yRatio * parameters.geometry.lengthY) { // not working if the domain is split in y and/or z direction
 
     // find the j-index of the first fluid cells on top of the step
-    for (int j = 2; j < 2 + _parameters.parallel.localSize[1]; j++) {
-      if (_stepY < _parameters.meshsize->getPosY(0,j,0) + 0.5 * _parameters.meshsize->getDy(0,j,0)){
-        _jOnStep = j;
-        break;
+    _jOnStep = -1;
+    if (_parameters.meshsize->getPosY(0,1,0) < _stepY){
+      // only get the index of the cells on top of the step if the step is possibly in this domain
+      for (int j = 2; j < 2 + _parameters.parallel.localSize[1]; j++) {
+        if (_stepY < _parameters.meshsize->getPosY(0,j,0) + 0.5 * _parameters.meshsize->getDy(0,j,0)){
+          _jOnStep = j;
+          break;
+        }
       }
     }
 
     // find the i-index of the first fluid cells after the step
     _iBehindStep = -1; // indication that the step is not in this domain
-    if (_parameters.parallel.firstCorner[0] < _stepX){
-      // only get the index of the cells behind the step if the step is in this domain
+    if (_parameters.meshsize->getPosX(1,0,0) < _stepX){
+      // only get the index of the cells behind the step if the step is possibly in this domain
       for (int i = 2; i < 2 + _parameters.parallel.localSize[1]; i++) {
         if (_stepX < _parameters.meshsize->getPosX(i,0,0) + 0.5 * _parameters.meshsize->getDx(i,0,0)){
           _iBehindStep = i;
@@ -117,6 +121,8 @@ void WallPostStencil::apply ( FlowField & flowField, int i, int j, int k ) {
     tauw[2] = 0.0;
 
     const int obstacle = flowField.getFlags().getValue(i,j,k);
+    const int globalJ = _parameters.parallel.firstCorner[1] + j - 2;
+    const int globalK = _parameters.parallel.firstCorner[2] + k - 2;
 
     // check whether current cell is a fluid cell or not
     if ((obstacle & OBSTACLE_SELF) == 0) {
@@ -127,19 +133,19 @@ void WallPostStencil::apply ( FlowField & flowField, int i, int j, int k ) {
       const FLOAT posY = ms->getPosY(i,j,k) + 0.5*ms->getDy(i,j,k);
       // const FLOAT posZ = ms->getPosZ(i,j,k) + 0.5*ms->getDz(i,j,k);
 
-      if ((j == 2 && posX > _stepX) || (j == _jOnStep && posX < _stepX)){
+      if ((globalJ == 0 && posX > _stepX) || (j == _jOnStep && posX < _stepX)){
         // bottom cell
         tauw[0] = velocity[0] / (0.5 * ms->getDy(i,j,k));
         tauw[2] = velocity[2] / (0.5 * ms->getDy(i,j,k));
-      } else if (j == flowField.getNy() + 1) {
+      } else if (globalJ == _parameters.geometry.sizeY - 1) {
         // top cell
         tauw[0] = velocity[0] / (0.5 * ms->getDy(i,j,k));
         tauw[2] = velocity[2] / (0.5 * ms->getDy(i,j,k));
-      } else if (k == 2) {
+      } else if (globalK == 0) {
         // front cell
         tauw[0] = velocity[0] / (0.5 * ms->getDz(i,j,k));
         tauw[1] = velocity[1] / (0.5 * ms->getDz(i,j,k));
-      } else if (k == flowField.getNz() + 1) {
+      } else if (globalK == _parameters.geometry.sizeZ - 1) {
         // back cell
         tauw[0] = velocity[0] / (0.5 * ms->getDz(i,j,k));
         tauw[1] = velocity[1] / (0.5 * ms->getDz(i,j,k));
