@@ -71,6 +71,7 @@ int main (int argc, char *argv[]) {
     }
     // call initialization of simulation (initialize flow field)
     if(simulation == NULL){ handleError(1, "simulation==NULL!"); }
+    simulation->readCheckpoint();
     simulation->initializeFlowField();
     //flowField->getFlags().show();
 

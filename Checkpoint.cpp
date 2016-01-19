@@ -64,8 +64,102 @@ _parameters(parameters)
 
 Checkpoint::~Checkpoint () {}
 
+void Checkpoint::read () {
+    MPI_File fh_restart;
+    MPI_Status status;
+    MPI_Offset disp;
+    int ierr;
+    
+    // Open the restart file
+    ierr = MPI_File_open(PETSC_COMM_WORLD, _parameters.restart.filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &fh_restart);
+    if (ierr != MPI_SUCCESS) {
+        handleError(1, "Cannot open the restart file.");
+    }
+    
+    // Read the header of the restart file using Rank0.
+    if (_parameters.parallel.rank == 0) {
+        int buffer_timeStep;
+        // Read the timeStep
+        MPI_File_read_at(fh_restart, 0, &buffer_timeStep, 1, MPI_INT, &status);
+        if (ierr != MPI_SUCCESS) {
+            handleError(1, "Cannot read the timeStep from the restart file.");
+        }
+        // DEBUG
+        printf("====== TIMESTEP: %d ==========\n", buffer_timeStep);
+        
+        FLOAT buffer_time;
+        // Read the time
+        MPI_File_read_at(fh_restart, sizeof(int), &buffer_time, 1, MY_MPI_FLOAT, &status);
+        if (ierr != MPI_SUCCESS) {
+            handleError(1, "Cannot read the time from the restart file.");
+        }
+        // DEBUG
+        printf("====== TIME: %f ==========\n", buffer_time);
+    }
+    
+    // Displacement of the file view from the begining of the file.
+    // The header consists of an int and a FLOAT.
+    disp = sizeof(int) + sizeof(FLOAT);
+    
+    // Note: we assume that we are only using the same machine always, for performance reasons.
+    MPI_File_set_view(fh_restart, disp, MY_MPI_FLOAT, _filetype, "native", MPI_INFO_NULL);
+    
+    // 2D or 3D case?
+    if (_parameters.geometry.dim == 2) {
+    // 2D case
+        FLOAT localarray[_parameters.parallel.localSize[0]][3*_parameters.parallel.localSize[1]];
+        
+        // Number of elements to read
+        int data_count = 3 * _parameters.parallel.localSize[0] * _parameters.parallel.localSize[1];
+        
+        // Read the cell data from the file
+        ierr = MPI_File_read(fh_restart, localarray, data_count, MY_MPI_FLOAT, &status);
+        if (ierr != MPI_SUCCESS) {
+            handleError(1, "Cannot read the cell data from the checkpoint file.");
+        }
+        
+        for (int i=0; i < _parameters.parallel.localSize[0]; i++) {
+            for (int j=0; j < _parameters.parallel.localSize[1]; j++) {
+                // DEBUG
+                if (_parameters.parallel.rank == 0) {
+                    printf("%f | %f %f\n", localarray[i][3*j], localarray[i][3*j+1], localarray[i][3*j+2]);
+                }
+            }
+        }
+    } else {
+    // 3D case
+        FLOAT localarray[_parameters.parallel.localSize[0]][_parameters.parallel.localSize[1]][4*_parameters.parallel.localSize[2]];
+        
+        // Number of elements to write
+        int data_count = 4 * _parameters.parallel.localSize[0] * _parameters.parallel.localSize[1] * _parameters.parallel.localSize[2];
+        
+        // Read the cell data from the file
+        ierr = MPI_File_read(fh_restart, localarray, data_count, MY_MPI_FLOAT, &status);
+        if (ierr != MPI_SUCCESS) {
+            handleError(1, "Cannot read the cell data from the checkpoint file.");
+        }
+        
+        for (int i=0; i < _parameters.parallel.localSize[0]; i++) {
+            for (int j=0; j < _parameters.parallel.localSize[1]; j++) {
+                for (int k=0; k < _parameters.parallel.localSize[2]; k++) {
+                    // DEBUG
+                    if (_parameters.parallel.rank == 0) {
+                        printf("%f | %f %f %f\n", localarray[i][j][4*k], localarray[i][j][4*k+1], localarray[i][j][4*k+2], localarray[i][j][4*k+3]);
+                    }
+                }
+            }
+        }
+    }
+    
+    // Close the file
+    ierr = MPI_File_close(&fh_restart);
+    if (ierr != MPI_SUCCESS) {
+        handleError(1, "Cannot close the restart file.");
+    }
+}
+
 void Checkpoint::create ( int timeStep, FLOAT time ) {
-    MPI_File fh;
+    MPI_File fh_checkpoint;
     MPI_Status status;
     MPI_Offset disp;
     int ierr;
@@ -75,8 +169,8 @@ void Checkpoint::create ( int timeStep, FLOAT time ) {
     checkpointFileName << _parameters.checkpoint.directory << _parameters.checkpoint.prefix
              << "." << std::setfill('0') << std::setw(6) << timeStep;
 
-    // Open the file and assign it to the handler fh.
-    ierr = MPI_File_open(PETSC_COMM_WORLD, checkpointFileName.str().c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
+    // Open the file and assign it to the handler fh_checkpoint.
+    ierr = MPI_File_open(PETSC_COMM_WORLD, checkpointFileName.str().c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh_checkpoint);
     if (ierr != MPI_SUCCESS) {
         handleError(1, "Cannot open/create checkpoint file.");
     }
@@ -85,13 +179,13 @@ void Checkpoint::create ( int timeStep, FLOAT time ) {
     if (_parameters.parallel.rank == 0) {
         
         // Write the timeStep
-        ierr = MPI_File_write(fh, &timeStep, 1, MPI_INT, &status);
+        ierr = MPI_File_write(fh_checkpoint, &timeStep, 1, MPI_INT, &status);
         if (ierr != MPI_SUCCESS) {
             handleError(1, "Cannot write the timeStep to the checkpoint file.");
         }
 
         // Write the time
-        ierr = MPI_File_write(fh, &time, 1, MY_MPI_FLOAT, &status);
+        ierr = MPI_File_write(fh_checkpoint, &time, 1, MY_MPI_FLOAT, &status);
         if (ierr != MPI_SUCCESS) {
             handleError(1, "Cannot write the time to the checkpoint file.");
         }
@@ -103,7 +197,7 @@ void Checkpoint::create ( int timeStep, FLOAT time ) {
     disp = sizeof(int) + sizeof(FLOAT);
     
     // Note: we assume that we are only using the same machine always, for performance reasons.
-    MPI_File_set_view(fh, disp, MY_MPI_FLOAT, _filetype, "internal", MPI_INFO_NULL);
+    MPI_File_set_view(fh_checkpoint, disp, MY_MPI_FLOAT, _filetype, "native", MPI_INFO_NULL);
     
     // 2D or 3D case?
     if (_parameters.geometry.dim == 2) {
@@ -114,23 +208,23 @@ void Checkpoint::create ( int timeStep, FLOAT time ) {
         // DEBUG: Is the index order optimal??
         for (int i=0; i < _parameters.parallel.localSize[0]; i++) {
             for (int j=0; j < _parameters.parallel.localSize[1]; j++) {
-                    // DEBUG
-                    // if (_parameters.parallel.rank == 0) {
-                    //     printf("%f | %f %f\n", _flowField.getPressure().getScalar(i+2,j+2), _flowField.getVelocity().getVector(i+2,j+2)[0], _flowField.getVelocity().getVector(i+2,j+2)[1]);
-                    // }
-                    // Pressure
-                    localarray[i][3*j] = _flowField.getPressure().getScalar(i+2,j+2);
-                    // Velocities per x,y
-                    localarray[i][3*j+1] = _flowField.getVelocity().getVector(i+2,j+2)[0];
-                    localarray[i][3*j+2] = _flowField.getVelocity().getVector(i+2,j+2)[1];
-                }
+                // DEBUG
+                // if (_parameters.parallel.rank == 0) {
+                //     printf("%f | %f %f\n", _flowField.getPressure().getScalar(i+2,j+2), _flowField.getVelocity().getVector(i+2,j+2)[0], _flowField.getVelocity().getVector(i+2,j+2)[1]);
+                // }
+                // Pressure
+                localarray[i][3*j] = _flowField.getPressure().getScalar(i+2,j+2);
+                // Velocities per x,y
+                localarray[i][3*j+1] = _flowField.getVelocity().getVector(i+2,j+2)[0];
+                localarray[i][3*j+2] = _flowField.getVelocity().getVector(i+2,j+2)[1];
             }
+        }
         
         // Number of elements to write
         int data_count = 3 * _parameters.parallel.localSize[0] * _parameters.parallel.localSize[1];
         
         // Write the cell data to the file
-        ierr = MPI_File_write(fh, localarray, data_count, MY_MPI_FLOAT, &status);
+        ierr = MPI_File_write(fh_checkpoint, localarray, data_count, MY_MPI_FLOAT, &status);
         if (ierr != MPI_SUCCESS) {
             handleError(1, "Cannot write the cell data to the checkpoint file.");
         }
@@ -161,14 +255,14 @@ void Checkpoint::create ( int timeStep, FLOAT time ) {
         int data_count = 4 * _parameters.parallel.localSize[0] * _parameters.parallel.localSize[1] * _parameters.parallel.localSize[2];
         
         // Write the cell data to the file
-        ierr = MPI_File_write(fh, localarray, data_count, MY_MPI_FLOAT, &status);
+        ierr = MPI_File_write(fh_checkpoint, localarray, data_count, MY_MPI_FLOAT, &status);
         if (ierr != MPI_SUCCESS) {
             handleError(1, "Cannot write the cell data to the checkpoint file.");
         }
     }
 
     // Close the file
-    ierr = MPI_File_close(&fh);
+    ierr = MPI_File_close(&fh_checkpoint);
     if (ierr != MPI_SUCCESS) {
         handleError(1, "Cannot close the checkpoint file.");
     }

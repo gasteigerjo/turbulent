@@ -52,6 +52,6 @@
         <directory>restart/</directory>
         <prefix>checkpoint</prefix>
     </checkpoint>
-    <restart>previous_1000</restart>
+    <restart>restart/checkpoint.000002</restart>
     <parallel numProcessorsX="2" numProcessorsY="2" numProcessorsZ="1" />
 </configuration>

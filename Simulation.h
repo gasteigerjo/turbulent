@@ -188,6 +188,10 @@ class Simulation {
     virtual void createCheckpoint(int timeStep, FLOAT time){
         _checkpoint.create(timeStep, time);
     }
+    
+    virtual void readCheckpoint(){
+        _checkpoint.read();
+    }
 
   protected:
     /** sets the time step*/
