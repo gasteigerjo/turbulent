@@ -93,32 +93,32 @@ int main (int argc, char *argv[]) {
 
     simulation->createCheckpoint(timeSteps, time);
 
-    // // time loop
-    // while (time < parameters.simulation.finalTime){
-    //
-    //   simulation->solveTimestep(time_solve, time_comm);
-    //
-    //   time += parameters.timestep.dt;
-    //   timeSteps++;
-    //
-    //   // std-out: terminal info
-    //   if ( (rank==0) && (timeStdOut <= time) ){
-    //       std::cout << "Current time: " << time << "\ttimestep: " <<
-    //                     parameters.timestep.dt << "\titeration: " << timeSteps <<std::endl << std::endl;
-    //       timeStdOut += parameters.stdOut.interval;
-    //   }
-    //
-    //   if (lastCheckpointIter + parameters.checkpoint.iterations <= timeSteps) {
-    //       simulation->createCheckpoint(timeSteps, time);
-    //       lastCheckpointIter += parameters.checkpoint.iterations;
-    //   }
-    //
-    //   // WS1: trigger VTK output
-    //   if (lastPlotTime + parameters.vtk.interval <= time) {
-    //       simulation->plotVTK(timeSteps); // TODO Change to time?
-    //       lastPlotTime += parameters.vtk.interval;
-    //   }
-    // }
+    // time loop
+    while (time < parameters.simulation.finalTime){
+    
+      simulation->solveTimestep(time_solve, time_comm);
+    
+      time += parameters.timestep.dt;
+      timeSteps++;
+    
+      // std-out: terminal info
+      if ( (rank==0) && (timeStdOut <= time) ){
+          std::cout << "Current time: " << time << "\ttimestep: " <<
+                        parameters.timestep.dt << "\titeration: " << timeSteps <<std::endl << std::endl;
+          timeStdOut += parameters.stdOut.interval;
+      }
+    
+      if (lastCheckpointIter + parameters.checkpoint.iterations <= timeSteps) {
+          simulation->createCheckpoint(timeSteps, time);
+          lastCheckpointIter += parameters.checkpoint.iterations;
+      }
+    
+      // WS1: trigger VTK output
+      if (lastPlotTime + parameters.vtk.interval <= time) {
+          simulation->plotVTK(timeSteps); // TODO Change to time?
+          lastPlotTime += parameters.vtk.interval;
+      }
+    }
 
     // take computation time
     time_loop = timer.getTimeAndContinue();

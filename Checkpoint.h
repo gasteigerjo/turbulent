@@ -24,7 +24,7 @@ class Checkpoint {
 
         ~Checkpoint();
 
-        /** Creates checkpoint files
+        /** Creates a checkpoint file
          * @param timeStep the current timestep
          * @param time the current time
          */
