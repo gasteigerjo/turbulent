@@ -333,8 +333,24 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
         }
 
         readIntOptional(parameters.checkpoint.iterations, node, "iterations", 1000);
-        readStringMandatory(parameters.checkpoint.prefix, node);
-
+        bool buffer=false;
+        readBoolOptional(buffer, node, "cleanDirectory", false);
+        parameters.checkpoint.cleanDirectory = (int) buffer;
+        
+        subNode = node->FirstChildElement("directory");
+        if (subNode != NULL) {
+            readStringMandatory(parameters.checkpoint.directory, subNode);
+        } else {
+            handleError (1, "Missing directory in checkpoint parameters");
+        }
+        
+        subNode = node->FirstChildElement("prefix");
+        if (subNode != NULL) {
+            readStringMandatory(parameters.checkpoint.prefix, subNode);
+        } else {
+            handleError (1, "Missing prefix in checkpoint parameters");
+        }
+        
         //--------------------------------------------------
         // Restart parameters
         //--------------------------------------------------
@@ -517,10 +533,13 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
     MPI_Bcast(&(parameters.checkpoint.iterations), 1, MPI_INT, 0, communicator);
 
     broadcastString (parameters.vtk.prefix, communicator);
+    broadcastString (parameters.checkpoint.directory, communicator);
     broadcastString (parameters.checkpoint.prefix, communicator);
     broadcastString (parameters.restart.filename, communicator);
     broadcastString (parameters.simulation.type, communicator);
     broadcastString (parameters.simulation.scenario, communicator);
+
+    MPI_Bcast(&(parameters.checkpoint.cleanDirectory),1,MPI_INT,0,communicator);
 
     MPI_Bcast(&(parameters.bfStep.xRatio), 1, MY_MPI_FLOAT, 0, communicator);
     MPI_Bcast(&(parameters.bfStep.yRatio), 1, MY_MPI_FLOAT, 0, communicator);

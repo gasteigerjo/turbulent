@@ -48,7 +48,7 @@ int main (int argc, char *argv[]) {
     #endif
 
     // DEBUG
-    std::cout << "Checkpoint iterations: " << parameters.checkpoint.iterations << ", prefix: " << parameters.checkpoint.prefix << std::endl;
+    std::cout << "Checkpoint iterations: " << parameters.checkpoint.iterations << ", directory: " << parameters.checkpoint.directory << ", prefix: " << parameters.checkpoint.prefix << ", cleanDirectory:" << parameters.checkpoint.cleanDirectory << std::endl;
     std::cout << "Restart filename: " << parameters.restart.filename << std::endl;
 
     // initialise simulation

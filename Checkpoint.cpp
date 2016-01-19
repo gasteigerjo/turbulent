@@ -44,6 +44,22 @@ _parameters(parameters)
         MPI_Type_create_subarray(3, sizes, subsizes, starts, MPI_ORDER_C, MY_MPI_FLOAT, &_filetype);    
     }
     MPI_Type_commit(&_filetype);
+    
+    // Create the restart directory if it doesn't exist
+    mkdir(_parameters.checkpoint.directory.c_str(), S_IRWXU | S_IRWXG | S_IROTH);
+    
+    // Clean the directory from previous restart data
+    if (_parameters.checkpoint.cleanDirectory) {
+        DIR *checkpointDir = opendir(_parameters.checkpoint.directory.c_str());
+        struct dirent *next_file;
+        char filepath[256];
+        
+        while( (next_file = readdir(checkpointDir)) != NULL ) {
+            sprintf(filepath, "%s/%s", _parameters.checkpoint.directory.c_str(), next_file->d_name);
+            remove(filepath);
+        } 
+        closedir(checkpointDir);
+    }
 }
 
 Checkpoint::~Checkpoint () {}
@@ -54,8 +70,13 @@ void Checkpoint::create ( int timeStep, FLOAT time ) {
     MPI_Offset disp;
     int ierr;
 
+    // Set the filename of the checkpoint file
+    std::ostringstream checkpointFileName;
+    checkpointFileName << _parameters.checkpoint.directory << _parameters.checkpoint.prefix
+             << "." << std::setfill('0') << std::setw(6) << timeStep;
+
     // Open the file and assign it to the handler fh.
-    ierr = MPI_File_open(PETSC_COMM_WORLD, "my_dummy_file", MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
+    ierr = MPI_File_open(PETSC_COMM_WORLD, checkpointFileName.str().c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
     if (ierr != MPI_SUCCESS) {
         handleError(1, "Cannot open/create checkpoint file.");
     }
@@ -94,9 +115,9 @@ void Checkpoint::create ( int timeStep, FLOAT time ) {
         for (int i=0; i < _parameters.parallel.localSize[0]; i++) {
             for (int j=0; j < _parameters.parallel.localSize[1]; j++) {
                     // DEBUG
-                    if (_parameters.parallel.rank == 0) {
-                        printf("%f | %f %f\n", _flowField.getPressure().getScalar(i+2,j+2), _flowField.getVelocity().getVector(i+2,j+2)[0], _flowField.getVelocity().getVector(i+2,j+2)[1]);
-                    }
+                    // if (_parameters.parallel.rank == 0) {
+                    //     printf("%f | %f %f\n", _flowField.getPressure().getScalar(i+2,j+2), _flowField.getVelocity().getVector(i+2,j+2)[0], _flowField.getVelocity().getVector(i+2,j+2)[1]);
+                    // }
                     // Pressure
                     localarray[i][3*j] = _flowField.getPressure().getScalar(i+2,j+2);
                     // Velocities per x,y
@@ -123,9 +144,9 @@ void Checkpoint::create ( int timeStep, FLOAT time ) {
             for (int j=0; j < _parameters.parallel.localSize[1]; j++) {
                 for (int k=0; k < _parameters.parallel.localSize[2]; k++) {
                     // DEBUG
-                    if (_parameters.parallel.rank == 0) {
-                        printf("%f | %f %f %f\n", _flowField.getPressure().getScalar(i+2,j+2,k+2), _flowField.getVelocity().getVector(i+2,j+2,k+2)[0], _flowField.getVelocity().getVector(i+2,j+2,k+2)[1], _flowField.getVelocity().getVector(i+2,j+2,k+2)[2]);
-                    }
+                    // if (_parameters.parallel.rank == 0) {
+                    //     printf("%f | %f %f %f\n", _flowField.getPressure().getScalar(i+2,j+2,k+2), _flowField.getVelocity().getVector(i+2,j+2,k+2)[0], _flowField.getVelocity().getVector(i+2,j+2,k+2)[1], _flowField.getVelocity().getVector(i+2,j+2,k+2)[2]);
+                    // }
                     // Pressure
                     localarray[i][j][4*k] = _flowField.getPressure().getScalar(i+2,j+2,k+2);
                     // Velocities per x,y,z

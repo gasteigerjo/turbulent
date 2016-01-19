@@ -32,7 +32,7 @@ if [ "$DIM" = "2" ]; then
     for i in `seq 1 ${CELLS}`;
     do 
         printf "[%6d] " ${i} >> ${OUTPUT}
-        hexdump -e '1 8 "%10f    | " 2 8 "%10f " "\n"' -n 24 -s ${OFFSET} ${FILENAME} >> ${OUTPUT}
+        hexdump -e '1 8 "%10.6f    | " 2 8 "%10.6f " "\n"' -n 24 -s ${OFFSET} ${FILENAME} >> ${OUTPUT}
         let OFFSET+=24
     done    
 else
@@ -40,7 +40,7 @@ else
     for i in `seq 1 ${CELLS}`;
     do 
         printf "[%6d] " ${i} >> ${OUTPUT}
-        hexdump -e '1 8 "%10f    | " 3 8 "%10f " "\n"' -n 32 -s ${OFFSET} ${FILENAME} >> ${OUTPUT}
+        hexdump -e '1 8 "%10.6f    | " 3 8 "%10.6f " "\n"' -n 32 -s ${OFFSET} ${FILENAME} >> ${OUTPUT}
         let OFFSET+=32
     done
 fi

@@ -4,6 +4,10 @@
 #include "Definitions.h"
 #include "Parameters.h"
 #include "FlowField.h"
+#include "sstream"
+#include "iomanip"
+#include "dirent.h"
+#include "sys/stat.h"
 
 class Checkpoint {
 
