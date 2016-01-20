@@ -97,8 +97,14 @@ int main (int argc, char *argv[]) {
 
     // start the global timer
     timer.start();
+    
+    // clean the checkpoints directory if needed
+    if (parameters.checkpoint.cleanDirectory) {
+        simulation->cleandirCheckpoint();
+    }
 
-    simulation->createCheckpoint(timeSteps, time);
+    // create the first checkpoint
+    // simulation->createCheckpoint(timeSteps, time);
 
     // time loop
     while (time < parameters.simulation.finalTime){

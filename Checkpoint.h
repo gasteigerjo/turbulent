@@ -39,6 +39,10 @@ class Checkpoint {
          * @param time the current time
          */
         void create ( int timeStep, FLOAT time );
+        
+        /** Clean the restart directory
+        */
+        void cleandir ();
 
 };
 

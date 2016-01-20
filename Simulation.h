@@ -192,6 +192,10 @@ class Simulation {
     virtual void readCheckpoint(int& timeStep, FLOAT& time){
         _checkpoint.read(timeStep, time);
     }
+    
+    virtual void cleandirCheckpoint(){
+        _checkpoint.cleandir();
+    }
 
   protected:
     /** sets the time step*/

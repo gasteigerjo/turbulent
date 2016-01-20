@@ -48,20 +48,6 @@ _parameters(parameters)
     // Create the restart directory if it doesn't exist
     mkdir(_parameters.checkpoint.directory.c_str(), S_IRWXU | S_IRWXG | S_IROTH);
     
-    // Clean the directory from previous restart data
-    // DEBUG: Change the bahavior. If we put it in the constructor, it removes before reading.
-    //        If we put it in the create, it keeps only the last file written.
-    if (_parameters.checkpoint.cleanDirectory) {
-        DIR *checkpointDir = opendir(_parameters.checkpoint.directory.c_str());
-        struct dirent *next_file;
-        char filepath[256];
-        
-        while( (next_file = readdir(checkpointDir)) != NULL ) {
-            sprintf(filepath, "%s/%s", _parameters.checkpoint.directory.c_str(), next_file->d_name);
-            remove(filepath);
-        } 
-        closedir(checkpointDir);
-    }
 }
 
 Checkpoint::~Checkpoint () {}
@@ -274,4 +260,19 @@ void Checkpoint::create ( int timeStep, FLOAT time ) {
     if (ierr != MPI_SUCCESS) {
         handleError(1, "Cannot close the checkpoint file.");
     }
+}
+
+void Checkpoint::cleandir () {
+    
+    // Clean the directory from previous restart data
+    DIR *checkpointDir = opendir(_parameters.checkpoint.directory.c_str());
+    struct dirent *next_file;
+    char filepath[256];
+    
+    while( (next_file = readdir(checkpointDir)) != NULL ) {
+        sprintf(filepath, "%s/%s", _parameters.checkpoint.directory.c_str(), next_file->d_name);
+        remove(filepath);
+    } 
+    closedir(checkpointDir);
+    
 }
