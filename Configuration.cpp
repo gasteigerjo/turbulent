@@ -366,7 +366,6 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
             // Change filename to the latest file
             if(parameters.restart.latest) {
 
-                std::cout << "restart latest\n";
                 // get only the prefix
                 std::string restart_prefix = parameters.restart.filename;
                 size_t prefix_end = parameters.restart.filename.find_last_of(".");
@@ -393,6 +392,10 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
                 }
                 parameters.restart.filename = restart_dir + "/" + parameters.restart.filename;
             }
+            
+            readBoolOptional(buffer, node, "startNew", false);
+            parameters.restart.startNew = (int) buffer;
+
         }
 
         //--------------------------------------------------
@@ -576,6 +579,7 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
 
     MPI_Bcast(&(parameters.checkpoint.cleanDirectory),1,MPI_INT,0,communicator);
     MPI_Bcast(&(parameters.restart.latest),1,MPI_INT,0,communicator);
+    MPI_Bcast(&(parameters.restart.startNew),1,MPI_INT,0,communicator);
 
     MPI_Bcast(&(parameters.bfStep.xRatio), 1, MY_MPI_FLOAT, 0, communicator);
     MPI_Bcast(&(parameters.bfStep.yRatio), 1, MY_MPI_FLOAT, 0, communicator);

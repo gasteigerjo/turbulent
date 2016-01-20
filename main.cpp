@@ -80,6 +80,10 @@ int main (int argc, char *argv[]) {
     // Read the restart data
     if(parameters.restart.filename != "") {
         simulation->readCheckpoint(timeSteps, time);
+        if (parameters.restart.startNew) {
+            timeSteps = 0;
+            time = 0.0;
+        }
         printf(" ++++ timestep: %d, time: %f\n", timeSteps, time); //DEBUG
     }
 
