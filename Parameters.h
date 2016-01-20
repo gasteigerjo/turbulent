@@ -121,6 +121,7 @@ class RestartParameters{
     public:
         std::string filename; //! Specific name of the file to use for restarting.
         int latest;    //! Option to read from the checkpoint from the latest iteration.
+        int startNew;  //! Option to start a new simulation (time=0) using the restart data only for the flowfield init.
 };
 
 class ParallelParameters{

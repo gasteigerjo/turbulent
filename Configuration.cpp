@@ -397,6 +397,9 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
                 // readd the directory to the filename
                 parameters.restart.filename = restart_dir + "/" + parameters.restart.filename;
             }
+
+            readBoolOptional(buffer, node, "startNew", false);
+            parameters.restart.startNew = (int) buffer;
         }
 
         //--------------------------------------------------
@@ -581,6 +584,7 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
 
     MPI_Bcast(&(parameters.checkpoint.cleanDirectory),1,MPI_INT,0,communicator);
     MPI_Bcast(&(parameters.restart.latest),1,MPI_INT,0,communicator);
+    MPI_Bcast(&(parameters.restart.startNew),1,MPI_INT,0,communicator);
 
     MPI_Bcast(&(parameters.bfStep.xRatio), 1, MY_MPI_FLOAT, 0, communicator);
     MPI_Bcast(&(parameters.bfStep.yRatio), 1, MY_MPI_FLOAT, 0, communicator);

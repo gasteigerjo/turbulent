@@ -57,6 +57,7 @@ int main (int argc, char *argv[]) {
     std::cout << "Checkpoint iterations: " << parameters.checkpoint.iterations << ", directory: " << parameters.checkpoint.directory << ", prefix: " << parameters.checkpoint.prefix << ", cleanDirectory:" << parameters.checkpoint.cleanDirectory << std::endl;
     std::cout << "Restart filename: " << parameters.restart.filename << std::endl;
     #endif
+    #endif
 
     // initialise simulation
     if (parameters.simulation.type=="turbulence"){
