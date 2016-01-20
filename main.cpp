@@ -71,15 +71,21 @@ int main (int argc, char *argv[]) {
     }
     // call initialization of simulation (initialize flow field)
     if(simulation == NULL){ handleError(1, "simulation==NULL!"); }
-    simulation->readCheckpoint();
     simulation->initializeFlowField();
     //flowField->getFlags().show();
-
-    FLOAT time = 0.0;
-    FLOAT lastPlotTime = 0.0;
-    int lastCheckpointIter = 0;
-    FLOAT timeStdOut=parameters.stdOut.interval;
+    
     int timeSteps = 0;
+    FLOAT time = 0.0;
+
+    // Read the restart data
+    if(parameters.restart.filename != "") {
+        simulation->readCheckpoint(timeSteps, time);
+        printf(" ++++ timestep: %d, time: %f\n", timeSteps, time); //DEBUG
+    }
+
+    FLOAT lastPlotTime = time;
+    int lastCheckpointIter = timeSteps;
+    FLOAT timeStdOut=parameters.stdOut.interval;
 
     // WS1: plot initial state
     simulation->plotVTK(0);
@@ -109,6 +115,7 @@ int main (int argc, char *argv[]) {
           timeStdOut += parameters.stdOut.interval;
       }
     
+      // DEBUG: Currently, restarting the simulation will overwrite the last checkpoint. Change that!
       if (lastCheckpointIter + parameters.checkpoint.iterations <= timeSteps) {
           simulation->createCheckpoint(timeSteps, time);
           lastCheckpointIter += parameters.checkpoint.iterations;

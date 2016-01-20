@@ -49,6 +49,8 @@ _parameters(parameters)
     mkdir(_parameters.checkpoint.directory.c_str(), S_IRWXU | S_IRWXG | S_IROTH);
     
     // Clean the directory from previous restart data
+    // DEBUG: Change the bahavior. If we put it in the constructor, it removes before reading.
+    //        If we put it in the create, it keeps only the last file written.
     if (_parameters.checkpoint.cleanDirectory) {
         DIR *checkpointDir = opendir(_parameters.checkpoint.directory.c_str());
         struct dirent *next_file;
@@ -64,7 +66,7 @@ _parameters(parameters)
 
 Checkpoint::~Checkpoint () {}
 
-void Checkpoint::read () {
+void Checkpoint::read ( int& timeStep, FLOAT& time ) {
     MPI_File fh_restart;
     MPI_Status status;
     MPI_Offset disp;
@@ -76,26 +78,25 @@ void Checkpoint::read () {
         handleError(1, "Cannot open the restart file.");
     }
     
-    // Read the header of the restart file using Rank0.
-    if (_parameters.parallel.rank == 0) {
-        int buffer_timeStep;
-        // Read the timeStep
-        MPI_File_read_at(fh_restart, 0, &buffer_timeStep, 1, MPI_INT, &status);
-        if (ierr != MPI_SUCCESS) {
-            handleError(1, "Cannot read the timeStep from the restart file.");
-        }
-        // DEBUG
-        printf("====== TIMESTEP: %d ==========\n", buffer_timeStep);
-        
-        FLOAT buffer_time;
-        // Read the time
-        MPI_File_read_at(fh_restart, sizeof(int), &buffer_time, 1, MY_MPI_FLOAT, &status);
-        if (ierr != MPI_SUCCESS) {
-            handleError(1, "Cannot read the time from the restart file.");
-        }
-        // DEBUG
-        printf("====== TIME: %f ==========\n", buffer_time);
+    int buffer_timeStep;
+    // Read the timeStep
+    MPI_File_read_at(fh_restart, 0, &buffer_timeStep, 1, MPI_INT, &status);
+    if (ierr != MPI_SUCCESS) {
+        handleError(1, "Cannot read the timeStep from the restart file.");
     }
+    // DEBUG
+    printf("====== TIMESTEP: %d ==========\n", buffer_timeStep);
+    timeStep = buffer_timeStep;
+    
+    FLOAT buffer_time;
+    // Read the time
+    MPI_File_read_at(fh_restart, sizeof(int), &buffer_time, 1, MY_MPI_FLOAT, &status);
+    if (ierr != MPI_SUCCESS) {
+        handleError(1, "Cannot read the time from the restart file.");
+    }
+    // DEBUG
+    printf("====== TIME: %f ==========\n", buffer_time);
+    time = buffer_time;
     
     // Displacement of the file view from the begining of the file.
     // The header consists of an int and a FLOAT.
@@ -124,6 +125,9 @@ void Checkpoint::read () {
                 if (_parameters.parallel.rank == 0) {
                     printf("%f | %f %f\n", localarray[i][3*j], localarray[i][3*j+1], localarray[i][3*j+2]);
                 }
+                _flowField.getPressure().getScalar(i+2,j+2) = localarray[i][3*j];
+                _flowField.getVelocity().getVector(i+2,j+2)[0] = localarray[i][3*j+1];
+                _flowField.getVelocity().getVector(i+2,j+2)[1] = localarray[i][3*j+2];
             }
         }
     } else {
@@ -146,6 +150,10 @@ void Checkpoint::read () {
                     if (_parameters.parallel.rank == 0) {
                         printf("%f | %f %f %f\n", localarray[i][j][4*k], localarray[i][j][4*k+1], localarray[i][j][4*k+2], localarray[i][j][4*k+3]);
                     }
+                    _flowField.getPressure().getScalar(i+2,j+2,k+2) = localarray[i][j][4*k];
+                    _flowField.getVelocity().getVector(i+2,j+2,k+2)[0] = localarray[i][j][4*k+1];
+                    _flowField.getVelocity().getVector(i+2,j+2,k+2)[1] = localarray[i][j][4*k+2];
+                    _flowField.getVelocity().getVector(i+2,j+2,k+2)[2] = localarray[i][j][4*k+3];
                 }
             }
         }

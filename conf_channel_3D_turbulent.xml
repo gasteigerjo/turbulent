@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
     <flow Re="10000" />
-    <simulation finalTime="0.1" >
+    <simulation finalTime="1" >
         <type>turbulence</type>
         <scenario>channel</scenario>
     </simulation>
@@ -52,6 +52,6 @@
         <directory>restart/</directory>
         <prefix>checkpoint</prefix>
     </checkpoint>
-    <restart>restart/checkpoint.000002</restart>
+    <!-- <restart>restart/checkpoint.000024</restart> -->
     <parallel numProcessorsX="2" numProcessorsY="2" numProcessorsZ="1" />
 </configuration>

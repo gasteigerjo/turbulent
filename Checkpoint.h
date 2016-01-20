@@ -29,8 +29,10 @@ class Checkpoint {
         ~Checkpoint();
 
         /** Reads a checkpoint file
+        * @param timeStep the restart timestep
+        * @param time the restart time
         */
-        void read ();
+        void read ( int& timeStep, FLOAT& time );
 
         /** Creates a checkpoint file
          * @param timeStep the current timestep
