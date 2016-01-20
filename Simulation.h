@@ -191,6 +191,8 @@ class Simulation {
     
     virtual void readCheckpoint(int& timeStep, FLOAT& time){
         _checkpoint.read(timeStep, time);
+        _petscParallelManager.communicatePressure();
+        _petscParallelManager.communicateVelocities();
     }
     
     virtual void cleandirCheckpoint(){
