@@ -68,25 +68,17 @@ void Checkpoint::read ( int& timeStep, FLOAT& time ) {
         handleError(1, "Cannot open the restart file.");
     }
 
-    int buffer_timeStep;
     // Read the timeStep
-    MPI_File_read_at(fh_restart, 0, &buffer_timeStep, 1, MPI_INT, &status);
+    MPI_File_read_at(fh_restart, 0, &timeStep, 1, MPI_INT, &status);
     if (ierr != MPI_SUCCESS) {
         handleError(1, "Cannot read the timeStep from the restart file.");
     }
-    // DEBUG
-    printf("====== TIMESTEP: %d ==========\n", buffer_timeStep);
-    timeStep = buffer_timeStep;
 
-    FLOAT buffer_time;
     // Read the time
-    MPI_File_read_at(fh_restart, sizeof(int), &buffer_time, 1, MY_MPI_FLOAT, &status);
+    MPI_File_read_at(fh_restart, sizeof(int), &time, 1, MY_MPI_FLOAT, &status);
     if (ierr != MPI_SUCCESS) {
         handleError(1, "Cannot read the time from the restart file.");
     }
-    // DEBUG
-    printf("====== TIME: %f ==========\n", buffer_time);
-    time = buffer_time;
 
     // Displacement of the file view from the beginning of the file.
     // The header consists of an int and a FLOAT.
@@ -111,10 +103,6 @@ void Checkpoint::read ( int& timeStep, FLOAT& time ) {
 
         for (int i=0; i < _parameters.parallel.localSize[0]; i++) {
             for (int j=0; j < _parameters.parallel.localSize[1]; j++) {
-                // DEBUG
-                if (_parameters.parallel.rank == 0) {
-                    printf("%f | %f %f\n", localarray[i][3*j], localarray[i][3*j+1], localarray[i][3*j+2]);
-                }
                 _flowField.getPressure().getScalar(i+2,j+2) = localarray[i][3*j];
                 _flowField.getVelocity().getVector(i+2,j+2)[0] = localarray[i][3*j+1];
                 _flowField.getVelocity().getVector(i+2,j+2)[1] = localarray[i][3*j+2];
@@ -136,10 +124,6 @@ void Checkpoint::read ( int& timeStep, FLOAT& time ) {
         for (int i=0; i < _parameters.parallel.localSize[0]; i++) {
             for (int j=0; j < _parameters.parallel.localSize[1]; j++) {
                 for (int k=0; k < _parameters.parallel.localSize[2]; k++) {
-                    // DEBUG
-                    if (_parameters.parallel.rank == 0) {
-                        printf("%f | %f %f %f\n", localarray[i][j][4*k], localarray[i][j][4*k+1], localarray[i][j][4*k+2], localarray[i][j][4*k+3]);
-                    }
                     _flowField.getPressure().getScalar(i+2,j+2,k+2) = localarray[i][j][4*k];
                     _flowField.getVelocity().getVector(i+2,j+2,k+2)[0] = localarray[i][j][4*k+1];
                     _flowField.getVelocity().getVector(i+2,j+2,k+2)[1] = localarray[i][j][4*k+2];
@@ -207,13 +191,8 @@ void Checkpoint::create ( int timeStep, FLOAT time ) {
         FLOAT localarray[_parameters.parallel.localSize[0]][3*_parameters.parallel.localSize[1]];
 
         // Prepare the cell data for writting to the file.
-        // DEBUG: Is the index order optimal??
         for (int i=0; i < _parameters.parallel.localSize[0]; i++) {
             for (int j=0; j < _parameters.parallel.localSize[1]; j++) {
-                // DEBUG
-                // if (_parameters.parallel.rank == 0) {
-                //     printf("%f | %f %f\n", _flowField.getPressure().getScalar(i+2,j+2), _flowField.getVelocity().getVector(i+2,j+2)[0], _flowField.getVelocity().getVector(i+2,j+2)[1]);
-                // }
                 // Pressure
                 localarray[i][3*j] = _flowField.getPressure().getScalar(i+2,j+2);
                 // Velocities per x,y
@@ -235,14 +214,9 @@ void Checkpoint::create ( int timeStep, FLOAT time ) {
         FLOAT localarray[_parameters.parallel.localSize[0]][_parameters.parallel.localSize[1]][4*_parameters.parallel.localSize[2]];
 
         // Prepare the data to write to the file.
-        // DEBUG: Is the index order optimal??
         for (int i=0; i < _parameters.parallel.localSize[0]; i++) {
             for (int j=0; j < _parameters.parallel.localSize[1]; j++) {
                 for (int k=0; k < _parameters.parallel.localSize[2]; k++) {
-                    // DEBUG
-                    // if (_parameters.parallel.rank == 0) {
-                    //     printf("%f | %f %f %f\n", _flowField.getPressure().getScalar(i+2,j+2,k+2), _flowField.getVelocity().getVector(i+2,j+2,k+2)[0], _flowField.getVelocity().getVector(i+2,j+2,k+2)[1], _flowField.getVelocity().getVector(i+2,j+2,k+2)[2]);
-                    // }
                     // Pressure
                     localarray[i][j][4*k] = _flowField.getPressure().getScalar(i+2,j+2,k+2);
                     // Velocities per x,y,z
