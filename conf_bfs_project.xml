@@ -23,7 +23,7 @@
       sizeX="20" sizeY="10" sizeZ="10"
       stretchX="false" stretchY="true" stretchZ="true"
     >
-      <mesh deltaSX="2.7" deltaSY="2.7" deltaSZ="2.7">bfs</mesh>
+      <mesh deltaSX="1.5" deltaSY="1.5" deltaSZ="1.5">bfs</mesh>
     </geometry>
     <environment gx="0" gy="0" gz="0" />
     <walls>
@@ -52,6 +52,6 @@
         <directory>restart/</directory>
         <prefix>checkpoint</prefix>
     </checkpoint>
-    <restart>previous_1000</restart>
+    <!-- <restart latest="true" startNew="false">restart/</restart> -->
     <parallel numProcessorsX="1" numProcessorsY="1" numProcessorsZ="1" />
 </configuration>

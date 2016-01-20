@@ -54,9 +54,6 @@ int main (int argc, char *argv[]) {
     std::cout << ", right neighbour: " << parameters.parallel.rightNb;
     std::cout << std::endl;
     std::cout << "Min. meshsizes: " << parameters.meshsize->getDxMin() << ", " << parameters.meshsize->getDyMin() << ", " << parameters.meshsize->getDzMin() << std::endl;
-    #endif
-
-    // DEBUG
     std::cout << "Checkpoint iterations: " << parameters.checkpoint.iterations << ", directory: " << parameters.checkpoint.directory << ", prefix: " << parameters.checkpoint.prefix << ", cleanDirectory:" << parameters.checkpoint.cleanDirectory << std::endl;
     std::cout << "Restart filename: " << parameters.restart.filename << std::endl;
     #endif
@@ -113,7 +110,10 @@ int main (int argc, char *argv[]) {
     // Read the restart data
     if(parameters.restart.filename != "") {
         simulation->readCheckpoint(timeSteps, time);
-        printf(" ++++ timestep: %d, time: %f\n", timeSteps, time); //DEBUG
+        if (parameters.restart.startNew) {
+            timeSteps = 0;
+            time = 0.0;
+        }
     }
 
     FLOAT lastPlotTime = time;
@@ -135,9 +135,6 @@ int main (int argc, char *argv[]) {
         simulation->cleandirCheckpoint();
     }
 
-    // create the first checkpoint
-    // simulation->createCheckpoint(timeSteps, time);
-
     // start the global timer
     timer.start();
 
@@ -156,7 +153,7 @@ int main (int argc, char *argv[]) {
           timeStdOut += parameters.stdOut.interval;
       }
 
-      // DEBUG: Currently, restarting the simulation will overwrite the last checkpoint. Change that!
+      // Create a checkpoint
       if (lastCheckpointIter + parameters.checkpoint.iterations <= timeSteps) {
           simulation->createCheckpoint(timeSteps, time);
           lastCheckpointIter += parameters.checkpoint.iterations;
