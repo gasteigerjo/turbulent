@@ -73,7 +73,7 @@ int main (int argc, char *argv[]) {
     if(simulation == NULL){ handleError(1, "simulation==NULL!"); }
     simulation->initializeFlowField();
     //flowField->getFlags().show();
-    
+
     int timeSteps = 0;
     FLOAT time = 0.0;
 
@@ -95,9 +95,6 @@ int main (int argc, char *argv[]) {
     FLOAT time_solve = 0; FLOAT time_solve_tot = 0;
     FLOAT time_comm  = 0; FLOAT time_comm_tot  = 0;
 
-    // start the global timer
-    timer.start();
-    
     // clean the checkpoints directory if needed
     if (parameters.checkpoint.cleanDirectory) {
         simulation->cleandirCheckpoint();
@@ -106,27 +103,30 @@ int main (int argc, char *argv[]) {
     // create the first checkpoint
     // simulation->createCheckpoint(timeSteps, time);
 
+    // start the global timer
+    timer.start();
+
     // time loop
     while (time < parameters.simulation.finalTime){
-    
+
       simulation->solveTimestep(time_solve, time_comm);
-    
+
       time += parameters.timestep.dt;
       timeSteps++;
-    
+
       // std-out: terminal info
       if ( (rank==0) && (timeStdOut <= time) ){
           std::cout << "Current time: " << time << "\ttimestep: " <<
                         parameters.timestep.dt << "\titeration: " << timeSteps <<std::endl << std::endl;
           timeStdOut += parameters.stdOut.interval;
       }
-    
+
       // DEBUG: Currently, restarting the simulation will overwrite the last checkpoint. Change that!
       if (lastCheckpointIter + parameters.checkpoint.iterations <= timeSteps) {
           simulation->createCheckpoint(timeSteps, time);
           lastCheckpointIter += parameters.checkpoint.iterations;
       }
-    
+
       // WS1: trigger VTK output
       if (lastPlotTime + parameters.vtk.interval <= time) {
           simulation->plotVTK(timeSteps); // TODO Change to time?

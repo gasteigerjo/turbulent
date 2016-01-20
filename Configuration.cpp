@@ -1,6 +1,7 @@
 #include "Configuration.h"
 #include "3rdparty/tinyxml2/tinyxml2.h"
 #include <string>
+#include <dirent.h>
 #include "Parameters.h"
 
 void readFloatMandatory(FLOAT & storage, tinyxml2::XMLElement *node, const char* tag){
@@ -336,21 +337,21 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
         bool buffer=false;
         readBoolOptional(buffer, node, "cleanDirectory", false);
         parameters.checkpoint.cleanDirectory = (int) buffer;
-        
+
         subNode = node->FirstChildElement("directory");
         if (subNode != NULL) {
             readStringMandatory(parameters.checkpoint.directory, subNode);
         } else {
             handleError (1, "Missing directory in checkpoint parameters");
         }
-        
+
         subNode = node->FirstChildElement("prefix");
         if (subNode != NULL) {
             readStringMandatory(parameters.checkpoint.prefix, subNode);
         } else {
             handleError (1, "Missing prefix in checkpoint parameters");
         }
-        
+
         //--------------------------------------------------
         // Restart parameters
         //--------------------------------------------------
@@ -358,6 +359,40 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
 
         if (node != NULL){
             readStringMandatory(parameters.restart.filename, node);
+
+            readBoolOptional(buffer, node, "latest", false);
+            parameters.restart.latest = (int) buffer;
+
+            // Change filename to the latest file
+            if(parameters.restart.latest) {
+
+                std::cout << "restart latest\n";
+                // get only the prefix
+                std::string restart_prefix = parameters.restart.filename;
+                size_t prefix_end = parameters.restart.filename.find_last_of(".");
+                if (prefix_end != std::string::npos) {
+                    restart_prefix = parameters.restart.filename.substr(0,prefix_end);
+                }
+
+                // get the folder
+                size_t dir_end = parameters.restart.filename.find_last_of("/");
+                std::string restart_dir = ".";
+                if (dir_end != std::string::npos) {
+                    restart_dir = "./" + parameters.restart.filename.substr(0,dir_end);
+                    restart_prefix = restart_prefix.substr(dir_end + 1);
+                    parameters.restart.filename = parameters.restart.filename.substr(dir_end + 1);
+                }
+
+                DIR* dir_pointer = opendir(restart_dir.c_str());
+                dirent* entry_pointer;
+                while ((entry_pointer = readdir(dir_pointer)) != NULL) {
+                    if ( !strncmp(entry_pointer->d_name, restart_prefix.c_str(), restart_prefix.size()) &&
+                        strcmp(entry_pointer->d_name, parameters.restart.filename.c_str()) > 0) {
+                            parameters.restart.filename = std::string(entry_pointer->d_name);
+                    }
+                }
+                parameters.restart.filename = restart_dir + "/" + parameters.restart.filename;
+            }
         }
 
         //--------------------------------------------------
@@ -540,6 +575,7 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
     broadcastString (parameters.simulation.scenario, communicator);
 
     MPI_Bcast(&(parameters.checkpoint.cleanDirectory),1,MPI_INT,0,communicator);
+    MPI_Bcast(&(parameters.restart.latest),1,MPI_INT,0,communicator);
 
     MPI_Bcast(&(parameters.bfStep.xRatio), 1, MY_MPI_FLOAT, 0, communicator);
     MPI_Bcast(&(parameters.bfStep.yRatio), 1, MY_MPI_FLOAT, 0, communicator);

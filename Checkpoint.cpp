@@ -63,7 +63,7 @@ void Checkpoint::read ( int& timeStep, FLOAT& time ) {
     strcpy(tmp_filename, _parameters.restart.filename.c_str());
     ierr = MPI_File_open(PETSC_COMM_WORLD, tmp_filename, MPI_MODE_RDONLY, MPI_INFO_NULL, &fh_restart);
     delete[] tmp_filename;
-    
+
     if (ierr != MPI_SUCCESS) {
         handleError(1, "Cannot open the restart file.");
     }
@@ -88,7 +88,7 @@ void Checkpoint::read ( int& timeStep, FLOAT& time ) {
     printf("====== TIME: %f ==========\n", buffer_time);
     time = buffer_time;
 
-    // Displacement of the file view from the begining of the file.
+    // Displacement of the file view from the beginning of the file.
     // The header consists of an int and a FLOAT.
     disp = sizeof(int) + sizeof(FLOAT);
 

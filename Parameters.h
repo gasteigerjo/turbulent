@@ -119,6 +119,7 @@ class CheckpointParameters{
 class RestartParameters{
     public:
         std::string filename; //! Specific name of the file to use for restarting.
+        int latest;    //! Option to read from the checkpoint from the latest iteration.
 };
 
 class ParallelParameters{
