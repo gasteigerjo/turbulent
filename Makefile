@@ -10,7 +10,7 @@ include ${PETSC_DIR}/conf/variables
 # default gnu compiler (currently not used)
 # CC = g++
 # compiler wrapper for mac-cluster
-#CC = mpiCC
+# CC = mpiCC
 #CFLAGS = -Wall -Werror -O3 -xHost -unroll
 # compiler on Ubuntu
 CC = mpic++
@@ -43,11 +43,16 @@ stencils/MinDtStencil.o stencils/TurbViscosityBoundaryStencil.o \
 stencils/TurbViscosityBufferFillStencil.o stencils/TurbViscosityBufferReadStencil.o \
 parallelManagers/PetscTurbulentParallelManager.o \
 
-all: ns
+all: ns chkpt_to_vtk
 
 ns: $(OBJ) $(NSOBJ) $(NSMAIN)
 	$(CC) -o ns $(OBJ) $(NSOBJ) $(NSMAIN) $(PETSC_KSP_LIB) -lstdc++ $(CFLAGS)
 
+chkpt_to_vtk: $(OBJ) $(NSOBJ) chkpt_to_vtk.o
+	$(CC) -o chkpt_to_vtk $(OBJ) $(NSOBJ) chkpt_to_vtk.o $(PETSC_KSP_LIB) -lstdc++ $(CFLAGS) -Dchkpt_to_vtk
+
+chkpt_to_vtk.o: main.cpp
+	$(CC) -c $(CFLAGS) $(INCLUDE) -o chkpt_to_vtk.o main.cpp $(PETSC_KSP_LIB) -lstdc++ -Dchkpt_to_vtk
 
 %.o: %.cpp
 	$(CC) -c $(CFLAGS) $(INCLUDE) -o $*.o $*.cpp $(PETSC_KSP_LIB) -lstdc++

@@ -18,7 +18,9 @@ int main (int argc, char *argv[]) {
     PetscInitialize(&argc, &argv, "petsc_commandline_arg", PETSC_NULL);
     MPI_Comm_size(PETSC_COMM_WORLD, &nproc);
     MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+    #ifndef chkpt_to_vtk
     std::cout << "Rank: " << rank << ", Nproc: " << nproc << std::endl;
+    #endif
     //----------------------------------------------------
 
 
@@ -26,12 +28,19 @@ int main (int argc, char *argv[]) {
     Configuration configuration(argv[1]);
     Parameters parameters;
     configuration.loadParameters(parameters);
+    #ifdef chkpt_to_vtk
+    parameters.parallel.numProcessors[0] = 1;
+    parameters.parallel.numProcessors[1] = 1;
+    parameters.parallel.numProcessors[2] = 1;
+    parameters.restart.startNew = false;
+    #endif
     PetscParallelConfiguration parallelConfiguration(parameters);
     MeshsizeFactory::getInstance().initMeshsize(parameters);
     FlowField *flowField = NULL;
     Simulation *simulation = NULL;
     SimpleTimer timer = SimpleTimer();
 
+    #ifndef chkpt_to_vtk
     #ifdef DEBUG
     std::cout << "Processor " << parameters.parallel.rank << " with index ";
     std::cout << parameters.parallel.indices[0] << ",";
@@ -50,24 +59,29 @@ int main (int argc, char *argv[]) {
     // DEBUG
     std::cout << "Checkpoint iterations: " << parameters.checkpoint.iterations << ", directory: " << parameters.checkpoint.directory << ", prefix: " << parameters.checkpoint.prefix << ", cleanDirectory:" << parameters.checkpoint.cleanDirectory << std::endl;
     std::cout << "Restart filename: " << parameters.restart.filename << std::endl;
+    #endif
 
     // initialise simulation
     if (parameters.simulation.type=="turbulence"){
-      if(rank==0){ std::cout << "Start RANS simulation in " << parameters.geometry.dim << "D" << std::endl; }
-      // WS2: initialise turbulent flow field and turbulent simulation object
-      TurbulentFlowField *turbFlowField = NULL;
-      turbFlowField = new TurbulentFlowField(parameters);
-      flowField = turbFlowField;
-      if(flowField == NULL){ handleError(1, "flowField==NULL!"); }
-      simulation = new TurbulentSimulation(parameters,*turbFlowField);
-      // handleError(1,"Turbulence currently not supported yet!");
+        #ifndef chkpt_to_vtk
+        if(rank==0){ std::cout << "Start RANS simulation in " << parameters.geometry.dim << "D" << std::endl; }
+        #endif
+        // WS2: initialise turbulent flow field and turbulent simulation object
+        TurbulentFlowField *turbFlowField = NULL;
+        turbFlowField = new TurbulentFlowField(parameters);
+        flowField = turbFlowField;
+        if(flowField == NULL){ handleError(1, "flowField==NULL!"); }
+        simulation = new TurbulentSimulation(parameters,*turbFlowField);
+        // handleError(1,"Turbulence currently not supported yet!");
     } else if (parameters.simulation.type=="dns"){
-      if(rank==0){ std::cout << "Start DNS simulation in " << parameters.geometry.dim << "D" << std::endl; }
-      flowField = new FlowField(parameters);
-      if(flowField == NULL){ handleError(1, "flowField==NULL!"); }
-      simulation = new Simulation(parameters,*flowField);
+        #ifndef chkpt_to_vtk
+        if(rank==0){ std::cout << "Start DNS simulation in " << parameters.geometry.dim << "D" << std::endl; }
+        #endif
+        flowField = new FlowField(parameters);
+        if(flowField == NULL){ handleError(1, "flowField==NULL!"); }
+        simulation = new Simulation(parameters,*flowField);
     } else {
-      handleError(1, "Unknown simulation type! Currently supported: dns, turbulence");
+        handleError(1, "Unknown simulation type! Currently supported: dns, turbulence");
     }
     // call initialization of simulation (initialize flow field)
     if(simulation == NULL){ handleError(1, "simulation==NULL!"); }
@@ -77,13 +91,28 @@ int main (int argc, char *argv[]) {
     int timeSteps = 0;
     FLOAT time = 0.0;
 
+    #ifdef chkpt_to_vtk
+    // iterate through all checkpoint files
+    DIR* dir_pointer = opendir(parameters.checkpoint.directory.c_str());
+    dirent* file_pointer;
+    while ((file_pointer = readdir(dir_pointer)) != NULL) {
+        if (!strncmp(file_pointer->d_name, parameters.checkpoint.prefix.c_str(), parameters.checkpoint.prefix.size())) {
+            parameters.restart.filename = parameters.checkpoint.directory + std::string(file_pointer->d_name);
+            simulation->readCheckpoint(timeSteps, time);
+            simulation->plotVTK(timeSteps);
+        }
+    }
+
+    // exit application
+    delete simulation; simulation=NULL;
+    delete flowField;  flowField= NULL;
+    PetscFinalize();
+    return 0;
+    #endif
+
     // Read the restart data
     if(parameters.restart.filename != "") {
         simulation->readCheckpoint(timeSteps, time);
-        if (parameters.restart.startNew) {
-            timeSteps = 0;
-            time = 0.0;
-        }
         printf(" ++++ timestep: %d, time: %f\n", timeSteps, time); //DEBUG
     }
 
@@ -92,7 +121,9 @@ int main (int argc, char *argv[]) {
     FLOAT timeStdOut=parameters.stdOut.interval;
 
     // WS1: plot initial state
-    simulation->plotVTK(0);
+    if(parameters.vtk.active) {
+        simulation->plotVTK(timeSteps);
+    }
 
     // initialize the region timers
     FLOAT time_loop  = 0; FLOAT time_loop_tot  = 0;
@@ -132,7 +163,7 @@ int main (int argc, char *argv[]) {
       }
 
       // WS1: trigger VTK output
-      if (lastPlotTime + parameters.vtk.interval <= time) {
+      if (parameters.vtk.active && lastPlotTime + parameters.vtk.interval <= time) {
           simulation->plotVTK(timeSteps); // TODO Change to time?
           lastPlotTime += parameters.vtk.interval;
       }
@@ -151,7 +182,9 @@ int main (int argc, char *argv[]) {
     }
 
     // WS1: plot final output
-    simulation->plotVTK(timeSteps);
+    if(parameters.vtk.active) {
+        simulation->plotVTK(timeSteps);
+    }
 
     delete simulation; simulation=NULL;
     delete flowField;  flowField= NULL;

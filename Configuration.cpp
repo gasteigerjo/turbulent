@@ -304,12 +304,15 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
 
         node = confFile.FirstChildElement()->FirstChildElement("vtk");
 
-        if (node == NULL){
-            handleError(1, "Error loading VTK parameters");
+        bool buffer = true;
+        if (node == NULL) {
+            parameters.vtk.active = (int) false;
+        } else {
+            readBoolOptional(buffer, node, "active", true);
+            parameters.vtk.active = (int) buffer;
+            readFloatOptional(parameters.vtk.interval, node, "interval");
+            readStringMandatory(parameters.vtk.prefix, node);
         }
-
-        readFloatOptional(parameters.vtk.interval, node, "interval");
-        readStringMandatory(parameters.vtk.prefix, node);
 
         //--------------------------------------------------
         // StdOut parameters
@@ -334,7 +337,6 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
         }
 
         readIntOptional(parameters.checkpoint.iterations, node, "iterations", 1000);
-        bool buffer=false;
         readBoolOptional(buffer, node, "cleanDirectory", false);
         parameters.checkpoint.cleanDirectory = (int) buffer;
 
@@ -366,14 +368,14 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
             // Change filename to the latest file
             if(parameters.restart.latest) {
 
-                // get only the prefix
+                // get the prefix
                 std::string restart_prefix = parameters.restart.filename;
                 size_t prefix_end = parameters.restart.filename.find_last_of(".");
                 if (prefix_end != std::string::npos) {
                     restart_prefix = parameters.restart.filename.substr(0,prefix_end);
                 }
 
-                // get the folder
+                // get the directory
                 size_t dir_end = parameters.restart.filename.find_last_of("/");
                 std::string restart_dir = ".";
                 if (dir_end != std::string::npos) {
@@ -382,20 +384,19 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
                     parameters.restart.filename = parameters.restart.filename.substr(dir_end + 1);
                 }
 
+                // get the latest checkpoint file
                 DIR* dir_pointer = opendir(restart_dir.c_str());
-                dirent* entry_pointer;
-                while ((entry_pointer = readdir(dir_pointer)) != NULL) {
-                    if ( !strncmp(entry_pointer->d_name, restart_prefix.c_str(), restart_prefix.size()) &&
-                        strcmp(entry_pointer->d_name, parameters.restart.filename.c_str()) > 0) {
-                            parameters.restart.filename = std::string(entry_pointer->d_name);
+                dirent* file_pointer;
+                while ((file_pointer = readdir(dir_pointer)) != NULL) {
+                    if ( !strncmp(file_pointer->d_name, restart_prefix.c_str(), restart_prefix.size()) &&
+                        strcmp(file_pointer->d_name, parameters.restart.filename.c_str()) > 0) {
+                            parameters.restart.filename = std::string(file_pointer->d_name);
                     }
                 }
+
+                // readd the directory to the filename
                 parameters.restart.filename = restart_dir + "/" + parameters.restart.filename;
             }
-            
-            readBoolOptional(buffer, node, "startNew", false);
-            parameters.restart.startNew = (int) buffer;
-
         }
 
         //--------------------------------------------------
@@ -566,6 +567,7 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
 
     MPI_Bcast(&(parameters.simulation.finalTime), 1, MY_MPI_FLOAT, 0, communicator);
 
+    MPI_Bcast(&(parameters.vtk.active), 1, MPI_INT, 0, communicator);
     MPI_Bcast(&(parameters.vtk.interval), 1, MY_MPI_FLOAT, 0, communicator);
     MPI_Bcast(&(parameters.stdOut.interval), 1, MY_MPI_FLOAT, 0, communicator);
     MPI_Bcast(&(parameters.checkpoint.iterations), 1, MPI_INT, 0, communicator);
@@ -579,7 +581,6 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
 
     MPI_Bcast(&(parameters.checkpoint.cleanDirectory),1,MPI_INT,0,communicator);
     MPI_Bcast(&(parameters.restart.latest),1,MPI_INT,0,communicator);
-    MPI_Bcast(&(parameters.restart.startNew),1,MPI_INT,0,communicator);
 
     MPI_Bcast(&(parameters.bfStep.xRatio), 1, MY_MPI_FLOAT, 0, communicator);
     MPI_Bcast(&(parameters.bfStep.yRatio), 1, MY_MPI_FLOAT, 0, communicator);
