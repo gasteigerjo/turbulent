@@ -143,8 +143,12 @@ int main (int argc, char *argv[]) {
     // start the global timer
     timer.start();
 
+    SimpleTimer chkpt_timer;
+    int chkpt_cnt = 0;
+    FLOAT chkpt_time = 0;
+
     // time loop
-    while (time < parameters.simulation.finalTime){
+    while (timeSteps < 30){ // time < parameters.simulation.finalTime
 
         simulation->solveTimestep(time_solve, time_comm);
 
@@ -153,21 +157,24 @@ int main (int argc, char *argv[]) {
 
         // std-out: terminal info
         if ( (rank==0) && (timeStdOut <= time) ){
-          std::cout << "Current time: " << time << "\ttimestep: " <<
+            std::cout << "Current time: " << time << "\ttimestep: " <<
                         parameters.timestep.dt << "\titeration: " << timeSteps <<std::endl << std::endl;
-          timeStdOut += parameters.stdOut.interval;
+            timeStdOut += parameters.stdOut.interval;
         }
 
         // Create a checkpoint
         if (lastCheckpointIter + parameters.checkpoint.iterations <= timeSteps) {
-          simulation->createCheckpoint(timeSteps, time);
-          lastCheckpointIter += parameters.checkpoint.iterations;
+            chkpt_cnt++;
+            chkpt_timer.start();
+            simulation->createCheckpoint(timeSteps, time);
+            lastCheckpointIter += parameters.checkpoint.iterations;
+            chkpt_time += chkpt_timer.getTimeAndContinue();
         }
 
         // WS1: trigger VTK output
         if (parameters.vtk.active && lastPlotTime + parameters.vtk.interval <= time) {
-          simulation->plotVTK(timeSteps); // TODO Change to time?
-          lastPlotTime += parameters.vtk.interval;
+            simulation->plotVTK(timeSteps); // TODO Change to time?
+            lastPlotTime += parameters.vtk.interval;
         }
     }
 
@@ -177,10 +184,18 @@ int main (int argc, char *argv[]) {
     MPI_Reduce(&time_loop,  &time_loop_tot,  1, MY_MPI_FLOAT, MPI_SUM, 0, PETSC_COMM_WORLD);
     MPI_Reduce(&time_solve, &time_solve_tot, 1, MY_MPI_FLOAT, MPI_SUM, 0, PETSC_COMM_WORLD);
     MPI_Reduce(&time_comm,  &time_comm_tot,  1, MY_MPI_FLOAT, MPI_SUM, 0, PETSC_COMM_WORLD);
-    MPI_Barrier(PETSC_COMM_WORLD);
     if (rank==0) {
         printf("[Average] Timers (s):\tloop: %f | solve: %f  comm: %f  other: %f\n", time_loop_tot/nproc, time_solve_tot/nproc, time_comm_tot/nproc, (time_loop_tot-time_solve_tot-time_comm_tot)/nproc);
         std::cerr << parameters.parallel.numProcessors[0] << "x" << parameters.parallel.numProcessors[1] << "x" << parameters.parallel.numProcessors[2] << ": " << time_loop_tot/nproc << std::endl; // Output time in cerr for easy redirection into file
+    }
+
+    // take writing time for checkpoint output
+    chkpt_time /= chkpt_cnt;
+    FLOAT chkpt_time_tot = 0;
+    MPI_Reduce(&chkpt_time,  &chkpt_time_tot,  1, MY_MPI_FLOAT, MPI_SUM, 0, PETSC_COMM_WORLD);
+    chkpt_time_tot /= nproc;
+    if (rank==0) {
+        std::cerr << "Writing time per checkpoint (average of " << chkpt_cnt << " checkpoints): " << chkpt_time_tot << std::endl;
     }
 
     // WS1: plot final output

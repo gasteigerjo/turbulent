@@ -94,11 +94,45 @@ def validation():
     # enqueue_sim(bfs, "bfs_str_seq", "dns", "stretched", 3, lX, lY, lZ, sX, sY, sZ, 1, 1, 1)
     # enqueue_sim(bfs, "bfs_str", "dns", "stretched", 3, lX, lY, lZ, sX, sY, sZ, 4, 2, 2)
 
+def writing():
+    lX = 5.0
+    lY = 1.0
+    lZ = 1.0
+    sX = 10
+    sY = 10
+    sZ = 10
+    pX = 8
+    pY = 1
+    pZ = 1
+    for sX in [10, 20, 40, 80]:
+        pX = sX / 10
+        enqueue_sim(cav, "m{0}x{1}x{2}_p{3}x{4}x{5}".format(sX,sY,sZ,pX,pY,pZ), "dns", "uniform", 3, lX, lY, lZ, sX, sY, sZ, pX, pY, pZ)
+
+    for sX in [10, 80]:
+        for sY in [10, 40, 80]:
+            for sZ in [10, 40, 80]:
+                pX = sX / 10
+                enqueue_sim(cav, "m{0}x{1}x{2}_p{3}x{4}x{5}".format(sX,sY,sZ,pX,pY,pZ), "dns", "uniform", 3, lX, lY, lZ, sX, sY, sZ, pX, pY, pZ)
+
+    sX = 70
+    sY = 40
+    sZ = 40
+    pY = 1
+    pZ = 1
+    for pX in [1, 2, 4, 7]:
+        enqueue_sim(cav, "m{0}x{1}x{2}_p{3}x{4}x{5}".format(sX,sY,sZ,pX,pY,pZ), "dns", "uniform", 3, lX, lY, lZ, sX, sY, sZ, pX, pY, pZ)
+    pX = 7
+    for pY in [2, 4]:
+        enqueue_sim(cav, "m{0}x{1}x{2}_p{3}x{4}x{5}".format(sX,sY,sZ,pX,pY,pZ), "dns", "uniform", 3, lX, lY, lZ, sX, sY, sZ, pX, pY, pZ)
+    pY = 4
+    pZ = 2
+    enqueue_sim(cav, "m{0}x{1}x{2}_p{3}x{4}x{5}".format(sX,sY,sZ,pX,pY,pZ), "dns", "uniform", 3, lX, lY, lZ, sX, sY, sZ, pX, pY, pZ)
+
 if __name__ == '__main__':
 
 
     # Name of this run
-    run_name = "scaling_3"
+    run_name = "writing_nat"
 
 
     # Create folders
@@ -111,9 +145,11 @@ if __name__ == '__main__':
     # Enqueue simulations to run
     cav = "conf_cavity.xml"
     bfs = "conf_bfs.xml"
-    strong_scaling()
-    weak_scaling()
+    turb = "conf_channel_3D_turbulent.xml"
+    # strong_scaling()
+    # weak_scaling()
     # validation()
+    writing()
 
 
     # Read batch file template
@@ -125,6 +161,7 @@ if __name__ == '__main__':
     batch = batch.format(run_name=run_name, nodes = int(math.ceil(max(nodeslist) * 1.0 / pernode)))
     # List all enqueued simulations
     for i in range(len(names)):
+        batch += "echo -e \"\\n{3}: \" >>output/{2}/times.txt\n".format(nodeslist[i], pernode, run_name, names[i])
         batch += "mpirun -np {0} -ppn {1} ./ns conf/parallel/tmp/{2}/{3}.xml 2>>output/{2}/times.txt\n".format(nodeslist[i], pernode, run_name, names[i])
 
     # Write new batch file

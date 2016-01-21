@@ -35,7 +35,11 @@
             <vector x="0" y="0" z="0" />
         </back>
     </walls>
-    <vtk interval="0.01">output/{run_name}/{name}/{name}</vtk>
+    <vtk interval="0.01" active="false">output/{run_name}/{name}/{name}</vtk>
     <stdOut interval="0.01" />
+    <checkpoint iterations="1" cleanDirectory="true">
+        <directory>restart/</directory>
+        <prefix>checkpoint</prefix>
+    </checkpoint>
     <parallel numProcessorsX="{npX}" numProcessorsY="{npY}" numProcessorsZ="{npZ}" />
 </configuration>
