@@ -148,7 +148,7 @@ int main (int argc, char *argv[]) {
     FLOAT chkpt_time = 0;
 
     // time loop
-    while (timeSteps < 30){ // time < parameters.simulation.finalTime
+    while (time < parameters.simulation.finalTime){
 
         simulation->solveTimestep(time_solve, time_comm);
 
