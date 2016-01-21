@@ -30,8 +30,12 @@ VtkOutput::VtkOutput ( FlowField & flowField, const Parameters & parameters ) :
 }
 
 VtkOutput::~VtkOutput (){
-  free(_postStencils);
-  free(_turbPostStencils);
+  for (int i = 0; i < _nPostStencils; i++) {
+    delete _postStencils[i];
+  }
+  for (int i = 0; i < _nTurbPostStencils; i++) {
+    delete _turbPostStencils[i];
+  }
 }
 
 

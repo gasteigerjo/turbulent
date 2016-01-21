@@ -74,7 +74,7 @@ WallPostStencil::WallPostStencil ( const Parameters & parameters )
     _sizeY(parameters.geometry.lengthY),
     _sizeZ(parameters.geometry.lengthZ),
     _stepX(_parameters.bfStep.xRatio * parameters.geometry.lengthX),
-    _stepY(_parameters.bfStep.yRatio * parameters.geometry.lengthY) { // not working if the domain is split in y and/or z direction
+    _stepY(_parameters.bfStep.yRatio * parameters.geometry.lengthY) {
 
     // find the j-index of the first fluid cells on top of the step
     _jOnStep = -1;
@@ -99,13 +99,6 @@ WallPostStencil::WallPostStencil ( const Parameters & parameters )
         }
       }
     }
-}
-
-WallPostStencil::~WallPostStencil(){
-}
-
-void WallPostStencil::preapply ( FlowField & flowField ) {
-
 }
 
 void WallPostStencil::apply ( FlowField & flowField, int i, int j ) {
@@ -155,6 +148,8 @@ void WallPostStencil::apply ( FlowField & flowField, int i, int j, int k ) {
 }
 
 void WallPostStencil::writeVtk ( std::ostream & stream ) {
+    if (_parameters.geometry.dim == 2) return; // no 2D implementation yet TODO
+
     // write wall shear stress
     stream << "\nVECTORS wallShearStress float" << std::endl;
     stream << _ssTauw.str();
