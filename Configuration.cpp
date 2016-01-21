@@ -1,6 +1,7 @@
 #include "Configuration.h"
 #include "3rdparty/tinyxml2/tinyxml2.h"
 #include <string>
+#include <sstream>
 #include <dirent.h>
 #include "Parameters.h"
 
@@ -377,15 +378,16 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
 
                 // get the directory
                 size_t dir_end = parameters.restart.filename.find_last_of("/");
-                std::string restart_dir = ".";
+                std::stringstream restart_dir;
+                restart_dir << ".";
                 if (dir_end != std::string::npos) {
-                    restart_dir = "./" + parameters.restart.filename.substr(0,dir_end);
+                    restart_dir << "/" << parameters.restart.filename.substr(0, dir_end);
                     restart_prefix = restart_prefix.substr(dir_end + 1);
                     parameters.restart.filename = parameters.restart.filename.substr(dir_end + 1);
                 }
 
                 // get the latest checkpoint file
-                DIR* dir_pointer = opendir(restart_dir.c_str());
+                DIR* dir_pointer = opendir(restart_dir.str().c_str());
                 dirent* file_pointer;
                 while ((file_pointer = readdir(dir_pointer)) != NULL) {
                     if ( !strncmp(file_pointer->d_name, restart_prefix.c_str(), restart_prefix.size()) &&
@@ -395,7 +397,9 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
                 }
 
                 // readd the directory to the filename
-                parameters.restart.filename = restart_dir + "/" + parameters.restart.filename;
+                std::stringstream tmp_fstream;
+                tmp_fstream << restart_dir.str() << "/" << parameters.restart.filename;
+                parameters.restart.filename = tmp_fstream.str();
             }
 
             readBoolOptional(buffer, node, "startNew", false);
