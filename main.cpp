@@ -97,6 +97,10 @@ int main (int argc, char *argv[]) {
         if (!strncmp(file_pointer->d_name, parameters.checkpoint.prefix.c_str(), parameters.checkpoint.prefix.size())) {
             parameters.restart.filename = parameters.checkpoint.directory + std::string(file_pointer->d_name);
             simulation->readCheckpoint(timeSteps, time);
+            if (parameters.simulation.type=="turbulence") {
+                ((TurbulentSimulation*)simulation)->computeTurbVisc();
+            }
+            std::cout << "Plotting time step " << timeSteps << std::endl;
             simulation->plotVTK(timeSteps);
         }
     }

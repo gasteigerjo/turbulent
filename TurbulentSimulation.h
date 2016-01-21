@@ -61,6 +61,10 @@ class TurbulentSimulation : public Simulation {
       iterator.iterate();
     }
 
+    void computeTurbVisc() {
+        _turbViscIterator.iterate();
+    }
+
     void solveTimestep(FLOAT &_time_solve, FLOAT &_time_comm){
       setTimeStep();
       // compute turbulent viscosity
