@@ -143,10 +143,6 @@ int main (int argc, char *argv[]) {
     // start the global timer
     timer.start();
 
-    SimpleTimer chkpt_timer;
-    int chkpt_cnt = 0;
-    FLOAT chkpt_time = 0;
-
     // time loop
     while (time < parameters.simulation.finalTime){
 
@@ -164,11 +160,8 @@ int main (int argc, char *argv[]) {
 
         // Create a checkpoint
         if (lastCheckpointIter + parameters.checkpoint.iterations <= timeSteps) {
-            chkpt_cnt++;
-            chkpt_timer.start();
             simulation->createCheckpoint(timeSteps, time);
             lastCheckpointIter += parameters.checkpoint.iterations;
-            chkpt_time += chkpt_timer.getTimeAndContinue();
         }
 
         // WS1: trigger VTK output
@@ -190,20 +183,7 @@ int main (int argc, char *argv[]) {
     }
 
     // Create the final checkpoint
-    chkpt_cnt++;
-    chkpt_timer.start();
     simulation->createCheckpoint(timeSteps, time);
-    lastCheckpointIter += parameters.checkpoint.iterations;
-    chkpt_time += chkpt_timer.getTimeAndContinue();
-
-    // take writing time for checkpoint output
-    chkpt_time /= chkpt_cnt;
-    FLOAT chkpt_time_tot = 0;
-    MPI_Reduce(&chkpt_time,  &chkpt_time_tot,  1, MY_MPI_FLOAT, MPI_SUM, 0, PETSC_COMM_WORLD);
-    chkpt_time_tot /= nproc;
-    if (rank==0) {
-        std::cout << "Writing time per checkpoint (average of " << chkpt_cnt << " checkpoints): " << chkpt_time_tot << std::endl;
-    }
 
     // WS1: plot final output
     if(parameters.vtk.active) {
