@@ -1,6 +1,8 @@
 #include "Configuration.h"
 #include "3rdparty/tinyxml2/tinyxml2.h"
 #include <string>
+#include <sstream>
+#include <dirent.h>
 #include "Parameters.h"
 
 void readFloatMandatory(FLOAT & storage, tinyxml2::XMLElement *node, const char* tag){
@@ -303,12 +305,15 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
 
         node = confFile.FirstChildElement()->FirstChildElement("vtk");
 
-        if (node == NULL){
-            handleError(1, "Error loading VTK parameters");
+        bool buffer = true;
+        if (node == NULL) {
+            parameters.vtk.active = (int) false;
+        } else {
+            readBoolOptional(buffer, node, "active", true);
+            parameters.vtk.active = (int) buffer;
+            readFloatOptional(parameters.vtk.interval, node, "interval");
+            readStringMandatory(parameters.vtk.prefix, node);
         }
-
-        readFloatOptional(parameters.vtk.interval, node, "interval");
-        readStringMandatory(parameters.vtk.prefix, node);
 
         //--------------------------------------------------
         // StdOut parameters
@@ -322,6 +327,84 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
 
         // If no value given, print every step
         readFloatOptional(parameters.stdOut.interval, node, "interval", 1);
+
+        //--------------------------------------------------
+        // Checkpoint parameters
+        //--------------------------------------------------
+        node = confFile.FirstChildElement()->FirstChildElement("checkpoint");
+
+        if (node == NULL){
+            handleError(1, "Error loading checkpointing parameters");
+        }
+
+        readIntOptional(parameters.checkpoint.iterations, node, "iterations", 1000);
+        readBoolOptional(buffer, node, "cleanDirectory", false);
+        parameters.checkpoint.cleanDirectory = (int) buffer;
+
+        subNode = node->FirstChildElement("directory");
+        if (subNode != NULL) {
+            readStringMandatory(parameters.checkpoint.directory, subNode);
+        } else {
+            handleError (1, "Missing directory in checkpoint parameters");
+        }
+
+        subNode = node->FirstChildElement("prefix");
+        if (subNode != NULL) {
+            readStringMandatory(parameters.checkpoint.prefix, subNode);
+        } else {
+            handleError (1, "Missing prefix in checkpoint parameters");
+        }
+
+        //--------------------------------------------------
+        // Restart parameters
+        //--------------------------------------------------
+        node = confFile.FirstChildElement()->FirstChildElement("restart");
+
+        if (node != NULL){
+            readStringMandatory(parameters.restart.filename, node);
+
+            readBoolOptional(buffer, node, "latest", false);
+            parameters.restart.latest = (int) buffer;
+
+            // Change filename to the latest file
+            if(parameters.restart.latest) {
+
+                // get the prefix
+                std::string restart_prefix = parameters.restart.filename;
+                size_t prefix_end = parameters.restart.filename.find_last_of(".");
+                if (prefix_end != std::string::npos) {
+                    restart_prefix = parameters.restart.filename.substr(0,prefix_end);
+                }
+
+                // get the directory
+                size_t dir_end = parameters.restart.filename.find_last_of("/");
+                std::stringstream restart_dir;
+                restart_dir << ".";
+                if (dir_end != std::string::npos) {
+                    restart_dir << "/" << parameters.restart.filename.substr(0, dir_end);
+                    restart_prefix = restart_prefix.substr(dir_end + 1);
+                    parameters.restart.filename = parameters.restart.filename.substr(dir_end + 1);
+                }
+
+                // get the latest checkpoint file
+                DIR* dir_pointer = opendir(restart_dir.str().c_str());
+                dirent* file_pointer;
+                while ((file_pointer = readdir(dir_pointer)) != NULL) {
+                    if ( !strncmp(file_pointer->d_name, restart_prefix.c_str(), restart_prefix.size()) &&
+                        strcmp(file_pointer->d_name, parameters.restart.filename.c_str()) > 0) {
+                            parameters.restart.filename = std::string(file_pointer->d_name);
+                    }
+                }
+
+                // readd the directory to the filename
+                std::stringstream tmp_fstream;
+                tmp_fstream << restart_dir.str() << "/" << parameters.restart.filename;
+                parameters.restart.filename = tmp_fstream.str();
+            }
+
+            readBoolOptional(buffer, node, "startNew", false);
+            parameters.restart.startNew = (int) buffer;
+        }
 
         //--------------------------------------------------
         // Parallel parameters
@@ -491,12 +574,21 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
 
     MPI_Bcast(&(parameters.simulation.finalTime), 1, MY_MPI_FLOAT, 0, communicator);
 
+    MPI_Bcast(&(parameters.vtk.active), 1, MPI_INT, 0, communicator);
     MPI_Bcast(&(parameters.vtk.interval), 1, MY_MPI_FLOAT, 0, communicator);
-    MPI_Bcast(&(parameters.stdOut.interval), 1, MPI_INT, 0, communicator);
+    MPI_Bcast(&(parameters.stdOut.interval), 1, MY_MPI_FLOAT, 0, communicator);
+    MPI_Bcast(&(parameters.checkpoint.iterations), 1, MPI_INT, 0, communicator);
 
     broadcastString (parameters.vtk.prefix, communicator);
+    broadcastString (parameters.checkpoint.directory, communicator);
+    broadcastString (parameters.checkpoint.prefix, communicator);
+    broadcastString (parameters.restart.filename, communicator);
     broadcastString (parameters.simulation.type, communicator);
     broadcastString (parameters.simulation.scenario, communicator);
+
+    MPI_Bcast(&(parameters.checkpoint.cleanDirectory),1,MPI_INT,0,communicator);
+    MPI_Bcast(&(parameters.restart.latest),1,MPI_INT,0,communicator);
+    MPI_Bcast(&(parameters.restart.startNew),1,MPI_INT,0,communicator);
 
     MPI_Bcast(&(parameters.bfStep.xRatio), 1, MY_MPI_FLOAT, 0, communicator);
     MPI_Bcast(&(parameters.bfStep.yRatio), 1, MY_MPI_FLOAT, 0, communicator);

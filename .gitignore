@@ -1,6 +1,8 @@
 Output/
 output/
+restart/
 *.o
 *.out
 *.tags*
 ns
+chkpt_to_vtk

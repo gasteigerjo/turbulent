@@ -101,11 +101,27 @@ class VTKParameters{
     public:
         FLOAT interval;     //! Time interval for file printing
         std::string prefix;   //! Output filename
+        int active;
 };
 
 class StdOutParameters{
     public:
         FLOAT interval;
+};
+
+class CheckpointParameters{
+    public:
+        int iterations;        //! Number of iterations between checkpoints.
+        std::string directory; //! Directory in which to create checkpoints.
+        std::string prefix;    //! Prefix of the checkpoint data to create.
+        int cleanDirectory;    //! Option to delete the previous files from the directory.
+};
+
+class RestartParameters{
+    public:
+        std::string filename; //! Specific name of the file to use for restarting.
+        int latest;    //! Option to read from the checkpoint from the latest iteration.
+        int startNew;  //! Option to start a new simulation (time=0) using the restart data only for the flowfield init.
 };
 
 class ParallelParameters{
@@ -183,6 +199,8 @@ class Parameters {
         VTKParameters           vtk;
         ParallelParameters      parallel;
         StdOutParameters        stdOut;
+        CheckpointParameters    checkpoint;
+        RestartParameters       restart;
         BFStepParameters        bfStep;
         // WS2: include parameters for turbulence
         TurbulenceModelParameters turbulenceModel;
