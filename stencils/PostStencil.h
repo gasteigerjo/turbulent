@@ -30,7 +30,7 @@ class PostStencil : public FieldStencil<FlowField> {
          *
          * @param flowField State of the flow field
          */
-        virtual void preapply ( FlowField & flowField ) = 0;
+        virtual void preapply ( FlowField & flowField ) {} // not pure since it is optional
 
         /** Writes the information to the file
          * @param stream Stream to be written to
@@ -101,15 +101,6 @@ class WallPostStencil : public PostStencil<FlowField> {
          * @param parameters Parameters of the problem
          */
         WallPostStencil ( const Parameters & parameters );
-          // : PostStencil<FlowField>(parameters) {}
-
-        ~WallPostStencil();
-
-        /** Operations to perform before the apply methods
-         *
-         * @param flowField State of the flow field
-         */
-        void preapply ( FlowField & flowField );
 
         /** 2D operation for one position
          *

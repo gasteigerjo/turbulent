@@ -189,13 +189,20 @@ int main (int argc, char *argv[]) {
         std::cerr << parameters.parallel.numProcessors[0] << "x" << parameters.parallel.numProcessors[1] << "x" << parameters.parallel.numProcessors[2] << ": " << time_loop_tot/nproc << std::endl; // Output time in cerr for easy redirection into file
     }
 
+    // Create the final checkpoint
+    chkpt_cnt++;
+    chkpt_timer.start();
+    simulation->createCheckpoint(timeSteps, time);
+    lastCheckpointIter += parameters.checkpoint.iterations;
+    chkpt_time += chkpt_timer.getTimeAndContinue();
+
     // take writing time for checkpoint output
     chkpt_time /= chkpt_cnt;
     FLOAT chkpt_time_tot = 0;
     MPI_Reduce(&chkpt_time,  &chkpt_time_tot,  1, MY_MPI_FLOAT, MPI_SUM, 0, PETSC_COMM_WORLD);
     chkpt_time_tot /= nproc;
     if (rank==0) {
-        std::cerr << "Writing time per checkpoint (average of " << chkpt_cnt << " checkpoints): " << chkpt_time_tot << std::endl;
+        std::cout << "Writing time per checkpoint (average of " << chkpt_cnt << " checkpoints): " << chkpt_time_tot << std::endl;
     }
 
     // WS1: plot final output

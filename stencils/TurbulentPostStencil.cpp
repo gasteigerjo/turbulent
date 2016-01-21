@@ -119,6 +119,7 @@ TurbulentWallPostStencil::~TurbulentWallPostStencil(){
 
 void TurbulentWallPostStencil::preapply ( TurbulentFlowField & turbFlowField ) {
     if (!_possible) return;
+    if (_parameters.geometry.dim == 2) return; // no 2D implementation yet TODO
 
     // this preapply method calculates the uTau values at all walls
 
@@ -245,6 +246,7 @@ void TurbulentWallPostStencil::apply ( TurbulentFlowField & turbFlowField, int i
 
 void TurbulentWallPostStencil::writeVtk ( std::ostream & stream ) {
     if (!_possible) return;
+    if (_parameters.geometry.dim == 2) return; // no 2D implementation yet TODO
 
     // write wall shear velocity data
     stream << "\nSCALARS uTau float 1" << std::endl;
