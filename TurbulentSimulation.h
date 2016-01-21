@@ -66,7 +66,7 @@ class TurbulentSimulation : public Simulation {
     }
 
     void solveTimestep(FLOAT &_time_solve, FLOAT &_time_comm){
-      setTimeStep();
+
       // compute turbulent viscosity
       _turbViscIterator.iterate();
 
@@ -77,6 +77,10 @@ class TurbulentSimulation : public Simulation {
       _time_comm += _timer_comm.getTimeAndContinue();
 
       _wallTurbViscIterator.iterate();
+
+      // the new timestep depends on the turbulent viscosity
+      setTimeStep();
+
       // compute fgh for turbulent case
       _fghTurbIterator.iterate();
       // set global boundary values

@@ -193,6 +193,7 @@ class Simulation {
         _checkpoint.read(timeStep, time);
         _petscParallelManager.communicatePressure();
         _petscParallelManager.communicateVelocities();
+        _wallVelocityIterator.iterate();
     }
     
     virtual void cleandirCheckpoint(){

@@ -126,7 +126,7 @@ int main (int argc, char *argv[]) {
     FLOAT timeStdOut=parameters.stdOut.interval;
 
     // WS1: plot initial state
-    if(parameters.vtk.active) {
+    if(parameters.restart.filename == "" && parameters.vtk.active) {
         simulation->plotVTK(timeSteps);
     }
 

@@ -5,3 +5,4 @@ restart/
 *.out
 *.tags*
 ns
+chkpt_to_vtk
