@@ -183,6 +183,9 @@ int main (int argc, char *argv[]) {
         std::cerr << parameters.parallel.numProcessors[0] << "x" << parameters.parallel.numProcessors[1] << "x" << parameters.parallel.numProcessors[2] << ": " << time_loop_tot/nproc << std::endl; // Output time in cerr for easy redirection into file
     }
 
+    // Create the final checkpoint
+    simulation->createCheckpoint(timeSteps, time);
+
     // WS1: plot final output
     if(parameters.vtk.active) {
         simulation->plotVTK(timeSteps);

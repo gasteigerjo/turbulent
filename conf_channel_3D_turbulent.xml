@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
     <flow Re="10000" />
-    <simulation finalTime="1" >
+    <simulation finalTime="1.0" >
         <type>turbulence</type>
         <scenario>channel</scenario>
     </simulation>
@@ -46,12 +46,12 @@
             <vector x="0" y="0" z="0" />
         </back>
     </walls>
-    <vtk interval="0.1" active="true">output2/channel_3D_turbulent</vtk>
+    <vtk interval="0.1" active="true">output/channel_3D_turbulent</vtk>
     <stdOut interval="0.0001" />
     <checkpoint iterations="1" cleanDirectory="false">
         <directory>restart/</directory>
         <prefix>checkpoint</prefix>
     </checkpoint>
-    <!-- <restart latest="true" startNew="false">restart/checkpoint.000005</restart> -->
+    <!-- <restart latest="true" startNew="false">restart/</restart> -->
     <parallel numProcessorsX="2" numProcessorsY="2" numProcessorsZ="1" />
 </configuration>

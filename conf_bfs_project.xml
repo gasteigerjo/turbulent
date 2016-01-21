@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
     <flow Re="10000" />
-    <simulation finalTime="10.0" >
+    <simulation finalTime="0.1" >
         <type>turbulence</type>
         <scenario>channel</scenario>
     </simulation>
@@ -20,7 +20,7 @@
     <geometry
       dim="3"
       lengthX="1.2" lengthY="0.2" lengthZ="0.2"
-      sizeX="20" sizeY="10" sizeZ="10"
+      sizeX="40" sizeY="20" sizeZ="20"
       stretchX="false" stretchY="true" stretchZ="true"
     >
       <mesh deltaSX="1.5" deltaSY="1.5" deltaSZ="1.5">bfs</mesh>
@@ -46,12 +46,12 @@
             <vector x="0" y="0" z="0" />
         </back>
     </walls>
-    <vtk interval="0.1">output/bfs</vtk>
+    <vtk interval="0.01" active="true">output/bfs</vtk>
     <stdOut interval="0.0001" />
-    <checkpoint iterations="1" cleanDirectory="false">
+    <checkpoint iterations="10" cleanDirectory="false">
         <directory>restart/</directory>
         <prefix>checkpoint</prefix>
     </checkpoint>
     <!-- <restart latest="true" startNew="false">restart/</restart> -->
-    <parallel numProcessorsX="1" numProcessorsY="1" numProcessorsZ="1" />
+    <parallel numProcessorsX="4" numProcessorsY="1" numProcessorsZ="1" />
 </configuration>

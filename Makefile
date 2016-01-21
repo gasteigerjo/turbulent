@@ -14,7 +14,7 @@ include ${PETSC_DIR}/conf/variables
 #CFLAGS = -Wall -Werror -O3 -xHost -unroll
 # compiler on Ubuntu
 CC = mpic++
-CFLAGS = -Wall -O3 -Wno-unknown-pragmas
+CFLAGS = -Wall -O3 -Wno-unknown-pragmas -Werror
 SRCDIR = ./
 INCLUDE = -I. -Istencils ${PETSC_CC_INCLUDES}
 
