@@ -104,6 +104,7 @@ int main (int argc, char *argv[]) {
             simulation->plotVTK(timeSteps);
         }
     }
+    closedir(dir_pointer);
 
     // exit application
     delete simulation; simulation=NULL;
