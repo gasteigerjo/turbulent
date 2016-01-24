@@ -395,6 +395,7 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
                             parameters.restart.filename = std::string(file_pointer->d_name);
                     }
                 }
+                closedir(dir_pointer);
 
                 // readd the directory to the filename
                 std::stringstream tmp_fstream;
