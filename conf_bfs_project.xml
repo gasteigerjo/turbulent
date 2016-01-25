@@ -48,10 +48,11 @@
     </walls>
     <vtk interval="1.0" active="true">output/bfs</vtk>
     <stdOut interval="0.0001" />
-    <checkpoint iterations="1000" cleanDirectory="false">
+    <checkpoint iterations="10" cleanDirectory="false">
+    <!-- <checkpoint iterations="10" increaseIter="true" maxIter="20" incrFactor="1.2" cleanDirectory="true"> -->
         <directory>restart/</directory>
         <prefix>checkpoint</prefix>
     </checkpoint>
     <!-- <restart latest="true" startNew="false">restart/</restart> -->
-    <parallel numProcessorsX="1" numProcessorsY="1" numProcessorsZ="1" />
+    <parallel numProcessorsX="4" numProcessorsY="1" numProcessorsZ="1" />
 </configuration>

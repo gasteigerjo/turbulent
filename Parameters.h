@@ -112,6 +112,9 @@ class StdOutParameters{
 class CheckpointParameters{
     public:
         int iterations;        //! Number of iterations between checkpoints.
+        int increaseIter;      //! Option to increase the interval between checkpoints along the simulation.
+        int maxIter;           //! Maximum number of iterations between checkpoints in case of increaseIter.
+        FLOAT incrFactor;        //! Factor of iterations increase in case of increaseIter.
         std::string directory; //! Directory in which to create checkpoints.
         std::string prefix;    //! Prefix of the checkpoint data to create.
         int cleanDirectory;    //! Option to delete the previous files from the directory.

@@ -163,6 +163,14 @@ int main (int argc, char *argv[]) {
         if (lastCheckpointIter + parameters.checkpoint.iterations <= timeSteps) {
             simulation->createCheckpoint(timeSteps, time);
             lastCheckpointIter += parameters.checkpoint.iterations;
+            if (parameters.checkpoint.increaseIter) {
+                if (parameters.checkpoint.maxIter > 0) {
+                    parameters.checkpoint.iterations = std::min<int>(floor(parameters.checkpoint.incrFactor * parameters.checkpoint.iterations), parameters.checkpoint.maxIter);
+                } else {
+                    parameters.checkpoint.iterations = floor(parameters.checkpoint.incrFactor * parameters.checkpoint.iterations);
+                }
+                
+            }
         }
 
         // WS1: trigger VTK output

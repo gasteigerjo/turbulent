@@ -338,6 +338,10 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
         }
 
         readIntOptional(parameters.checkpoint.iterations, node, "iterations", 1000);
+        readBoolOptional(buffer, node, "increaseIter", false);
+        parameters.checkpoint.increaseIter = (int) buffer;
+        readIntOptional(parameters.checkpoint.maxIter, node, "maxIter", -1);
+        readFloatOptional(parameters.checkpoint.incrFactor, node, "incrFactor", 1.1);
         readBoolOptional(buffer, node, "cleanDirectory", false);
         parameters.checkpoint.cleanDirectory = (int) buffer;
 
@@ -579,6 +583,8 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
     MPI_Bcast(&(parameters.vtk.interval), 1, MY_MPI_FLOAT, 0, communicator);
     MPI_Bcast(&(parameters.stdOut.interval), 1, MY_MPI_FLOAT, 0, communicator);
     MPI_Bcast(&(parameters.checkpoint.iterations), 1, MPI_INT, 0, communicator);
+    MPI_Bcast(&(parameters.checkpoint.maxIter), 1, MPI_INT, 0, communicator);
+    MPI_Bcast(&(parameters.checkpoint.incrFactor), 1, MY_MPI_FLOAT, 0, communicator);
 
     broadcastString (parameters.vtk.prefix, communicator);
     broadcastString (parameters.checkpoint.directory, communicator);
@@ -587,6 +593,7 @@ void Configuration::loadParameters(Parameters & parameters, const MPI_Comm & com
     broadcastString (parameters.simulation.type, communicator);
     broadcastString (parameters.simulation.scenario, communicator);
 
+    MPI_Bcast(&(parameters.checkpoint.increaseIter),1,MPI_INT,0,communicator);
     MPI_Bcast(&(parameters.checkpoint.cleanDirectory),1,MPI_INT,0,communicator);
     MPI_Bcast(&(parameters.restart.latest),1,MPI_INT,0,communicator);
     MPI_Bcast(&(parameters.restart.startNew),1,MPI_INT,0,communicator);
